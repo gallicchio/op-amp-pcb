@@ -28,7 +28,12 @@ def core(tail="cs", pot=0.5, ccomp="100p", bf_n=300, bf_p=200, stray="3p", vsup=
          "Q6 tail b6 e6 Q3904", "R5 0 b6 62k", "R6 b6 vn 10k", "R7 e6 vn 1k",
          "Q3 c3 c2 e3 Q3906", "R8 vp e3 330", "R9 c3 vn 12k",
          f"Ccomp c3 c2 {ccomp}",
-         "Q4 vp c3 out Q3904", "Q5 vn c3 out Q3906",
+         # the output current limit (not in the book): 47 ohm in each emitter, sensed by
+         # Q7 / Q8, which steal the drive above 0.65 V / 47 ohm = 14 mA, 20 mA into a short.  D5 / D6 keep the
+         # idle sense transistor's base-collector junction from conducting while the
+         # other half of the class-B pair is on (its base sits a Vbe below OUT).
+         "Q4 vp c3 e4 Q3904", "R15 e4 out 47", "Q7 c7 e4 out Q3904", "D5 c3 c7 D4148",
+         "Q5 vn c3 e5 Q3906", "R16 out e5 47", "Q8 c8 e5 out Q3906", "D6 c8 c3 D4148",
          "R10 out x 10k", "R11 x 0 1k",
          f"Cs2 c2 0 {stray}", f"Cs3 c3 0 {stray}", f"Cso out 0 {stray}"]
     if tail == "r":
@@ -188,6 +193,12 @@ def results_json(path):
         ng = run(core(pot=pot) + ["Vin inp 0 0", "Rfb out inm 1m"], ["op"])
         offs.append(ng.vec("v(out)")[0] * 1e3)
     out["null_mv"] = round((offs[1] - offs[0]) / 2, 1)
+    # short-circuit current: follower asked for +10 V and -10 V into a short
+    isc = []
+    for vin in (10, -10):
+        ng = run(core() + [f"Vin inp 0 {vin}", "Rfb out inm 1m", "Rshort out 0 0.01"], ["op"])
+        isc.append(round(abs(ng.vec("v(out)")[0] / 0.01) * 1e3, 1))
+    out["isc_ma"] = max(isc)
     # common-mode gain of stage 1
     for tail, key in (("r", "gcm_r"), ("cs", "gcm_cs")):
         ng = run(core(tail=tail) + ["Vin inp 0 dc 0 ac 1", "Vm inm inp 0"], ["ac dec 10 10 1meg"])

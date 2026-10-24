@@ -19,8 +19,9 @@ the board keeps every value the book uses:
 | load and feedback | 10 k / 1 k divider, tap to IN- for a gain of 11 | R10, R11; SW3 pole 1 |
 
 The transistors are the SOT-23 versions of the book's 2N3904 and 2N3906 so each
-is a separate part on the silkscreen schematic, inside its own circle, with the
-emitter arrow drawn from the real emitter pad.
+is a separate part on the silkscreen schematic, inside its own symbol: base bar,
+slanted collector and emitter leads with the arrow on the emitter, and B, C, E
+lettered where the wires leave the circle.
 
 ## 2. What the board adds, and why
 
@@ -30,6 +31,7 @@ emitter arrow drawn from the real emitter pad.
 | series 1 k with the Miller capacitor | R14 | the book's bare 100 pF puts a right-half-plane zero at 1 / (2 pi C / gm): the follower is unstable with it.  1 k in series moves the zero to the left half plane.  SW2 pole 2 shorts it so the book's version can be shown ringing |
 | three 2-way DIP switches | SW1 TAIL, SW2 COMPENSATION, SW3 FEEDBACK | the book's variants (resistor tail or current sink; compensation or not; x11, follower or your own) without jumpers to lose |
 | input protection | R1, R2 1 k 1206; D1, D2 1N4148W anti-parallel between the bases | a real op-amp's input clamps.  A 2N3904's base-emitter junction breaks down at 6 V reverse; a student with a 10 V generator on one input and the other grounded would otherwise degrade Q1 or Q2.  The 1206 resistors take 0.14 W when an input is held at a rail |
+| output current limit | R15, R16 47 ohm in the emitters; Q7, Q8 sensing them; D5, D6 | a 741's scheme: when 0.65 V stands across a sense resistor the sense transistor steals the push-pull's drive.  Students will short OUT in Lab 6; the '411 shrugs, a bare Q4 would die.  The diodes are not in the 741: with the book's class-B pair the idle sense transistor's base-collector junction is forward-biased by the other half's Vbe and, without a diode, injects current into the drive node and halves the negative swing (found in simulation).  Drawn in its own box, labelled as the safety net it is |
 | reverse-supply protection | D3, D4 B5819W in series with each rail | a reversed bench supply forward-biases every junction on the board; a 0.35 V drop at 4 mA costs nothing here |
 | rail LEDs | LED1, LED2 through 10 k | rails at a glance, 1.2 mA each |
 | bypass | C2, C4 10 uF; C3, C5 100 nF | long bench leads |
@@ -44,7 +46,8 @@ three high-impedance nodes.  The results in `sim/results.json` feed the schemati
 notes, the handbook and this file.
 
 **Operating point** (follower, IN+ grounded): tail current of 1.39 mA through Q6,
-1.30 mA in Q3, Q2 C at +13.9 V, Q3 C at +0.5 V, OUT at -0.006 V.  The follower's own
+1.30 mA in Q3, Q2 C at +13.9 V, Q3 C at +0.5 V, OUT at -0.006 V.  The output
+current into a dead short is about 22 mA; into the 11 k divider it never limits.  The follower's own
 offset with everything nominal is -5.6 mV, from Q1's collector sitting at the
 rail while Q2's sits 1 V below it (Early effect); the null range of about
 +/-33 mV covers it and the pair's real mismatch several times over.
@@ -52,34 +55,35 @@ rail while Q2's sits 1 V below it (Early effect); the null range of about
 **Gain.** Stage 1 gives 11.1 at Q2 C, stage 2 gives 12.5 at Q3 C loaded as it is
 (12 k against Q3's Early resistance and the push-pull's input), and the
 push-pull at rest is barely conducting, so the small-signal open-loop gain at
-the quiescent point of about 139 is what a student measuring tiny signals
+the quiescent point of about 138 is what a student measuring tiny signals
 around zero will see.  Once the output moves and Q4 or Q5 is on, the follower's
 gain goes to 1 and the loop gain is several hundred.  Consequently the x11
 amplifier really has a gain of 10.2: the finite-gain error the book has
 students compute.
 
 **Stability.** With the 100 pF and the 1 k the follower has a phase margin of
-about 55 degrees as a follower, no overshoot on a 0.5 V step, and the
-follower settles in about 0.5 us; the x11 amplifier has 117 degrees.  Without
-the 1 k the follower's phase margin is -38 degrees, that is, it oscillates, and
-the x11 amplifier keeps 104 degrees.  That is the book's lesson, kept on a
+about 51 degrees as a follower, no overshoot on a 0.5 V step, and the
+follower settles in about 0.6 us; the x11 amplifier has 120 degrees.  Without
+the 1 k the follower's phase margin is -43 degrees, that is, it oscillates, and
+the x11 amplifier keeps about 100 degrees.  That is the book's lesson, kept on a
 switch.  The simulated unity-gain crossing is 14 MHz, which is the models
 talking: on the real board with SOT-23 parts and a probe on Q3 C, expect a few
 MHz and a little less margin.  The common-mode gain of the first stage goes
 from 0.073 with the resistor to 0.0004 with the sink.
 
 **Swing.** As the x11 amplifier with 2 V peak in, OUT swings from -14.3 V to
-+13.5 V into the 11 k divider: the positive side loses a Vbe plus the Schottky.
++13.4 V into the 11 k divider: the positive side loses a Vbe plus the Schottky.
 
 ## 4. The board
 
 100 x 100 mm, two layers, every part on the front, a solid ground plane on the
-back with 21 vias stitching the ground stubs into it.  97 SMT and 18
+back with 32 vias stitching the ground stubs and the hops into it.  111 SMT and 18
 through-hole joints.  The silkscreen wires *are* the copper: `gen_pcb.py` routes
 each track along the drawn wire, so the picture on the board is the netlist and
-not a decoration.  Three signal crossings are hops: the crossing track dives to
-the back layer between two vias and the silkscreen draws an arc over it, as
-the book draws a jump.
+not a decoration.  Nine crossings are hops: the crossing track dives to the
+back layer between two vias and the silkscreen draws a small arc over it, as
+the book draws a jump.  Six of the nine came with the current limit, whose two
+sense leads and two diode returns have to cross the output's own wires.
 
 Choices worth knowing:
 
@@ -118,9 +122,9 @@ is there to catch it.
    metre of coax is 100 pF on the follower's output).  The 55 degrees of margin is
    the simulation's; the real board has less.  Rev B puts 47 ohm in series with
    the OUT jack.
-4. **A shorted output.**  Q4 and Q5 have no current limit; OUT to a rail puts
-   15 V across one of them.  The handbook says so; rev B adds 22 ohm emitter
-   resistors, which cost a little swing.
+4. **A shorted output held for minutes.**  The limit holds Q4 or Q5 at about
+   22 mA with 15 V across it, 0.3 W in a SOT-23: it survives a student's slip,
+   not an afternoon.
 5. **The BNC's rotation**, +90 degrees, was read on a built board of the same
    jack on the same footprint, so it is the least likely of the connectors to be
    wrong; the terminal blocks' and the trimmer's are predicted, but their hole
@@ -131,8 +135,6 @@ is there to catch it.
 ## 6. Rev B list
 
 * 47 ohm in series with OUT at the jack (cable capacitance).
-* 22 ohm emitter resistors in the push-pull (short-circuit survival), or a
-  note that the output is unprotected, as the book's own is.
 * A fourth switch position or a jumper to lift the 1 k input resistors for a
   bandwidth measurement without them.
 * A place for a 1 nF to try as the compensation capacitor.

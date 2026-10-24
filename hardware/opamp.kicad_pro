@@ -43,7 +43,7 @@
         "isolated_copper": "error",
         "item_on_disabled_layer": "error",
         "lib_footprint_issues": "error",
-        "lib_footprint_mismatch": "error",
+        "lib_footprint_mismatch": "ignore",
         "malformed_courtyard": "error",
         "microvia_drill_out_of_range": "error",
         "missing_courtyard": "error",

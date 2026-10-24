@@ -20,8 +20,8 @@ GERBER_LAYERS_4 = ("F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,B.Paste,"
 
 # Parts whose orientation in the CPL is worth a glance in the fab's preview:
 # anything that is not rotationally symmetric.
-ORIENTATION_SENSITIVE = ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "SW1", "SW2", "SW3", "RV1",
-                         "D1", "D2", "D3", "D4", "LED1", "LED2", "J1", "J2", "J3", "J4", "J5", "J6", "J7"]
+ORIENTATION_SENSITIVE = ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "SW1", "SW2", "SW3", "RV1",
+                         "D1", "D2", "D3", "D4", "D5", "D6", "LED1", "LED2", "J1", "J2", "J3", "J4", "J5", "J6", "J7"]
 IMAGES = os.path.join(ROOT, "docs", "images")
 PNG_DPI = 170
 import layout as _place
@@ -217,14 +217,14 @@ def export_bom(stem):
     return path, full, lines, total, unknown
 
 
-ASSEMBLY_NOTES = """LAoE DISCRETE OP-AMP -- notes for the assembler
-===============================================
+ASSEMBLY_NOTES = """DISCRETE TRANSISTOR OP-AMP -- notes for the assembler
+=====================================================
 
 PLACEMENTS
   Use {stem}_cpl_jlcpcb_upload.csv for JLCPCB.  It is {stem}_cpl_kicad_native.csv
   with JLCPCB's own per-part rotations applied; use the native file anywhere else.
 
-Q1-Q6 -- SOT-23 transistors, 1 = B, 2 = E, 3 = C.  Each sits inside a silkscreen
+Q1-Q8 -- SOT-23 transistors, 1 = B, 2 = E, 3 = C.  Each sits inside a silkscreen
   circle; the two bottom pads (or, for Q2 and Q6, the two top pads) are base and
   emitter, the single pad on the other side is the collector.
 
@@ -239,7 +239,7 @@ J1, J2, J3 -- BNC jacks.  The barrel points OFF the board edge: J1 and J2 off th
 
 J4, J5, J6, J7 -- screw terminal blocks.  The wire openings face the board edge.
 
-D1-D4, LED1, LED2 -- polarised; the cathode is pad 1, at the end the silkscreen
+D1-D6, LED1, LED2 -- polarised; the cathode is pad 1, at the end the silkscreen
   bar marks.
 """
 

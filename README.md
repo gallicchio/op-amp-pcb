@@ -1,7 +1,7 @@
-# LAoE Discrete Op-Amp
+# Discrete Transistor Op-Amp
 
 The op-amp of *Learning the Art of Electronics* (Hayes and Horowitz, 2016), Lab 5L,
-built from six 2N3904 / 2N3906 transistors on a 100 x 100 mm board whose silkscreen
+built from eight 2N3904 / 2N3906 transistors on a 100 x 100 mm board whose silkscreen
 *is* the schematic.  For a first electronics lab: every node has a loop to hang a
 scope probe on, three DIP switches select the variants the book walks through, and
 the inputs, output and power come in on BNCs and screw terminals.
@@ -32,6 +32,9 @@ The book's three-stage op-amp, with the book's values:
   the 100 pF Miller compensation capacitor on switch **COMPENSATION**.
 * **Push-pull emitter follower**, Q4 and Q5, into the book's 10 k / 1 k divider whose
   tap **X** is the feedback point for a gain of 11.
+* An **output current limit** in its own box, two more transistors and two diodes the
+  way a 741 does it, so a shorted output is survived.  It is marked as the safety net
+  it is and changes nothing about how the circuit works.
 * Switch **FEEDBACK** closes the loop as the x11 amplifier (X to IN-) or as a follower
   (OUT to IN-), or leaves it open so you wire your own feedback through the
   screw terminals.
@@ -44,11 +47,12 @@ What the board adds, so a class of first-year students can use it:
 * **Input protection**: 1 k in series with each input and anti-parallel 1N4148s between
   the bases, so no base-emitter junction ever sees its 6 V reverse breakdown.
 * **Reverse-supply protection** (a Schottky in each rail) and a green LED per rail.
-* 17 probe loops, three of them ground, placed on every node the book asks you to
-  look at.  Dashed boxes name each stage on the silkscreen.
+* 17 probe loops, four of them ground (one per scope channel), placed on every node
+  the book asks you to look at.  Dashed boxes name each stage on the silkscreen, and
+  every transistor sits inside its own symbol with B, C and E marked.
 
-Parts cost about $7.62 in parts per board at JLCPCB; the fixed assembly fees make the
-first board about $66 and each further one about $8.  See
+Parts cost about $7.68 in parts per board at JLCPCB; the fixed assembly fees make the
+first board about $66 and each further one about $8, so about $15 each for 10 assembled boards.  See
 [docs/MANUFACTURING.md](docs/MANUFACTURING.md).
 
 ![Schematic](docs/images/schematic.png)
@@ -73,7 +77,7 @@ export KICAD_APPIMAGE=$HOME/.local/bin/kicad-10.0.7-x86_64.AppImage   # or kicad
 ./make.py --clean      # delete everything it generates
 ```
 
-The build stops on any ERC or DRC violation, on any of the 91 circuit assertions
+The build stops on any ERC or DRC violation, on any of the 97 circuit assertions
 that read the exported netlist back against the book's circuit, on a schematic text
 overlap, on a fab-package problem (an order code whose JLCPCB description no longer
 matches, a QR code that does not decode from the board file) and on any number in

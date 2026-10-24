@@ -1,4 +1,4 @@
-LAoE Discrete Op-Amp rev A (2026-10-24) -- JLCPCB order form, field by field
+Discrete Transistor Op-Amp rev A (2026-10-24) -- JLCPCB order form, field by field
 ==============================================================================
 
 [PCB]

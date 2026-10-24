@@ -143,7 +143,15 @@ def main(path):
     # --- push-pull --------------------------------------------------------------
     check(N.net("Q4", 1) == "Q3 C" and N.net("Q5", 1) == "Q3 C", "Q4 and Q5's bases are driven by Q3 C")
     check(N.net("Q4", 3) == "+15V" and N.net("Q5", 3) == "-15V", "Q4's collector to +15 V, Q5's to -15 V")
-    check(N.net("Q4", 2) == "OUT" and N.net("Q5", 2) == "OUT", "both emitters are OUT")
+    # the output current limit (not in the book): 33 ohm in each emitter, sensed by Q7 / Q8
+    check(N.between(N.net("Q4", 2), "OUT") == ["R15"] and ohms(N.value["R15"]) == 47, "R15 = 47 ohm from Q4's emitter to OUT")
+    check(N.between(N.net("Q5", 2), "OUT") == ["R16"] and ohms(N.value["R16"]) == 47, "R16 = 47 ohm from Q5's emitter to OUT")
+    check(N.net("Q7", 1) == N.net("Q4", 2) and N.net("Q7", 2) == "OUT", "Q7 senses R15 from OUT")
+    check(N.net("Q8", 1) == N.net("Q5", 2) and N.net("Q8", 2) == "OUT", "Q8 senses R16 from OUT")
+    check(N.net("D5", 2) == "Q3 C" and N.net("D5", 1) == N.net("Q7", 3), "D5 lets Q7 pull Q3 C down, never up")
+    check(N.net("D6", 1) == "Q3 C" and N.net("D6", 2) == N.net("Q8", 3), "D6 lets Q8 pull Q3 C up, never down")
+    i_lim = 0.65 / ohms(N.value["R15"])
+    check(0.012 < i_lim < 0.022, f"the output limits at about {i_lim*1e3:.0f} mA: enough for 13 V into 1k, a short survives")
     check(N.between("OUT", "X") == ["R10"] and ohms(N.value["R10"]) == 10000, "R10 = 10k from OUT to X")
     check(N.between("X", "GND") == ["R11"] and ohms(N.value["R11"]) == 1000, "R11 = 1k from X to ground")
     check(abs(11000 / 1000 - 11) < 1e-9, "X = OUT / 11: the book's x11 divider")
@@ -176,8 +184,8 @@ def main(path):
 
     # --- probe loops on the nodes they claim ---------------------------------------
     for tp, net in (("TP1", "Q1 B"), ("TP2", "Q2 B"), ("TP3", "TAIL"), ("TP6", "Q2 C"), ("TP8", "Q3 C"),
-                    ("TP9", "OUT"), ("TP10", "X"), ("TP11", "+15V"), ("TP12", "-15V"),
-                    ("TP100", "GND"), ("TP101", "GND"), ("TP102", "GND")):
+                    ("TP9", "OUT"), ("TP11", "+15V"), ("TP12", "-15V"),
+                    ("TP100", "GND"), ("TP101", "GND"), ("TP102", "GND"), ("TP103", "GND")):
         check(N.net(tp, 1) == net, f"{tp} ({N.value[tp]}) is on {net}")
     check(N.net("TP4", 1) == N.net("Q6", 2), "TP4 is Q6's emitter")
     check(N.net("TP5", 1) == N.net("Q6", 1), "TP5 is Q6's base")

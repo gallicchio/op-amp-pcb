@@ -325,7 +325,7 @@ CODE_EXPECT = {
     "NPN": ["NPN", "SOT-23"], "PNP": ["PNP", "SOT-23"], "POT": ["50Ω"], "DIP2": ["DIP Switch", "2.54mm"],
     "BNC": ["BNC", "50Ω"], "TERM2": ["2P", "5mm"], "TERM3": ["3P", "5mm"], "TP": ["Test"],
     "DSCH": ["Schottky", "SOD-123"], "DSW": ["Switching", "SOD-123"], "LED": ["0805"],
-    "1k": ["1kΩ", "0805"], "1k_1206": ["1kΩ", "1206"], "1.5k": ["1.5kΩ", "0805"], "330R": ["330Ω", "0805"],
+    "47R": ["47Ω", "0805"], "1k": ["1kΩ", "0805"], "1k_1206": ["1kΩ", "1206"], "1.5k": ["1.5kΩ", "0805"], "330R": ["330Ω", "0805"],
     "10k": ["10kΩ", "0805"], "12k": ["12kΩ", "0805"], "62k": ["62kΩ", "0805"],
     "100pF": ["100pF", "0805", "C0G"], "100nF": ["100nF", "0805"], "10uF": ["10uF", "0805"],
 }
@@ -370,7 +370,7 @@ def check_stock(problems, notes):
     for key, p in parts.PARTS.items():
         if "stock" not in p:
             continue
-        need = {"NPN": 4, "PNP": 2, "BNC": 3, "DIP2": 3, "TERM2": 3, "TP": 17, "DSCH": 2, "DSW": 2, "LED": 2}.get(key, 1)
+        need = {"NPN": 5, "PNP": 3, "BNC": 3, "DIP2": 3, "TERM2": 3, "TP": 18, "DSCH": 2, "DSW": 4, "LED": 2}.get(key, 1)
         boards = p["stock"] // need
         if boards < 50:
             low.append(f"{p['mpn']} ({p['stock']} in stock = {boards} boards)")

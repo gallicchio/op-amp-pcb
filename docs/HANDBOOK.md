@@ -20,7 +20,9 @@ PNP arrows point in.  A dashed box names each stage.
 | TAIL | Q6, R5, R6, R7, R4, SW1 | the 1.4 mA current sink, or the 10 k resistor |
 | GAIN x30 | Q3, R8, R9 | PNP common-emitter stage, 330 ohm emitter, 12 k collector; its output is Q3 C |
 | COMPENSATION | C1, R14, SW2 | the 100 pF Miller capacitor from C3 back to C2, with 1 k in series |
-| PUSH-PULL x1 | Q4, Q5, R10, R11 | the output followers and the book's 10 k / 1 k divider; its tap is X |
+| PUSH-PULL FOLLOWER x1 | Q4, Q5, R15, R16 | the output followers, with 47 ohm in each emitter for the limit below |
+| OUTPUT CURRENT LIMIT | Q7, Q8, D5, D6 | not in the book: a safety net, as in a real op-amp.  Q7 (Q8) turns on when more than about 0.65 V stands across R15 (R16) and steals the drive; the diodes keep the idle one out of the way.  It limits at about 22 mA and does nothing below that |
+| FEEDBACK | R10, R11, SW3 | the book's 10 k / 1 k load and x11 divider; its tap is X, and the switch returns X or OUT to IN- |
 
 ## 2. Power
 
@@ -40,14 +42,14 @@ two 10 uF bypass capacitors hold the rails if the leads are long.
 |---|---|---|---|
 | IN- | J1, left, upper | J4 IN- / GND | +/-12 V |
 | IN+ | J2, left, lower | J5 IN+ / GND | +/-12 V |
-| OUT | J3, right | J7 OUT / GND | +/-13 V into 1 k or more, 10 mA |
+| OUT | J3, right | J7 OUT / GND | +/-13 V into 1 k or more, 20 mA |
 
 The jack and the terminal of each input are the same node, so a generator can
 come in on the BNC while a feedback network goes on the screws.  Each input has
 1 k in series before the transistor base, so the 1N4148 clamp between the bases
-limits the current a wrong input can push to about 6 mA.  The output has no
-current limit: a short from OUT to a rail puts 15 V across Q4 or Q5 and kills
-it.  Loads of 1 k and up are safe.
+limits the current a wrong input can push to about 6 mA.  The output limits
+itself at about 22 mA, so a short to ground or to a rail is survived (the
+transistor runs hot: do not leave it).  Loads of 1 k and up are the design.
 
 ## 4. The switches
 
@@ -86,11 +88,13 @@ to transistor; a volt off is a fault.
 | TP6 | Q2 C | Q2's collector, the diff amp's output | +13.9 V |
 | TP7 | Q3 E | Q3's emitter | +14.6 V |
 | TP8 | Q3 C | Q3's collector, the push-pull's input | +0.5 V |
-| TP9 | OUT | the output | 0.0 V |
-| TP10 | X | the 10 k / 1 k tap | 0.0 V |
+| TP9 | OUT | the output, beside the jack | 0.0 V |
 | TP11 | +15V | the rail, after the Schottky | +14.6 V |
 | TP12 | -15V | the rail, after the Schottky | -14.6 V |
-| TP100, TP101, TP102 | GND | for the clip | 0 |
+| TP100 - TP103 | GND | for the clip, one per scope channel | 0 |
+
+X, the 10 k / 1 k tap, has no loop of its own: probe it on the upper pad of R11
+or on the FEEDBACK switch's pin 1 when slider 1 is on.
 
 The 0.6 V steps are the story of the board: Q1 and Q2's emitters sit a diode
 below their grounded bases; Q2 C sits where the 1.5 k drops half the tail
@@ -171,7 +175,7 @@ real limits, and the limits are the lesson.
 | input bias current | about 2 uA (a BJT pair at 0.7 mA a side) | 50 pA |
 | input offset | millivolts, nullable with RV1 | 0.8 mV |
 | open-loop gain | about 140 at rest, a few hundred once the output moves | 200,000 |
-| output current | +/-13 V into 1 k and up; **no current limit**, a short kills Q4 or Q5 | 25 mA, limited |
+| output current | +/-13 V into 1 k and up; limits at about 22 mA, a short is survived | 25 mA, limited |
 | slew rate | several V/us | 15 V/us |
 | inputs | anti-parallel diodes between the bases conduct above 0.7 V of difference, through the two 1 k | none |
 
@@ -190,7 +194,7 @@ real limits, and the limits are the lesson.
 | 8L.7 Wien bridge | yes at modest amplitude | 15 mA of output current is the ceiling |
 | 9L.3 capacitive loads, 9L.4 buffer in the loop | yes | 55 degrees of phase margin to lose |
 
-Loads of 1 k and up only, and never OUT to a rail.
+Loads of 1 k and up are the design; a short is survived, not enjoyed.
 
 ## 10. If it does not work
 
@@ -200,6 +204,6 @@ Loads of 1 k and up only, and never OUT to a rail.
 | one LED | that rail's lead; the two LEDs are independent |
 | OUT stuck at a rail, open loop | normal: the open-loop gain is hundreds |
 | OUT stuck at a rail as a follower | TAIL both off; a transistor in backwards; TP6 shows which stage |
-| OUT follows but a volt off | a damaged Q4 or Q5 after a shorted output |
+| OUT clips at a few volts into a low load | the current limit at work: raise the load to 1 k |
 | rings or oscillates as a follower | COMPENSATION 1 off; a long unterminated cable on OUT |
 | hum | the scope's ground clip is not on a GND loop |

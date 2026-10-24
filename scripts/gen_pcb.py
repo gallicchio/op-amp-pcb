@@ -236,12 +236,19 @@ class Board:
                     self.hops.append((net, a, b))
                 else:
                     self.track(a, b, width, net)
-        for (padref, (vx, vy)) in L.GND_STUBS:
+        self.stub_dir = {}
+        for (padref, path) in L.GND_STUBS:
             pad = self.pads[padref]
             if pad["net"] != "GND":
                 self.problems.append(f"ground stub from {padref}, which is on {pad['net']!r}")
-            self.track((pad["x"], pad["y"]), (vx, vy), L.W_SIG, "GND")
+            pts = [(pad["x"], pad["y"])] + (list(path) if isinstance(path, list) else [path])
+            for a, b in zip(pts, pts[1:]):
+                self.track(a, b, L.W_SIG, "GND")
+            vx, vy = pts[-1]
             self.via(vx, vy, "GND")
+            dx, dy = vx - pts[-2][0], vy - pts[-2][1]
+            n = math.hypot(dx, dy) or 1.0
+            self.stub_dir[(round(vx, 3), round(vy, 3))] = (dx / n, dy / n)
 
 
     def plane(self):
@@ -335,13 +342,6 @@ class Board:
             if poly.OutlineCount():
                 bb = poly.BBox()
                 box = [tomm(bb.GetLeft()) - 0.4, tomm(bb.GetTop()) - 0.4, tomm(bb.GetRight()) + 0.4, tomm(bb.GetBottom()) + 0.4]
-                if ref in L.TRANSISTORS:
-                    # the symbol's bar stands a little outside the package on the base side
-                    kind, side = L.TRANSISTORS[ref]
-                    if side == "left":
-                        box[0] -= 0.9
-                    else:
-                        box[2] += 0.9
                 boxes.append(tuple(box))
         self.boxes = boxes
         return boxes
@@ -395,7 +395,7 @@ class Board:
             if key in hopset:
                 # a hop: a semicircle over the wire it crosses, at the middle
                 cx, cy = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
-                r = 1.0
+                r = 0.5
                 if abs(a[1] - b[1]) < 1e-6:          # horizontal hop
                     self._line(a, (cx - r, cy)); self._line((cx + r, cy), b)
                     self._arc(cx, cy, r, 180, 180)
@@ -447,17 +447,11 @@ class Board:
     def silk_grounds(self):
         """A ground symbol at every ground via (continuing the stub's direction)
         and under every ground connector post."""
-        stubs = {(round(vx, 3), round(vy, 3)): self.pads[padref] for (padref, (vx, vy)) in L.GND_STUBS}
         for (net, x, y) in self.vias:
             if net != "GND":
                 continue
-            src = stubs.get((round(x, 3), round(y, 3)))
-            if src is None:
-                self.ground_symbol(x, y, 0, 1)
-                continue
-            dx, dy = x - src["x"], y - src["y"]
-            n = math.hypot(dx, dy) or 1.0
-            self.ground_symbol(x, y, dx / n, dy / n)
+            ux, uy = self.stub_dir.get((round(x, 3), round(y, 3)), (0, 1))
+            self.ground_symbol(x, y, ux, uy)
         for (x, y) in L.GND_MARKS:
             self.ground_symbol(x, y, 0, 1, start=1.3 + 0.4)
 
@@ -473,53 +467,67 @@ class Board:
             self._line((cx - px * w / 2, cy - py * w / 2), (cx + px * w / 2, cy + py * w / 2), width=0.25)
 
     def silk_transistors(self):
-        """The schematic symbol drawn round each SOT-23: a circle, the base
-        bar beside the package, a short lead to each pad's side of the circle,
-        and the emitter arrow pointing out of (NPN) or into (PNP) the package."""
+        """The textbook symbol drawn round each SOT-23, inside a circle: the base
+        bar on the side the base wire arrives from, a slanted collector lead up
+        to the collector wire, a slanted emitter lead with the arrow on it (out
+        of the bar for an NPN, into it for a PNP), and B, C, E beside the three
+        wires where they leave the circle.  The package sits between the leads;
+        the copper wires enter the circle exactly where the symbol's leads end."""
         R = L.Q_RADIUS
         for ref, (kind, side) in L.TRANSISTORS.items():
             fp = self.fps[ref]
             cx, cy = tomm(fp.GetPosition().x), tomm(fp.GetPosition().y)
+            # the package's own outline would clutter the symbol: drop it
+            for item in list(fp.GraphicalItems()):
+                if item.GetLayer() == pcbnew.F_SilkS:
+                    fp.Remove(item)
             self._circle(cx, cy, R)
             b = self.pads[(ref, "1")]; e = self.pads[(ref, "2")]; c = self.pads[(ref, "3")]
-            # the bar: a vertical line just outside the package on the base side
-            sx = -1 if side == "left" else 1
-            bx = cx + sx * 2.45
-            half = math.sqrt(max(R * R - (bx - cx) ** 2, 0)) - 0.3
-            self._line((bx, cy - half), (bx, cy + half), width=0.4)
-            # emitter arrow: where the emitter's wire leaves the circle, pointing
-            # out of the package for an NPN and into it for a PNP
-            ex, ey = e["x"], e["y"]
-            d = None
-            for (net, points, width) in L.WIRES:
-                if points[0] == (ref, "2"):
-                    nxt = self.resolve(points[1], net)
-                    d = (nxt[0] - ex, nxt[1] - ey)
-                    break
-            if d is None:
-                d = (0.0, 1.0)
-            n = math.hypot(*d) or 1.0
-            ux, uy = d[0] / n, d[1] / n
-            # the exit point: along the ray from the pad in direction (ux, uy) to radius R
-            # solve |pad + t*u - c| = R
-            fx, fy = ex - cx, ey - cy
-            bq = 2 * (fx * ux + fy * uy)
-            cq = fx * fx + fy * fy - R * R
-            t = (-bq + math.sqrt(max(bq * bq - 4 * cq, 0))) / 2
-            tx_, ty_ = ex + ux * t, ey + uy * t
+            sx = -1 if side == "left" else 1          # the bar's side
+            cu = -1 if kind == "NPN" else 1            # collector direction: NPN up, PNP down
+            bx = cx + sx * 2.05
+            # the bar, and the two legs the book draws: collector from one end to
+            # the collector wire (x = cx), emitter from the other end to the emitter
+            # wire, which the layout brings out at x = cx + sx * 0.4.  The legs leave
+            # the bar near its ends so they clear the base pad under them.
+            self._line((bx, cy - 1.9), (bx, cy + 1.9), width=0.4)
+            self._line((bx, cy + cu * 1.6), (cx - sx * 0.2, cy + cu * 2.9), width=0.3)
+            p0 = (bx, cy - cu * 1.9)
+            p1 = (cx + sx * 0.4, cy - cu * 2.9)
+            self._line(p0, p1, width=0.3)
+            # the arrow is always on the emitter: at the leg's far end pointing out
+            # for an NPN, at the bar pointing in for a PNP
+            dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+            n = math.hypot(dx, dy); ux, uy = dx / n, dy / n
             px, py = -uy, ux
-            s_ = 1 if kind == "NPN" else -1          # NPN points outward along u
-            tip = (tx_ + ux * 0.9 * s_, ty_ + uy * 0.9 * s_)
-            base = (tx_ - ux * 0.5 * s_, ty_ - uy * 0.5 * s_)
-            self._poly([tip, (base[0] + px * 0.55, base[1] + py * 0.55), (base[0] - px * 0.55, base[1] - py * 0.55)])
+            if kind == "NPN":
+                tip = p1
+                tail = (p1[0] - ux * 1.3, p1[1] - uy * 1.3)
+            else:
+                tip = (p0[0] + ux * 0.1, p0[1] + uy * 0.1)
+                tail = (tip[0] + ux * 1.3, tip[1] + uy * 1.3)
+            self._poly([tip, (tail[0] + px * 0.55, tail[1] + py * 0.55), (tail[0] - px * 0.55, tail[1] - py * 0.55)])
+            # B, C, E where the wires leave the circle (or where the layout says)
+            letters = {"B": (cx + sx * (R + 0.9), b["y"] - 0.9),
+                       "C": (cx + sx * 1.1, cy + cu * (R + 0.7)),
+                       "E": (cx + sx * 1.5, cy - cu * (R + 0.7))}
+            letters.update(getattr(L, "Q_LETTER", {}).get(ref, {}))
+            for name, (lx, ly) in letters.items():
+                self._text(lx, ly, name, 0.8, 0.15, justify="center")
             # caption: reference and type, where the layout says
             fp.Value().SetVisible(False)
             fp.Reference().SetVisible(False)
             cap = L.Q_CAPTION[ref]
             tx, ty, just = cap[:3]
             size = cap[3] if len(cap) > 3 else 0.9
-            self._text(tx, ty, ref, size, 0.15, justify=just)
-            self._text(tx, ty + 1.5 * size, fp.Value().GetText(), size, 0.15, justify=just)
+            ang = cap[4] if len(cap) > 4 else 0
+            self._text(tx, ty, ref, size, 0.15, justify=just, angle=ang)
+            if ref in L.HIDE_VALUE:
+                pass
+            elif ang:
+                self._text(tx + 1.4 * size, ty, fp.Value().GetText(), size, 0.15, justify=just, angle=ang)
+            else:
+                self._text(tx, ty + 1.5 * size, fp.Value().GetText(), size, 0.15, justify=just)
 
     def silk_fields(self):
         """Reference and value beside each part, where layout.FIELD_AT says."""

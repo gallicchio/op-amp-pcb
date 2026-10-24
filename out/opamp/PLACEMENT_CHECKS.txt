@@ -1,4 +1,4 @@
-PLACEMENT CHECKS for LAoE Discrete Op-Amp rev A: JLCPCB's 'Confirm Parts Placement' preview
+PLACEMENT CHECKS for Discrete Transistor Op-Amp rev A: JLCPCB's 'Confirm Parts Placement' preview
 ==============================================================================
 
 The upload CPL turns these parts by the angle JLCPCB's own drawing needs.
@@ -8,7 +8,7 @@ Look at each predicted part in the preview; if one is turned, do NOT nudge it
 in their viewer (the fix is lost on the next upload): change its entry in
 scripts/parts.py JLC_ROTATION and rebuild.
 
-[PREDICTED] Q1, Q2, Q4, Q6  (C20526, +180 deg)
+[PREDICTED] Q1, Q2, Q4, Q6, Q7  (C20526, +180 deg)
             SOT-23: their pad 1 is at (+1.0,+0.95), KiCad's at (-0.94,-0.95); the SOT-23-5 on GPSDO needed +180 on 59 placements
             look for: SOT-23: the lone pad (collector) on the side the collector wire leaves; should be: lone pad at the TOP, the pair at the bottom
 
@@ -20,27 +20,27 @@ scripts/parts.py JLC_ROTATION and rebuild.
             KF301-3P: pins along x at -5/0/+5, as drawn here
             look for: screw terminal wire openings; should be: facing the RIGHT edge
 
-[PREDICTED] TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9, TP10, TP11, TP12, TP13, TP14, TP100, TP101, TP102  (C5199800, +0 deg)
+[PREDICTED] TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9, TP11, TP12, TP13, TP14, TP100, TP101, TP102, TP103  (C5199800, +0 deg)
             RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x
 
 [PREDICTED] RV1  (C52754333, +0 deg)
             3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here
             look for: 3362P trimmer, keyed; should be: fits one way; screw on top
 
-[PREDICTED] Q3, Q5  (C53444, +180 deg)
+[PREDICTED] Q3, Q5, Q8  (C53444, +180 deg)
             SOT-23, same drawing as the NPN
 
 [PREDICTED] SW1, SW2, SW3  (C54949, +270 deg)
             DSIC02LSGET: JLCPCB draws the DSIC06 lying along x, KiCad standing; the Lorenz DSIC06 needed +270 (read)
             look for: 2-way DIP switch: pads on pads; sliders move toward the '1 / 2' legends; should be: SW1 and SW2 sliders moving toward the labelled side; electrically it cannot go in wrong
 
-[PREDICTED] D1, D2  (C81598, +0 deg)
+[PREDICTED] D1, D2, D5, D6  (C81598, +0 deg)
             1N4148W SOD-123F: as the Schottky
             look for: SOD-123 cathode band; should be: at the end the silkscreen bar marks (they are anti-parallel: one up, one down)
 
 [PREDICTED] D3, D4  (C8598, +0 deg)
             B5819W SOD-123: their pad 1 at -1.7 as KiCad's; cathode band end to be seen
-            look for: SOD-123 cathode band; should be: D3 toward the +15 V rail (top); D4 toward the terminal (bottom)
+            look for: SOD-123 cathode band; should be: D3 toward the +15 V rail (top); D4 toward the terminal (right)
 
 [READ     ] LED1, LED2  (C2297, +0 deg)
             KT-0805G on KiCad's LED_0805: GPiBridge rev A preview, cathode at pad 1

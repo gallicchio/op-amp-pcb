@@ -9,7 +9,7 @@ when a code's description no longer matches the value and package here.
 
 REV = "A"
 BOARD_DATE = "2026-10-24"
-BOARD_NAME = "LAoE Discrete Op-Amp"
+BOARD_NAME = "Discrete Transistor Op-Amp"
 PROJECT_URL = "github.com/gallicchio/op-amp-pcb"   # the git remote of this checkout
 STOCK_DATE = "2026-10-24"
 
@@ -134,6 +134,8 @@ PASSIVES = {
                     price=0.0085, stock=1945919, note="1206, 0.25 W: the input series resistors"),
     "1.5k":  dict(lcsc="C4310", mpn="0805W8F1501T5E", jlc_type="basic",
                   price=0.0028, stock=1272825),
+    "47R":   dict(lcsc="C17714", mpn="0805W8F470JT5E", jlc_type="basic",
+                  price=0.0029, stock=667379, note="the output current limit's sense resistors: about 20 mA"),
     "330R":  dict(lcsc="C17630", mpn="0805W8F3300T5E", jlc_type="basic",
                   price=0.0044, stock=1939287),
     "10k":   dict(lcsc="C17414", mpn="0805W8F1002T5E", jlc_type="basic",

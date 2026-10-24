@@ -98,6 +98,8 @@ def severities():
     # KiCad's stock symbols carry footprint-name filters ("Pin*", "SW?DIP?x2*");
     # the project's own footprints are named for what they are, not to match them
     out["footprint_filters_mismatch"] = "ignore"
+    # the transistors drop the stock SOT-23 outline on the board (the drawn symbol replaces it)
+    out["lib_footprint_mismatch"] = "ignore"
     return out
 
 

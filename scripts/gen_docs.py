@@ -175,11 +175,11 @@ def main():
     a(f"The board has **{smt} SMT joints** and **{tht} through-hole joints** on")
     a(f"{len(rows)} BOM lines; {len(ext_codes)} distinct order codes are JLCPCB *Extended* parts")
     a(f"(the BNCs, the terminal blocks, the trimmer, the DIP switches, the test loops")
-    a(f"and the PNP), each with a one-off {money(EXTENDED_PART_FEE)} feeder fee.  Parts alone are")
+    a(f"and the PNPs), each with a one-off {money(EXTENDED_PART_FEE)} feeder fee.  Parts alone are")
     a(f"**{money(parts_cost)} per board**, of which the three BNC jacks are")
     a(f"{money(3 * parts.PARTS['BNC']['price'])} and the {loops} test loops {money(loops * parts.PARTS['TP']['price'])}.")
     a("")
-    for qty, pcb in ((2, PCB_2L_5PCS), (5, PCB_2L_5PCS), (10, PCB_2L_10PCS)):
+    for qty, pcb in ((2, PCB_2L_5PCS), (5, PCB_2L_5PCS), (10, PCB_2L_10PCS), (20, PCB_2L_10PCS * 1.8)):
         p, pr, asm, ship, tot = quote(qty, pcb)
         a(f"**{qty} boards, fully assembled, through-hole parts included**")
         a("")
@@ -349,6 +349,7 @@ def main():
         ("README.md", r"first board about \$(\d+) and each further one about \$(\d+)",
          (f"{round(p1):d}", f"{round(p2 - p1):d}")),
         ("README.md", r"(\d+) probe loops", str(loops)),
+        ("README.md", r"about \$(\d+) each for (\d+) assembled boards", (f"{round(quote(10, PCB_2L_10PCS)[4] / 10):d}", "10")),
         ("docs/HANDBOOK.md", r"(\d+) probe loops", str(loops)),
         ("docs/HANDBOOK.md", r"\| TP3 \| TAIL \|[^|]*\| ([-+0-9.]+) V", v(op["tail"])),
         ("docs/HANDBOOK.md", r"\| TP6 \| Q2 C \|[^|]*\| ([-+0-9.]+) V", v(op["c2"])),
@@ -356,6 +357,8 @@ def main():
         ("docs/HANDBOOK.md", r"\| TP8 \| Q3 C \|[^|]*\| ([-+0-9.]+) V", v(op["c3"])),
         ("docs/HANDBOOK.md", r"\| TP5 \| Q6 B \|[^|]*\| ([-+0-9.]+) V", v(op["b6"])),
         ("docs/HANDBOOK.md", r"\| TP4 \| Q6 E \|[^|]*\| ([-+0-9.]+) V", v(op["e6"])),
+        ("docs/HANDBOOK.md", r"limits at about (\d+) mA", f"{R['isc_ma']:.0f}"),
+        ("docs/DESIGN_NOTES.md", r"into a dead short is about (\d+) mA", f"{R['isc_ma']:.0f}"),
         ("docs/HANDBOOK.md", r"\| TP11 \| \+15V \|[^|]*\| ([-+0-9.]+) V", v(R["vrail"])),
         ("docs/HANDBOOK.md", r"\| TP12 \| -15V \|[^|]*\| ([-+0-9.]+) V", v(-R["vrail"])),
         ("docs/HANDBOOK.md", r"null range of about \+/-(\d+) mV", f"{R['null_mv']:.0f}"),
@@ -391,7 +394,7 @@ def main():
 
 # What to look for in JLCPCB's preview, per orientation-sensitive part.
 PREVIEW_CHECKS = [
-    ("Q1, Q3, Q4, Q5", "SOT-23: the lone pad (collector) on the side the collector wire leaves",
+    ("Q1, Q3, Q4, Q5, Q7, Q8", "SOT-23: the lone pad (collector) on the side the collector wire leaves",
      "lone pad at the TOP, the pair at the bottom"),
     ("Q2, Q6", "the same, the other way up", "lone pad at the BOTTOM, the pair at the top"),
     ("SW1, SW2, SW3", "2-way DIP switch: pads on pads; sliders move toward the '1 / 2' legends",
@@ -402,10 +405,11 @@ PREVIEW_CHECKS = [
     ("J4, J5", "screw terminal wire openings", "facing the LEFT edge"),
     ("J6, J7", "screw terminal wire openings", "facing the RIGHT edge"),
     ("D1, D2", "SOD-123 cathode band", "at the end the silkscreen bar marks (they are anti-parallel: one up, one down)"),
-    ("D3, D4", "SOD-123 cathode band", "D3 toward the +15 V rail (top); D4 toward the terminal (bottom)"),
+    ("D3, D4", "SOD-123 cathode band", "D3 toward the +15 V rail (top); D4 toward the terminal (right)"),
+    ("D5, D6", "SOD-123 cathode band", "D5 cathode DOWN toward Q7; D6 cathode DOWN toward the bus"),
     ("LED1, LED2", "0805 LED cathode mark", "LED1 cathode on the RIGHT (its ground via), anode toward R12; "
      "LED2 cathode on the LEFT toward R13, anode to the ground via on its right"),
-    ("TP1-TP14, TP100-TP102", "test loops", "the loop lying along the pad's long side; not polarised"),
+    ("TP1-TP14, TP100-TP103", "test loops", "the loop lying along the pad's long side; not polarised"),
 ]
 
 

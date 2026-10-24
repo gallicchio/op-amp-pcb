@@ -73,7 +73,7 @@ def build():
         return fmt.format(op[node]) if node in op else "?"
 
     s = Sheet(kienv.share_dir(), paper="A2",
-              title=f"{parts.BOARD_NAME}: a 3-stage op-amp from six discrete transistors",
+              title=f"{parts.BOARD_NAME}: the Lab 5L op-amp of Learning the Art of Electronics",
               date=parts.BOARD_DATE, rev=parts.REV,
               company="Circuit: Hayes & Horowitz, Learning the Art of Electronics (2016), Lab 5L  |  Board: Jason Gallicchio and Claude",
               comments=["2N3904 / 2N3906 (MMBT, SOT-23): the transistors of Chapter 4",
@@ -341,13 +341,16 @@ def build():
     s.wire(c3_, (g(98), c3_[1]), (g(98), g(57)), (CX, g(57)))
 
     # ======================================================= push-pull =======
-    Q4_X, Q4_Y, Q5_Y = g(116), g(51), g(61)
+    # Q4 / Q5 with the book's bare emitters joined at OUT, plus the output
+    # current limit a real op-amp has: 47 ohm in each emitter, sensed by Q7 / Q8,
+    # which steal the drive above 0.65 V / 47 ohm = 14 mA.  Not in the book.
+    Q4_X, Q4_Y, Q5_Y = g(116), g(46), g(66)
     s.place(sym("NPN"), "Q4", "2N3904", Q4_X, Q4_Y, footprint=fp("NPN"),
-            fields=part_fields("NPN"), ref_off=(3.6, -3.4), val_off=(3.6, -0.6),
-            ref_justify="left", val_justify="left")
+            fields=part_fields("NPN"), ref_off=(-7.6, -3.4), val_off=(-7.6, -0.6),
+            ref_justify="right", val_justify="right")
     s.place(sym("PNP"), "Q5", "2N3906", Q4_X, Q5_Y, mirror="x", footprint=fp("PNP"),
-            fields=part_fields("PNP"), ref_off=(3.6, 0.6), val_off=(3.6, 3.4),
-            ref_justify="left", val_justify="left")
+            fields=part_fields("PNP"), ref_off=(-7.6, 0.6), val_off=(-7.6, 3.4),
+            ref_justify="right", val_justify="right")
     q4b, q4c, q4e = s.pin("Q4", 1, "1"), s.pin("Q4", 1, "3"), s.pin("Q4", 1, "2")
     q5b, q5e, q5c = s.pin("Q5", 1, "1"), s.pin("Q5", 1, "2"), s.pin("Q5", 1, "3")
     BB_X = q4b[0]
@@ -360,11 +363,44 @@ def build():
     s.wire(q5c, (q5c[0], VM_Y))
     s.junction(q5c[0], VM_Y)
     OX = q4e[0]
-    s.wire(q4e, (OX, OUT_Y), q5e)
+    res("R15", "47R", OX, g(52), side="left")
+    res("R16", "47R", OX, g(60), side="left")
+    s.wire(q4e, (OX, g(52) - 3.81))
+    s.wire((OX, g(52) + 3.81), (OX, g(60) - 3.81))
+    s.wire((OX, g(60) + 3.81), q5e)
     s.junction(OX, OUT_Y)
-    OUT_X0 = g(122)
+    # the limiter: Q7 senses R15 (base on Q4's emitter), Q8 senses R16
+    Q7_X = g(121)
+    s.place(sym("NPN"), "Q7", "2N3904", Q7_X, g(49), footprint=fp("NPN"),
+            fields=part_fields("NPN"), ref_off=(3.6, -3.4), val_off=(3.6, -0.6),
+            ref_justify="left", val_justify="left")
+    s.place(sym("PNP"), "Q8", "2N3906", Q7_X, g(63), mirror="x", footprint=fp("PNP"),
+            fields=part_fields("PNP"), ref_off=(3.6, 0.6), val_off=(3.6, 3.4),
+            ref_justify="left", val_justify="left")
+    q7b, q7c, q7e = s.pin("Q7", 1, "1"), s.pin("Q7", 1, "3"), s.pin("Q7", 1, "2")
+    q8b, q8e, q8c = s.pin("Q8", 1, "1"), s.pin("Q8", 1, "2"), s.pin("Q8", 1, "3")
+    s.wire((OX, q7b[1]), q7b)
+    s.junction(OX, q7b[1])
+    s.wire((OX, q8b[1]), q8b)
+    s.junction(OX, q8b[1])
+    LX = q7e[0]
+    s.wire(q7e, (LX, OUT_Y), q8e)
+    s.junction(LX, OUT_Y)
+    # D5 / D6 block the idle sense transistor's base-collector junction, which
+    # the other half's Vbe would otherwise forward-bias (anodes toward Q3 C)
+    s.place("Device:D", "D5", "1N4148W", LX, g(44), rot=90,
+            footprint=fp("DSW"), fields=part_fields("DSW"),
+            ref_off=(2.4, -1.4), val_off=(2.4, 1.4), ref_justify="left", val_justify="left")
+    s.place("Device:D", "D6", "1N4148W", LX, g(68), rot=90,
+            footprint=fp("DSW"), fields=part_fields("DSW"),
+            ref_off=(2.4, -1.4), val_off=(2.4, 1.4), ref_justify="left", val_justify="left")
+    s.wire(q7c, (LX, g(44) + 3.81))
+    s.wire((LX, g(44) - 3.81), (LX, g(40)), (BB_X, g(40)), q4b)   # crosses Q4's collector wire: no dot
+    s.wire(q8c, (LX, g(68) - 3.81))
+    s.wire((LX, g(68) + 3.81), (LX, g(72)), (BB_X, g(72)), q5b)
+    OUT_X0 = g(126)
     s.wire((OX, OUT_Y), (OUT_X0, OUT_Y))
-    label("OUT", OX + 2.54, OUT_Y + 0.0)
+    label("OUT", LX + 2.54, OUT_Y + 0.0)
 
     # --- the 10k / 1k that load the output and make the x11 feedback ---------
     s.junction(OUT_X0, OUT_Y)
@@ -378,23 +414,22 @@ def build():
     s.wire((OUT_X0, g(69.5) + 3.81), (OUT_X0, g(74)))
     gnd(OUT_X0, g(74))
     testpoint(OUT_X0, g(58), "OUT", rot=270, dx=3.4, dy=0.5)
-    testpoint(OUT_X0, g(67.5), "X", rot=270, dx=3.4, dy=0.5)
 
     # --- feedback selector: x11 from X (pole 1), x1 from OUT (pole 2) --------
     # Drawn mirrored top-to-bottom so pole 1 (X, gain 11) is the lower pair of
     # pins, level with the X wire, and pole 2 (OUT, the follower) the upper:
     # the OUT wire then drops to its pin without crossing the X wire.  On the
     # board pole 1 is the switch's left column, where X arrives.
-    SW3_X, SW3_Y = g(132), g(64)
+    SW3_X, SW3_Y = g(136), g(64)
     s.place(sym("DIP2"), "SW3", "FEEDBACK", SW3_X, SW3_Y, mirror="x", footprint=fp("DIP2"),
             fields=part_fields("DIP2"), ref_off=(0, 6.0), val_off=(0, 8.4))
     f1, f2, f3, f4 = (s.pin("SW3", 1, p) for p in ("1", "2", "3", "4"))
     s.wire((OUT_X0, X_Y), f1)                                          # x11
-    OUT_X1 = g(127)
+    OUT_X1 = g(131)
     s.wire((OUT_X0, OUT_Y), (OUT_X1, OUT_Y))
     s.junction(OUT_X1, OUT_Y)
     s.wire((OUT_X1, OUT_Y), (OUT_X1, f2[1]), f2)                        # x1
-    FBX = g(137)
+    FBX = g(141)
     s.wire(f4, (FBX, f4[1]), (FBX, f3[1]), f3)
     s.junction(FBX, f3[1])
     # ...and back to IN-: down under the -15 V rail, along the bottom, up the
@@ -405,21 +440,21 @@ def build():
     label("IN+", g(28), IN_P_Y)
 
     # --- OUT jack and terminal ------------------------------------------------
-    s.wire((OUT_X1, OUT_Y), (g(140), OUT_Y))
-    s.place("Connector:Conn_Coaxial", "J3", "BNC", g(142), OUT_Y,
+    s.wire((OUT_X1, OUT_Y), (g(145), OUT_Y))
+    s.place("Connector:Conn_Coaxial", "J3", "BNC", g(147), OUT_Y,
             footprint=fp("BNC"), fields=part_fields("BNC"),
             ref_off=(4.0, -2.6), val_off=(4.0, 0.4), ref_justify="left", val_justify="left")
-    s.wire(s.pin("J3", 1, "2"), (g(142), g(60)))
-    gnd(g(142), g(60))
-    s.text("OUT", g(145), OUT_Y + 1.0, size=3.0)
-    s.place(sym("TERM2"), "J7", "OUT / GND", g(144), g(48),
+    s.wire(s.pin("J3", 1, "2"), (g(147), g(60)))
+    gnd(g(147), g(60))
+    s.text("OUT", g(150), OUT_Y + 1.0, size=3.0)
+    s.place(sym("TERM2"), "J7", "OUT / GND", g(149), g(48),
             footprint=fp("TERM2"), fields=part_fields("TERM2"),
             ref_off=(3.0, -1.0), val_off=(3.0, 1.6), ref_justify="left", val_justify="left")
     j7a, j7b = s.pin("J7", 1, "1"), s.pin("J7", 1, "2")
-    s.wire((g(133), OUT_Y), (g(133), j7a[1]), j7a)
-    s.junction(g(133), OUT_Y)
-    s.wire(j7b, (g(140), j7b[1]), (g(140), g(52)))
-    gnd(g(140), g(52))
+    s.wire((g(137), OUT_Y), (g(137), j7a[1]), j7a)
+    s.junction(g(137), OUT_Y)
+    s.wire(j7b, (g(143), j7b[1]), (g(143), g(52)))
+    gnd(g(143), g(52))
 
     # ========================================================== rails ========
     PR = g(156)
@@ -442,11 +477,11 @@ def build():
     s.text("POWER", g(160), g(54.5), size=3.0)
     s.text("+15 V, GND, -15 V from a bench supply; 20 mA", g(160), g(56.3), size=1.2)
     DP_X = g(152)                                     # +15 in: Schottky, then the rail
-    s.place("Device:D_Schottky", "D3", "B5819W", DP_X, g(44), rot=270,
+    s.place("Device:D_Schottky", "D3", "B5819W", DP_X, g(40), rot=270,
             footprint=fp("DSCH"), fields=part_fields("DSCH"),
             ref_off=(2.4, -1.4), val_off=(2.4, 1.4), ref_justify="left", val_justify="left")
-    s.wire(j6a, (DP_X, j6a[1]), (DP_X, g(44) + 3.81))
-    s.wire((DP_X, g(44) - 3.81), (DP_X, VP_Y))
+    s.wire(j6a, (DP_X, j6a[1]), (DP_X, g(40) + 3.81))
+    s.wire((DP_X, g(40) - 3.81), (DP_X, VP_Y))
     s.junction(DP_X, VP_Y)
     label("+15V_IN", g(152.5), j6a[1])
     flag(g(157), j6a[1] - 2.54, j6a[1])
@@ -500,7 +535,7 @@ def build():
     s.text("-15 V present", LX + 2.8, g(86) - 3.6, size=1.2)
 
     # ================================================== probe grounds ========
-    for x in (g(40), g(100), g(126)):
+    for x in (g(40), g(70), g(100), g(126)):
         testpoint(x, g(96), "GND", rot=0, dx=1.8, dy=-3.0)
         s.wire((x, g(96)), (x, g(97)))
         gnd(x, g(97))
@@ -590,8 +625,9 @@ def build():
           "",
           "OUTPUT",
           f"{R['swing'][0]:+.0f} to {R['swing'][1]:+.0f} V into the 11k; 10 mA max." if "swing" in R else "+/-13 V into the 11k; 10 mA max.",
-          "No short-circuit protection: a short to a rail or",
-          "to ground can kill Q4 or Q5."],
+          "Q7, Q8, D5, D6 and the 47 ohm resistors are not in the",
+          "book: they limit the output to about 20 mA, as a real",
+          "op-amp does, so a short to a rail or ground is survived."],
          col[3], NOTE_Y)
     note(["POWER",
           "+15 V, GND, -15 V from a bench supply, 20 mA.",

@@ -1,11 +1,11 @@
-LAoE DISCRETE OP-AMP -- notes for the assembler
-===============================================
+DISCRETE TRANSISTOR OP-AMP -- notes for the assembler
+=====================================================
 
 PLACEMENTS
   Use opamp_cpl_jlcpcb_upload.csv for JLCPCB.  It is opamp_cpl_kicad_native.csv
   with JLCPCB's own per-part rotations applied; use the native file anywhere else.
 
-Q1-Q6 -- SOT-23 transistors, 1 = B, 2 = E, 3 = C.  Each sits inside a silkscreen
+Q1-Q8 -- SOT-23 transistors, 1 = B, 2 = E, 3 = C.  Each sits inside a silkscreen
   circle; the two bottom pads (or, for Q2 and Q6, the two top pads) are base and
   emitter, the single pad on the other side is the collector.
 
@@ -20,5 +20,5 @@ J1, J2, J3 -- BNC jacks.  The barrel points OFF the board edge: J1 and J2 off th
 
 J4, J5, J6, J7 -- screw terminal blocks.  The wire openings face the board edge.
 
-D1-D4, LED1, LED2 -- polarised; the cathode is pad 1, at the end the silkscreen
+D1-D6, LED1, LED2 -- polarised; the cathode is pad 1, at the end the silkscreen
   bar marks.
