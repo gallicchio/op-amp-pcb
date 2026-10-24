@@ -1,0 +1,211 @@
+(footprint "SW_DIP_SPSTx02_KingTek_DSIC02_P2.54mm"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "2-way SMD DIP switch, 2.54mm pitch, 8.8mm row spacing, KingTek DSIC02LSGET (LCSC C54949)")
+	(tags "DIP switch SPST x2 SMD 2.54mm")
+	(property "Reference" "REF**"
+		(at 0 4.6 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "669db0c9-f4c2-53c2-9bcf-0fdedfaa7632")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SW_DIP_SPSTx02_KingTek_DSIC02_P2.54mm"
+		(at 0 -4.6 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "7eb78059-4d48-5967-82dc-f822dd4a97e2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 -4.6 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "11aaa61e-1d0d-57d4-a91e-a4ef86573bb9")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "2-way SMD DIP switch, 2.54mm pitch, 8.8mm row spacing, KingTek DSIC02LSGET (LCSC C54949)"
+		(at 0 -4.6 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "8df9239d-a84f-5bee-b9e4-d9115e5eac5c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -3 -3.15)
+		(end 3 -3.15)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "cf8348e9-1995-5bf7-9d6b-7cd33ce1e8a0")
+	)
+	(fp_line
+		(start -3 3.15)
+		(end 3 3.15)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "fcbc3b5d-d57c-5442-9b62-3ef8f60117b8")
+	)
+	(fp_line
+		(start -5.85 -3.4)
+		(end 5.85 -3.4)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "57487684-499c-5763-9885-2721b9ae038b")
+	)
+	(fp_line
+		(start -5.85 3.4)
+		(end -5.85 -3.4)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "43fcd683-80f8-5e91-a221-0f0f04f293a8")
+	)
+	(fp_line
+		(start 5.85 -3.4)
+		(end 5.85 3.4)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "be58f4ae-5d53-5f08-ae75-fb80e6c774e0")
+	)
+	(fp_line
+		(start 5.85 3.4)
+		(end -5.85 3.4)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "25e36ff6-1d8d-5c6a-9c3f-99d536d7902d")
+	)
+	(fp_line
+		(start -3 -3.15)
+		(end 3 -3.15)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "60fb10aa-fcff-5f7d-9327-8ee88df2c972")
+	)
+	(fp_line
+		(start -3 3.15)
+		(end -3 -3.15)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "a7fbad87-d319-56b8-bd2a-4aaf48cc8fb4")
+	)
+	(fp_line
+		(start 3 -3.15)
+		(end 3 3.15)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "9944d7a7-9c1f-550a-9d23-1455209e27a8")
+	)
+	(fp_line
+		(start 3 3.15)
+		(end -3 3.15)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "fed8932d-c31f-5774-9dd0-0abbd50d97ea")
+	)
+	(fp_text user "ON ->"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "caeeccec-36b5-5d8d-a76b-7f82f359d785")
+		(effects
+			(font
+				(size 0.7 0.7)
+				(thickness 0.12)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -4.4 -1.27)
+		(size 2.4 1.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "ca19433c-38e5-57ca-9ac6-31663e50a416")
+	)
+	(pad "2" smd roundrect
+		(at -4.4 1.27)
+		(size 2.4 1.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "dc10c90e-8bf9-5fd6-998a-ebd6ce86e9db")
+	)
+	(pad "3" smd roundrect
+		(at 4.4 1.27)
+		(size 2.4 1.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "960008a5-02dc-5cc7-af1a-9e3966d4ae93")
+	)
+	(pad "4" smd roundrect
+		(at 4.4 -1.27)
+		(size 2.4 1.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "7ad3e300-2908-5390-8603-362d0986f7c5")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/lib/opamp.3dshapes/SW_DIP_x02_DSIC02.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 0.393701 0.393701 0.393701)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

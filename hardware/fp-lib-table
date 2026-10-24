@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "opamp")(type "KiCad")(uri "${KIPRJMOD}/lib/opamp.pretty")(options "")(descr "Footprints drawn for this project"))
+)
