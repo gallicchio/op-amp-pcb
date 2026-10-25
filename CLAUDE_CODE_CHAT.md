@@ -526,3 +526,22 @@ is not worth doing an hour before a review round. It is listed as open in the br
 
 The brief's "already known" section now says what was fixed and what is still open, so
 the other reviewers verify rather than re-find.
+
+## Prompt 13
+
+> Somewhere on the board, I want you to add, in quotes, "Op-Amps aren't magic, they're just transistors."
+
+## Response 7
+
+2026-10-25 07:58 PDT.
+
+The quote is on the front, in the band above the +15 V rail, which was empty but for
+the two fiducials in its corners: 1.8 mm text, 0.3 mm stroke, centred on the board,
+spanning x = 13.5 to 82.5 mm at y = 7, so it clears each fiducial's 2 mm mask opening
+by 1.5 mm. It is the one line on the board that is not a label, so it sits opposite
+the title band, which has the name, the authors, the revision and the URL. The design
+notes' "Identity" bullet names it. Rebuilt in place: ERC 0, 102 circuit assertions,
+DRC 0 (the silk rules include the new text), 28 of 28 document claims. Only the front
+silkscreen, its gerber, the assembly drawing and the renders changed.
+
+![board with the motto, response 7](docs/history/2026-10-25-r6-top.png)

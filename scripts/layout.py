@@ -252,6 +252,8 @@ Q_CAPTION = {
 
 # Free text: (x, y, text, size, thickness, justify, angle)
 TEXTS = [
+    # the motto, in the band above the +15 V rail, between the fiducials
+    (48.0, 7.0, "\"Op-Amps aren't magic, they're just transistors.\"", 1.8, 0.3, "center", 0),
     # identity, in the band under the -15 V rail
     (48.0, 90.3, "DISCRETE TRANSISTOR OP-AMP", 2.4, 0.4, "center", 0),
     (48.0, 93.3, "the op-amp of Learning the Art of Electronics (Hayes & Horowitz), Lab 5L", 1.0, 0.15, "center", 0),
