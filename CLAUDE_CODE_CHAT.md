@@ -561,3 +561,72 @@ the usual repair when the second clause explains the first, so the board now rea
 Rebuilt in place, every gate clean; the response 7 render was replaced.
 
 ![board with the motto, response 8](docs/history/2026-10-25-r6-top.png)
+
+## Prompt 15
+
+> The green LEDs for power aren't symmetrically placed on the board. That would be nice
+> if possible. Maybe that means putting the -15V LED closer to the "POWER" label where the
+> 3 terminals come in on the East side.
+>
+> Change "COMPENSATION" to "OPTIONAL COMPENSATION" because you can turn it off. You may
+> need to rearrange to make the words fit, but it looks like you'd have room to make
+> OPTIONAL and COMPENSATION on different lines, pushing the "1: 100pF….." over a bit.
+> Similarly, "FEEDBACK" should be "OPTIONAL FEEDBACK", since you can turn it off.
+>
+> For the silkscreen on the back:
+>
+> The github address in the silk screen text should include the "https://" to make it
+> clear that the first line is a web address and the second line that starts with
+> "circuit, scripts, …." is a description. The line right below the QR code should be
+> "https://github.com/gallicchio/op-amp-pcb". The QR code works, so no need to change that.
+>
+> Put a line break after "usual: and change it to "usual positions:" so that "TAIL 1" is
+> on its own line, in line with COMPENSATION 1 and TAIL 2, etc. Similarly for the other
+> items like FEEDBACK, where "1 = " and "2 = " and "BOTH OFF" should be on their own
+> lines. The text can go farther to the right if it means keeping ideas on their own
+> lines. This might violate my suggestion about not making text columns too wide, but I'd
+> pay that price if each item can be on its own line, somewhat like a bulleted list.
+>
+> Change "(no 10 M feedback)" to "(10 M feedback for photodiode will not work; everything
+> else should)"
+>
+> You can get rid of the line that starts with, "PROBING:". This is obvious from looking
+> at the board and will allow you more lines to spread out the items as I suggested above.
+
+## Response 9
+
+2026-10-25 11:09 PDT.
+
+- **The -15 V LED is in the south-east corner, beside POWER.** The exact mirror of
+  LED1 (hanging up from the -15 V rail at x = 93) lands on the power terminal, and the
+  column just west of it holds D3, the +15 V input wire and the terminal's pin labels.
+  So D4 moved 1.2 mm east and LED2 with R13 now hangs down from D4's rail side, cathode
+  up toward R13 and its ground symbol pointing down, with "R13 10k" and "LED2 GREEN" on
+  its right, just west of the word POWER. Both lamps are now in the east corners, LED1
+  near OUT at the top and LED2 near POWER at the bottom. The assembler's orientation
+  check for the LEDs was stale (it described an older layout) and now says LED1 cathode
+  down, LED2 cathode up.
+- **OPTIONAL COMPENSATION**: three vertical columns in the box's right side; the legend
+  moved 1 mm west, then OPTIONAL, then COMPENSATION, so tilting your head left reads
+  legend, OPTIONAL, COMPENSATION.
+- **OPTIONAL FEEDBACK**: two lines in the box's top right. R10's label could not share
+  those rows without reading as "R10 OPTIONAL", so it moved down level with R10's
+  middle, the X probe's label moved under its loop, and "R11 1k" moved down 0.9 mm.
+- **The back**: the line under the QR code is now https://github.com/gallicchio/op-amp-pcb.
+  The instructions are a list, one idea per line: POWER (three lines), SWITCHES, usual
+  positions (TAIL 1, COMPENSATION 1, FEEDBACK, then the TAIL 2 and COMPENSATION 2
+  alternatives at the same indent), FEEDBACK (1 =, 2 =, BOTH OFF), AS AN OP-AMP IN YOUR
+  OWN CIRCUIT (five lines, with "10 M feedback for photodiode will not work; everything
+  else should"), OFFSET NULL, INPUTS, OUT. PROBING is gone. Lines now run west to
+  x = 17; the first two stay short because RV1's through-hole pads sit where they would
+  start. 28 lines at a 1.83 mm pitch (1.8 put two lines 0.0002 mm inside the silk rule).
+  The front's URL line still has no https://; you asked about the back.
+
+Rebuilt in place: ERC 0, 102 circuit assertions, DRC 0, 28 of 28 document claims. Vias
+(32), hops (8) and the cost are unchanged, so the review brief's numbers still hold.
+
+![LED2 beside POWER](docs/history/2026-10-25-r7-led2.png)
+![OPTIONAL COMPENSATION](docs/history/2026-10-25-r7-compensation.png)
+![OPTIONAL FEEDBACK](docs/history/2026-10-25-r7-feedback.png)
+![board, response 9](docs/history/2026-10-25-r7-top.png)
+![back, response 9](docs/history/2026-10-25-r7-silk-bottom.png)

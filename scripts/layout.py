@@ -79,12 +79,13 @@ PLACE = {
     "J3": (94.3, OUT_Y, 0),     # OUT BNC
     "J7": (95.5, 58.0, 270),    # OUT / GND screw terminal
     "J6": (95.5, 82.0, 270),    # +15 / GND / -15 screw terminal
-    "D3": (88.5, 74.0, 270), "D4": (84.3, 87.0, 180),
+    "D3": (88.5, 74.0, 270), "D4": (85.5, 87.0, 180),
     "C2": (24.0, 18.0, 270), "C3": (27.5, 18.0, 270),
     "C4": (24.0, 80.0, 270), "C5": (27.5, 80.0, 270),
-    # the lamps hang from the rails toward ground, like the bypass capacitors
+    # the lamps hang toward ground, one in each east corner: LED1 from the +15 V rail,
+    # LED2 from D4's rail side, beside the POWER terminal
     "R12": (93.0, 18.0, 270), "LED1": (93.0, 22.5, 90),
-    "R13": (68.0, 81.0, 270), "LED2": (68.0, 76.5, 90),
+    "R13": (83.85, 90.8, 90), "LED2": (83.85, 94.3, 270),
     # probe loops, each on its wire
     "TP1": (26.8, 36.0, 90),    # IN- (after the 1k)
     "TP2": (26.8, 58.0, 90),    # IN+ (after the 1k), the mirror of TP1
@@ -125,7 +126,7 @@ WIRES = [
     ("+15V", [("R12", "1"), (93.0, VP_Y)], W_SIG),
     ("+15V", [("D3", "1"), (FEED_X, 45.2), (FEED_X, 40.8), (FEED_X, VP_Y)], W_RAIL),
     # -15 V rail
-    ("-15V", [(24.0, VM_Y), (82.65, VM_Y)], W_RAIL),
+    ("-15V", [(24.0, VM_Y), (83.85, VM_Y)], W_RAIL),
     ("-15V", [("R4", "2"), (30.8, VM_Y)], W_SIG),
     ("-15V", [("R6", "2"), (43.5, VM_Y)], W_SIG),
     ("-15V", [("R7", "2"), (38.0, VM_Y)], W_SIG),
@@ -133,8 +134,8 @@ WIRES = [
     ("-15V", [("Q5", "3"), (70.9, VM_Y)], W_SIG),
     ("-15V", [("C4", "2"), (24.0, VM_Y)], W_SIG),
     ("-15V", [("C5", "2"), (27.5, VM_Y)], W_SIG),
-    ("-15V", [("R13", "2"), (68.0, VM_Y)], W_SIG),
-    ("-15V", [("D4", "2"), (82.65, VM_Y)], W_RAIL),
+    ("-15V", [("D4", "2"), (83.85, VM_Y)], W_RAIL),
+    ("-15V", [("D4", "2"), ("R13", "2")], W_SIG),
     # power entry
     ("/+15V_IN", [("J6", "1"), (FEED_X, 77.0), ("D3", "2")], W_RAIL),
     ("/-15V_IN", [("J6", "3"), ("D4", "1")], W_RAIL),
@@ -227,7 +228,7 @@ GND_STUBS = [
     (("J7", "2"), [(90.8, 60.5), (90.8, 63.0)]), (("J6", "2"), [(90.6, 82.0), (90.6, 84.0)]),
     (("C2", "2"), (24.0, 21.5)), (("C3", "2"), (27.5, 21.5)),
     (("C4", "1"), (24.0, 76.5)), (("C5", "1"), (27.5, 76.5)),
-    (("LED1", "1"), (93.0, 26.5)), (("LED2", "2"), (68.0, 72.5)),
+    (("LED1", "1"), (93.0, 26.5)), (("LED2", "2"), (83.85, 96.9)),
     (("R11", "2"), (83.5, 69.5)), (("R5", "1"), (46.3, 74.5)),
     (("TP100", "1"), (24.0, 72.0)), (("TP101", "1"), (12.0, 83.5)), (("TP102", "1"), (92.0, 71.6)),
     (("TP103", "1"), (54.3, 71.5)),
@@ -274,7 +275,7 @@ TEXTS = [
     (91.9, 65.0, "GND", 0.9, 0.15, "left", 0),
     (91.4, 78.4, "+15V", 0.9, 0.15, "right", 0),
     (89.8, 84.6, "GND", 0.9, 0.15, "right", 0),
-    (91.4, 88.7, "-15V", 0.9, 0.15, "right", 0),
+    (91.4, 88.4, "-15V", 0.9, 0.15, "right", 0),
     (93.5, 93.2, "POWER", 1.0, 0.2, "center", 0),
     # rails
     (24.0, 13.1, "+15 V", 1.2, 0.2, "left", 0),
@@ -301,14 +302,16 @@ TEXTS = [
     (31.3, 67.8, "10k", 0.8, 0.15, "left", 0),
     # the compensation switch, named and explained along the box's right side
     (58.2, 37.6, "SW2", 0.8, 0.15, "center", 0),
-    (64.0, 54.0, "COMPENSATION", 0.9, 0.15, "center", 90),
+    (62.6, 54.0, "OPTIONAL", 0.9, 0.15, "center", 90),
+    (63.95, 54.0, "COMPENSATION", 0.9, 0.15, "center", 90),
     (58.2, 39.4, "ON", 0.8, 0.15, "center", 0),
-    (62.3, 54.5, "1: 100pF+1k   2: no 1k", 0.8, 0.15, "center", 90),
+    (61.3, 54.5, "1: 100pF+1k   2: no 1k", 0.8, 0.15, "center", 90),
     # the feedback box, explained beside its switch
-    (86.2, 60.3, "FEEDBACK", 0.9, 0.18, "right", 0),
+    (86.4, 60.25, "OPTIONAL", 0.9, 0.18, "right", 0),
+    (86.4, 61.65, "FEEDBACK", 0.9, 0.18, "right", 0),
     (85.0, 72.4, "ON>", 0.8, 0.15, "center", 0),
-    (78.0, 61.7, "R10 10k", 0.8, 0.15, "left", 0),
-    (82.3, 67.5, "R11 1k", 0.8, 0.15, "right", 0),
+    (77.7, 62.95, "R10 10k", 0.8, 0.15, "left", 0),
+    (82.3, 68.4, "R11 1k", 0.8, 0.15, "right", 0),
     (73.8, 79.8, "1: X to IN- (x11)", 0.8, 0.15, "left", 0),
     (73.8, 81.1, "2: OUT to IN- (x1)", 0.8, 0.15, "left", 0),
     (73.8, 82.4, "off: bare op-amp", 0.8, 0.15, "left", 0),
@@ -334,11 +337,11 @@ FIELD_AT = {
     "R3": ((2.2, -0.7), (2.2, 0.7)),
     "R6": ((2.4, -0.7), (2.4, 0.7)), "R7": ((2.4, -0.7), (2.4, 0.7)),
     "R8": ((1.1, -0.7), (1.1, 0.7)), "R9": ((2.4, -0.7), (2.4, 0.7)),
-    "R12": ((2.4, -0.7), (2.4, 0.7)), "R13": ((-2.4, -0.7), (-2.4, 0.7)),
+    "R12": ((2.4, -0.7), (2.4, 0.7)), "R13": ((2.4, -0.7), (2.4, 0.7)),
     "R14": ((1.5, -0.7), (1.5, 0.7)), "C1": ((1.5, -0.7), (1.5, 0.7)),
     "R15": ((1.4, -0.7), (1.4, 0.7)), "R16": ((1.4, -0.7), (1.4, 0.7)),
     "D4": ((-2.6, -1.6), (-2.6, -0.2)),
-    "LED1": ((2.4, -0.7), (2.4, 0.7)), "LED2": ((-2.4, -0.7), (-2.4, 0.7)),
+    "LED1": ((2.4, -0.7), (2.4, 0.7)), "LED2": ((2.4, -0.7), (2.4, 0.7)),
 }
 # Parts whose reference or value is printed as free text instead, or not at all.
 HIDE_REF = {"J1", "J2", "J3", "J4", "J5", "J6", "J7", "SW1", "SW2", "SW3", "D1", "D2", "D3", "D5", "D6",
@@ -351,7 +354,7 @@ HIDE_VALUE = {"SW1", "SW2", "SW3", "J1", "J2", "J3", "J4", "J5", "J6", "J7", "RV
 TP_LABEL = {
     "TP1": (0.0, -3.0, "center", 0.8), "TP2": (0.0, 3.0, "center", 0.8), "TP3": (2.0, 0.0, "left"),
     "TP4": (-1.4, -1.0, "right"), "TP5": (2.0, 0.0, "left"), "TP6": (-1.8, 0.0, "right"),
-    "TP7": (-2.4, 0.0, "right"), "TP8": (0, -2.2, "center"), "TP9": None, "TP10": (0, -1.9, "center"),
+    "TP7": (-2.4, 0.0, "right"), "TP8": (0, -2.2, "center"), "TP9": None, "TP10": (0, 1.75, "center"),
     "TP11": None, "TP12": None,     # loops on the labelled rails, and by the OUT jack
     "TP13": (2.6, -0.7, "left"), "TP14": (-2.6, -0.7, "right"),
     "TP100": (2.0, 0.0, "left"), "TP101": (0, -2.6, "center"), "TP102": (2.0, 0.0, "left"), "TP103": (0, -2.2, "center"),
@@ -377,33 +380,38 @@ FIDUCIALS = [(11.0, 7.0), (89.0, 7.0), (11.0, 92.0)]
 # The QR code on the back: its centre and module size.
 QR_AT, QR_MODULE = (55.0, 30.0), 0.6
 
-# Printed on the back, where there are no parts: how to use the board.  Each
-# line is short enough to stay between x = 30 and x = 85, clear of every
-# through-hole pad (the silkscreen may cross tented vias).
-BACK_Y, BACK_PITCH = 48.0, 1.9
+# Printed on the back, where there are no parts: how to use the board, one idea
+# per line like a list.  Lines run from x = 85 toward the west edge; the first two
+# stay short of RV1's pads, and none reaches the BNCs (the silkscreen may cross
+# tented vias).
+BACK_Y, BACK_PITCH = 47.0, 1.83
 BACK_TEXT = [
     "The op-amp of Learning the Art of Electronics",
     "(Hayes & Horowitz, 2016), built from eight",
     "2N3904 / 2N3906 so you can probe every node.",
     "",
-    "POWER: +15 V, GND, -15 V into the terminal, 20 mA; set",
-    "   the supply's limit to 50 mA.  Both LEDs light if right.",
-    "SWITCHES, usual: TAIL 1 on (Q6 current source),",
-    "   COMPENSATION 1 on (100 pF + 1k), FEEDBACK as needed.",
-    "   TAIL 2 = 10k tail resistor instead.",
-    "   COMPENSATION 2 = the bare 100 pF, no 1k (the book's):",
-    "   the x11 amp still works, a follower rings.",
-    "FEEDBACK 1 = X to IN-: gain 11.  2 = OUT to IN-:",
-    "   follower.  Both off: it is a bare op-amp.",
-    "AS AN OP-AMP IN YOUR OWN CIRCUIT (Labs 6-9): FEEDBACK",
-    "   both off; IN-, IN+, OUT and GND on the terminals",
-    "   are pins 2, 3, 6 of a '411.  Mind its 2 uA of input",
-    "   bias current (no 10 M feedback); its output limits",
-    "   at 20 mA, like a real one (Q7, Q8: not in the book).",
-    "OFFSET NULL: as a follower with IN+ grounded,",
-    "   turn RV1 until OUT reads 0 V.",
-    "INPUTS: ±12 V.  OUT: ±12 V into 1k, 15 mA; a short to",
-    "   ground is survived, to a rail only for seconds.",
-    "PROBING: a loop on every named node for a scope",
-    "   hook, and GND loops for the clip.",
+    "POWER: +15 V, GND, -15 V into the terminal, 20 mA.",
+    "   Set the supply's current limit to 50 mA.",
+    "   Both LEDs light if it is right.",
+    "SWITCHES, usual positions:",
+    "   TAIL 1 on: the Q6 current source.",
+    "   COMPENSATION 1 on: 100 pF + 1k.",
+    "   FEEDBACK as needed (below).",
+    "   TAIL 2 instead: a 10k tail resistor.",
+    "   COMPENSATION 2 instead: the bare 100 pF, no 1k (the book's);",
+    "      the x11 amp still works, a follower rings.",
+    "FEEDBACK:",
+    "   1 = X to IN-: gain 11.",
+    "   2 = OUT to IN-: follower.",
+    "   BOTH OFF: a bare op-amp.",
+    "AS AN OP-AMP IN YOUR OWN CIRCUIT (Labs 6-9):",
+    "   FEEDBACK both off.",
+    "   IN-, IN+, OUT and GND on the terminals are pins 2, 3, 6 of a '411.",
+    "   Mind its 2 uA of input bias current",
+    "      (10 M feedback for photodiode will not work; everything else should).",
+    "   Its output limits at 20 mA, like a real one (Q7, Q8: not in the book).",
+    "OFFSET NULL: as a follower with IN+ grounded, turn RV1 until OUT reads 0 V.",
+    "INPUTS: ±12 V.",
+    "OUT: ±12 V into 1k, 15 mA.",
+    "   A short to ground is survived; a short to a rail, only for seconds.",
 ]

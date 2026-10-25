@@ -407,8 +407,8 @@ PREVIEW_CHECKS = [
     ("D1, D2", "SOD-123 cathode band", "at the end the silkscreen bar marks (they are anti-parallel: one up, one down)"),
     ("D3, D4", "SOD-123 cathode band", "D3 toward the +15 V rail (top); D4 toward the terminal (right)"),
     ("D5, D6", "SOD-123 cathode band", "D5 cathode DOWN toward Q7; D6 cathode DOWN toward the bus"),
-    ("LED1, LED2", "0805 LED cathode mark", "LED1 cathode on the RIGHT (its ground via), anode toward R12; "
-     "LED2 cathode on the LEFT toward R13, anode to the ground via on its right"),
+    ("LED1, LED2", "0805 LED cathode mark", "LED1 cathode DOWN toward its ground via, anode up toward R12; "
+     "LED2 (beside POWER) cathode UP toward R13, anode down to its ground via"),
     ("TP1-TP14, TP100-TP103", "test loops", "the loop lying along the pad's long side; not polarised"),
 ]
 

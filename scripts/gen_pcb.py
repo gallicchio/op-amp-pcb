@@ -691,7 +691,7 @@ class Board:
         qx, qy = L.QR_AT
         n, rects = self.add_qr("https://" + parts.PROJECT_URL, qx, qy, L.QR_MODULE)
         half = n * L.QR_MODULE / 2
-        self._text(qx, qy + half + 2.4, parts.PROJECT_URL, 1.1, 0.15, layer=pcbnew.B_SilkS)
+        self._text(qx, qy + half + 2.4, "https://" + parts.PROJECT_URL, 1.1, 0.15, layer=pcbnew.B_SilkS)
         self._text(qx, qy + half + 4.6, "circuit, scripts, schematic, this board", 1.0, 0.15, layer=pcbnew.B_SilkS)
         self.qr = (n, rects)
 

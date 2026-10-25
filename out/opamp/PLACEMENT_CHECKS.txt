@@ -44,7 +44,7 @@ scripts/parts.py JLC_ROTATION and rebuild.
 
 [READ     ] LED1, LED2  (C2297, +0 deg)
             KT-0805G on KiCad's LED_0805: GPiBridge rev A preview, cathode at pad 1
-            look for: 0805 LED cathode mark; should be: LED1 cathode on the RIGHT (its ground via), anode toward R12; LED2 cathode on the LEFT toward R13, anode to the ground via on its right
+            look for: 0805 LED cathode mark; should be: LED1 cathode DOWN toward its ground via, anode up toward R12; LED2 (beside POWER) cathode UP toward R13, anode down to its ground via
 
 [READ     ] J1, J2, J3  (C41416668, +90 deg)
             BNC-KYWE-295-W4-N: Lorenz board rev A/B preview, built and working
