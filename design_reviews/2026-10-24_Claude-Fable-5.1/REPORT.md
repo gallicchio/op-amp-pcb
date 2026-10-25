@@ -6,7 +6,13 @@ here was run or re-derived in this directory: `sim_review.py` / `sim_review2.py`
 their logs, the land-pattern fetch `easyeda_landpatterns.log`, the 600 dpi silkscreen
 crops `z_*.png` (as built) and `zp_*.png` (with the patch), `build.log` (the unmodified
 copy) and `build_patched.log`, and the patch `patch_round1.diff` with `apply_patch.py`.
-Nothing outside this directory was touched.
+Nothing outside this directory was touched while the review was written.
+
+**Status, 2026-10-25.** No other reviewer had started, so at Jason's word the patch
+(findings 1 to 7) was applied to the project and rebuilt clean (ERC 0, 102 circuit
+assertions, DRC 0, 28 of 28 claims), and finding 9 was fixed as well (the J4 and J5
+ground stubs turn down before their vias). Findings 8, 10 and 11 are open. The report
+below describes the board as it was when reviewed.
 
 ## 1. Verdict
 

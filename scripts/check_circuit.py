@@ -78,8 +78,8 @@ def main(path):
         (ok if cond else bad).append(what)
 
     # --- the transistors: 1 = B, 2 = E, 3 = C on every SOT-23 ----------------
-    for q, kind in (("Q1", "2N3904"), ("Q2", "2N3904"), ("Q3", "2N3906"),
-                    ("Q4", "2N3904"), ("Q5", "2N3906"), ("Q6", "2N3904")):
+    for q, kind in (("Q1", "2N3904"), ("Q2", "2N3904"), ("Q3", "2N3906"), ("Q4", "2N3904"),
+                    ("Q5", "2N3906"), ("Q6", "2N3904"), ("Q7", "2N3904"), ("Q8", "2N3906")):
         check(N.value[q] == kind, f"{q} is a {kind}")
         check(N.footprint[q].endswith("SOT-23"), f"{q} is in SOT-23")
 
@@ -91,14 +91,14 @@ def main(path):
     check(N.net("Q1", 2) == N.net("RV1", 3) and N.net("Q2", 2) == N.net("RV1", 1),
           "the two emitters are the ends of the null trimmer RV1")
     check(N.net("RV1", 2) == "TAIL", "RV1's wiper is the tail")
-    check(N.value["RV1"] == "50R", "RV1 is 50 ohm: 25 ohm per emitter at centre, +/-19 mV of null")
+    check(N.value["RV1"] == "50R", "RV1 is 50 ohm: 25 ohm per emitter at centre, +/-33 mV of null")
     check(N.net("Q1", 1) == "Q1 B" and N.net("Q2", 1) == "Q2 B", "Q1's base is the - input, Q2's the + input")
 
     # --- input protection ---------------------------------------------------
     check(N.between("IN-", "Q1 B") == ["R1"] and ohms(N.value["R1"]) == 1000, "R1 = 1k from IN- to Q1's base")
     check(N.between("IN+", "Q2 B") == ["R2"] and ohms(N.value["R2"]) == 1000, "R2 = 1k from IN+ to Q2's base")
     check(N.footprint["R1"].endswith("R_1206_3216Metric") and N.footprint["R2"].endswith("R_1206_3216Metric"),
-          "R1 and R2 are 1206: a rail on an input puts 0.2 W in them")
+          "R1 and R2 are 1206: the two inputs at opposite rails put 0.21 W in each")
     check(N.net("D1", 2) == "Q1 B" and N.net("D1", 1) == "Q2 B" and N.net("D2", 1) == "Q1 B" and N.net("D2", 2) == "Q2 B",
           "D1 and D2 are back to back between the bases (anode of one to the cathode of the other)")
 
@@ -136,7 +136,8 @@ def main(path):
     check(N.between(n1, N.net("C1", 1)) == ["R14"] and ohms(N.value["R14"]) == 1000,
           "R14 = 1k between SW2's pole 1 and C1")
     check(N.net("C1", 2) == "Q3 C" and abs(farads(N.value["C1"]) - 100e-12) < 1e-13, "C1 = 100 pF to Q3 C (Q3's collector)")
-    check(N.net("SW2", 2) == n1 and N.net("SW2", 3) == N.net("C1", 1), "SW2 pole 2 shorts R14")
+    check(N.net("SW2", 3) == "Q2 C" and N.net("SW2", 2) == N.net("C1", 1),
+          "SW2 pole 2 takes Q2 C straight to C1, bypassing R14: the book's bare 100 pF on its own")
     f_z = 1 / (2 * math.pi * 100e-12 * (1000 - 350))
     check(f_z > 1e6, f"with the 1k the Miller zero sits in the left half-plane at {f_z/1e6:.1f} MHz")
 

@@ -20,8 +20,8 @@ PNP arrows point in.  A dashed box names each stage.
 | TAIL | Q6, R5, R6, R7, R4, SW1 | the 1.4 mA current sink, or the 10 k resistor |
 | GAIN x30 | Q3, R8, R9 | PNP common-emitter stage, 330 ohm emitter, 12 k collector; its output is Q3 C |
 | COMPENSATION | C1, R14, SW2 | the 100 pF Miller capacitor from C3 back to C2, with 1 k in series |
-| PUSH-PULL FOLLOWER x1 | Q4, Q5, R15, R16 | the output followers, with 47 ohm in each emitter for the limit below |
-| OUTPUT CURRENT LIMIT | Q7, Q8, D5, D6 | not in the book: a safety net, as in a real op-amp.  Q7 (Q8) turns on when more than about 0.65 V stands across R15 (R16) and steals the drive; the diodes keep the idle one out of the way.  It limits at about 22 mA and does nothing below that |
+| PUSH-PULL FOLLOWER | Q4, Q5, R15, R16 | the output followers, with 47 ohm in each emitter for the limit below |
+| OUTPUT CURRENT LIMIT | Q7, Q8, D5, D6 | not in the book: a safety net, as in a real op-amp.  Q7 (Q8) turns on when more than about 0.65 V stands across R15 (R16) and steals the drive; the diodes keep the idle one out of the way.  It limits at about 22 mA into a dead short (15 mA through Q4 or Q5) and does nothing below that |
 | FEEDBACK | R10, R11, SW3 | the book's 10 k / 1 k load and x11 divider; its tap is X, and the switch returns X or OUT to IN- |
 
 ## 2. Power
@@ -33,8 +33,11 @@ PNP arrows point in.  A dashed box names each stage.
 | protection | a Schottky in each rail: reversed leads do nothing (no LED), they do not kill it |
 | signs of life | both green LEDs on, one beside each rail |
 
-A current-limited bench supply at 30 mA is the right thing for a new board.  The
-two 10 uF bypass capacitors hold the rails if the leads are long.
+Set the bench supply's current limit to 50 mA, always, not only for a new board:
+the board never needs more than 30 mA a rail, and with the limit a scope's
+ground clip on the wrong loop (Q2 C or Q3 E to ground would otherwise put
+0.6 W into the 0805 R8) or a shorted output cannot burn anything.  The two
+10 uF bypass capacitors hold the rails if the leads are long.
 
 ## 3. Inputs and output
 
@@ -42,24 +45,28 @@ two 10 uF bypass capacitors hold the rails if the leads are long.
 |---|---|---|---|
 | IN- | J1, left, upper | J4 IN- / GND | +/-12 V |
 | IN+ | J2, left, lower | J5 IN+ / GND | +/-12 V |
-| OUT | J3, right | J7 OUT / GND | +/-13 V into 1 k or more, 20 mA |
+| OUT | J3, right | J7 OUT / GND | +/-12 V into 1 k, 15 mA |
 
 The jack and the terminal of each input are the same node, so a generator can
 come in on the BNC while a feedback network goes on the screws.  Each input has
 1 k in series before the transistor base, so the 1N4148 clamp between the bases
-limits the current a wrong input can push to about 6 mA.  The output limits
-itself at about 22 mA, so a short to ground or to a rail is survived (the
-transistor runs hot: do not leave it).  Loads of 1 k and up are the design.
+limits the current a wrong input can push to about 7 mA (15 mA, 0.2 W in each
+1 k, with the two inputs at opposite rails).  The output limits itself (about
+15 mA through Q4 or Q5, 22 mA into a dead short with the sense transistor's
+share), so a short to ground is survived for minutes, not an afternoon: 0.21 W
+in a SOT-23 whose stocked part is rated 0.2 W.  A short to a rail puts 0.43 W
+into Q4 or Q5, twice its rating: a slip, not a minute.  Loads of 1 k and up are
+the design.
 
 ## 4. The switches
 
 Each DIP switch has two sliders, numbered 1 and 2 on the board.  "On" is toward
-the number.
+the word ON beside the switch.
 
 | switch | 1 on | 2 on | both off |
 |---|---|---|---|
 | **TAIL** SW1 | Q6 current sink (normal) | 10 k tail resistor, the book's first version | no tail: the diff pair is dead, nothing works |
-| **COMPENSATION** SW2 | 100 pF + 1 k from C3 to C2 (normal) | shorts the 1 k: the book's bare 100 pF | no compensation |
+| **COMPENSATION** SW2 | 100 pF + 1 k from C3 to C2 (normal) | the bare 100 pF, no 1 k: the book's version | no compensation |
 | **FEEDBACK** SW3 | X to IN-: gain of 11, non-inverting | OUT to IN-: follower | open loop, or your own feedback on the terminals |
 
 Both TAIL sliders on puts the resistor in parallel with the sink, which is
@@ -109,8 +116,8 @@ with temperature: hold a finger on Q1 and watch it.
 
 ## 7. Bringing up a new board
 
-1. Look at it.  Six transistors with their lone pad on the collector side (up for
-   Q1, Q3, Q4, Q5; down for Q2 and Q6), the diode bands where the silkscreen bars
+1. Look at it.  Eight transistors with their lone pad on the collector side (up
+   for Q1, Q3, Q4, Q5, Q7, Q8; down for Q2 and Q6), the diode bands where the silkscreen bars
    are, the BNC barrels off the edges, the trimmer screw up.
 2. Set TAIL 1, COMPENSATION 1, FEEDBACK 2.  Nothing on the inputs.
 3. Power from a current-limited supply at 30 mA.  Both LEDs light; each rail
@@ -173,7 +180,7 @@ real limits, and the limits are the lesson.
 | input bias current | about 2 uA (a BJT pair at 0.7 mA a side) | 50 pA |
 | input offset | millivolts, nullable with RV1 | 0.8 mV |
 | open-loop gain | about 140 at rest, a few hundred once the output moves | 200,000 |
-| output current | +/-13 V into 1 k and up; limits at about 22 mA, a short is survived | 25 mA, limited |
+| output current | +/-12 V into 1 k; limits at about 15 mA (22 mA into a dead short); a short to ground is survived | 25 mA, limited |
 | slew rate | several V/us | 15 V/us |
 | inputs | anti-parallel diodes between the bases conduct above 0.7 V of difference, through the two 1 k | none |
 
@@ -190,7 +197,7 @@ real limits, and the limits are the lesson.
 | 7L.4 single-supply microphone amplifier | no | needs both rails |
 | 8L.1 comparator, 8L.1.3 Schmitt trigger, 8L.2 relaxation oscillator | yes | keep the hysteresis under a volt or so, or the input clamp loads the divider |
 | 8L.7 Wien bridge | yes at modest amplitude | 15 mA of output current is the ceiling |
-| 9L.3 capacitive loads, 9L.4 buffer in the loop | yes | 55 degrees of phase margin to lose |
+| 9L.3 capacitive loads, 9L.4 buffer in the loop | yes | 51 degrees of phase margin to lose; a probe on Q3 C costs 12 of them |
 
 Loads of 1 k and up are the design; a short is survived, not enjoyed.
 
@@ -205,3 +212,4 @@ Loads of 1 k and up are the design; a short is survived, not enjoyed.
 | OUT clips at a few volts into a low load | the current limit at work: raise the load to 1 k |
 | rings or oscillates as a follower | COMPENSATION 1 off; a long unterminated cable on OUT |
 | hum | the scope's ground clip is not on a GND loop |
+| a resistor smells hot | a ground clip on a signal loop: Q2 C or Q3 E to ground puts 0.6 W into R8, Q6 E or Q6 B to ground 0.2 W into R7.  The 50 mA supply limit is what saves R8; power off and move the clip |

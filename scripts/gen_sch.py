@@ -327,7 +327,6 @@ def build():
     s.wire((CX, C2_Y), c4)
     RZ_Y = g(54.5)
     s.wire(c1, (CX, RZ_Y - 3.81))
-    s.junction(CX, g(52))
     res("R14", "1k", CX, RZ_Y, side="left")
     CC_Y = g(59.5)
     s.wire((CX, RZ_Y + 3.81), (CX, CC_Y - 3.81))
@@ -335,10 +334,11 @@ def build():
     cap("C1", "100pF", CX, CC_Y, side="left")
     s.wire((CX, CC_Y + 3.81), (CX, g(64)), (q3c[0], g(64)))
     s.junction(q3c[0], g(64))
-    # pole 2 shorts the 1k: its lower pin to the node above R14, its upper pin
-    # round the outside to the node below it
-    s.wire(c2_, (c2_[0], g(52)), (CX, g(52)))
-    s.wire(c3_, (g(98), c3_[1]), (g(98), g(57)), (CX, g(57)))
+    # pole 2 bypasses the 1k: its upper pin up to Q2 C, its lower pin to the
+    # node between R14 and C1, so "2" alone is the book's bare 100 pF
+    s.wire(c3_, (g(98), c3_[1]), (g(98), C2_Y))
+    s.junction(g(98), C2_Y)
+    s.wire(c2_, (c2_[0], g(57)), (CX, g(57)))
 
     # ======================================================= push-pull =======
     # Q4 / Q5 with the book's bare emitters joined at OUT, plus the output
@@ -553,7 +553,7 @@ def build():
     note([f"{parts.BOARD_NAME.upper()}",
           "",
           "The op-amp of Lab 5L (Learning the Art of Electronics, Hayes & Horowitz, 2016), built from the NPN and",
-          "PNP of Chapter 4 as six SOT-23 transistors, on a board whose silkscreen is this drawing.",
+          "PNP of Chapter 4 as eight SOT-23 transistors, on a board whose silkscreen is this drawing.",
           "Three stages, as the book's Fig. 5L.11 and 5N.32:",
           "",
           f"    difference    Q1 Q2, 1.5k collector load on the + side, tail from RV1 through SW1     x{R.get('gdiff1', 11):.0f}",
@@ -604,7 +604,8 @@ def build():
           "1 ON: 100 pF from Q3's collector to its base, Miller-",
           "multiplied by the stage's gain of 30 into a 3 nF",
           "low-pass at C2.  The book's Fig. 5L.17.",
-          "2 ON: shorts the 1k, leaving the bare 100 pF.",
+          "2 ON: the bare 100 pF, no 1k: the book's version.",
+          "1 and 2 ON: the same as 2.",
           "",
           "The 1k is not in the book.  A bare Miller cap feeds",
           "the signal FORWARD above 4 MHz, the loop's sign",
@@ -628,7 +629,7 @@ def build():
           f"{R['swing'][0]:+.0f} to {R['swing'][1]:+.0f} V into the 11k; 10 mA max." if "swing" in R else "+/-13 V into the 11k; 10 mA max.",
           "Q7, Q8, D5, D6 and the 47 ohm resistors are not in the",
           "book: they limit the output to about 20 mA, as a real",
-          "op-amp does, so a short to a rail or ground is survived."],
+          "op-amp does: a short to ground is survived, to a rail for seconds."],
          col[3], NOTE_Y)
     note(["POWER",
           "+15 V, GND, -15 V from a bench supply, 20 mA.",
@@ -641,9 +642,9 @@ def build():
           "says the supply is on and the right way round.",
           "",
           "PROBING",
-          "A 2.54 mm pin on every node named on the sheet;",
-          "a scope hook grabs it.  Three pairs of ground",
-          "pins for the clip."],
+          "A wire loop on every node named on the sheet;",
+          "a scope hook grabs it.  Four ground loops for",
+          "the clip."],
          col[4], NOTE_Y)
     return s
 

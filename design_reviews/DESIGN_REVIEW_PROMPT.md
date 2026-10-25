@@ -259,6 +259,16 @@ build uses the committed `sim/results.json` and says so.
 
 ## 6. Already known or decided
 
+- The author reviewed first (`design_reviews/2026-10-24_Claude-Fable-5.1/REPORT.md`,
+  with its simulations and patch) and, at Jason's word, applied its patch before this
+  round opened: the COMPENSATION switch's pole 2 now bypasses the 1 k so position 2
+  alone is the bare 100 pF; the handbook and the back of the board say a short to
+  ground is survived and a short to a rail is not, with the stocked SOT-23's 0.2 W
+  rating; the 50 mA supply limit is the rule; the switches carry ON marks; the input
+  terminals' ground symbols point down; the stale counts and numbers are corrected.
+  Verify those rather than re-find them. Still open from that review: the "Q6 B" label
+  sitting over R5's ground symbol (no clean place for it without re-planning the Q6
+  area), the "Remove Mark" fee, and the fee constants in the cost model.
 - Every CPL rotation except the BNCs' and the LEDs' is predicted, not read; the BNC's
   +90 was read on a built board with the same footprint. `PLACEMENT_CHECKS.txt` is the
   list for the preview.

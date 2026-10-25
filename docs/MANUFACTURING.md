@@ -2,7 +2,7 @@
 
 One board, two layers, 100 x 100 mm, every part on the top side, a solid
 ground plane on the back.  It passes ERC, DRC with schematic parity, the
-98 circuit assertions and the fab-package checks with zero violations,
+102 circuit assertions and the fab-package checks with zero violations,
 and `./make.py` rebuilds and rechecks everything from scratch in about a minute.
 
 ## What to upload
@@ -51,7 +51,7 @@ ordering.  The values that come from the board are computed, not typed.
 | PCBA Type | Economic | all parts on one side, nothing fine-pitch |
 | Assembly Side | Top | every part is on the front |
 | PCBA Qty | 2, or as many as the class needs | the per-order fees are the same for 2 or 20 |
-| Edge Rails/Fiducials | Added by JLCPCB | the board carries no fiducials; let them add rails with fiducials, removed before delivery |
+| Edge Rails/Fiducials | Added by JLCPCB | the board has three 1 mm fiducials in its corners; let them add rails anyway, removed before delivery |
 | Confirm Parts Placement | Yes | look at the preview against PLACEMENT_CHECKS.txt before paying |
 | Parts Selection | By JLCPCB | every BOM line has an LCSC code |
 | Through-hole parts | keep them: J1, J2, J3, J4, J5, J6, J7, RV1 | the form lists them separately; the BNCs, terminals and trimmer are meant to be fitted |
@@ -143,7 +143,7 @@ in `out/opamp/PLACEMENT_CHECKS.txt`, the list to hold against the preview.
 |---|---|---|
 | Q1, Q3, Q4, Q5, Q7, Q8 | SOT-23: the lone pad (collector) on the side the collector wire leaves | lone pad at the TOP, the pair at the bottom |
 | Q2, Q6 | the same, the other way up | lone pad at the BOTTOM, the pair at the top |
-| SW1, SW2, SW3 | 2-way DIP switch: pads on pads; sliders move toward the '1 / 2' legends | SW1 and SW2 sliders moving toward the labelled side; electrically it cannot go in wrong |
+| SW1, SW2, SW3 | 2-way DIP switch: pads on pads; the part's own ON marking | on the side of the silkscreen word ON (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it); electrically it cannot go in wrong |
 | RV1 | 3362P trimmer, keyed | fits one way; screw on top |
 | J1, J2 | BNC barrel | pointing off the LEFT edge |
 | J3 | BNC barrel | pointing off the RIGHT edge |
@@ -182,7 +182,7 @@ upload shows it per line.
 | C2,C4 | 10uF | C15850 | basic | $0.0426 | 9,138,516 | X5R 25V 0805 |
 | C3,C5 | 100nF | C49678 | basic | $0.0205 | 22,490,642 | X7R 50V 0805 |
 | D1,D2,D5,D6 | 1N4148W | C81598 | basic | $0.0124 | 4,130,788 | anti-parallel pair across the two inputs: holds the differential input under 0.7 V, as a real op-amp's clamps do, so no base-emitter junction sees its 6 V reverse breakdown |
-| D3,D4 | B5819W | C8598 | basic | $0.0260 | 589,077 | 1 A 40 V Schottky in series with each supply: a reversed supply does nothing instead of forward-biasing six transistors. Drops about 0.35 V at this board's 3 mA |
+| D3,D4 | B5819W | C8598 | basic | $0.0260 | 589,077 | 1 A 40 V Schottky in series with each supply: a reversed supply does nothing instead of forward-biasing eight transistors. Drops about 0.35 V at this board's 3 mA |
 | J1,J2,J3 | BNC | C41416668 | extended | $1.2930 | 215 | 50 ohm BNC jack, right angle, 4 ground posts on 8x8 mm (the Lorenz board's jack: JLCPCB rotation +90 read off a real preview) |
 | J4 | IN- / GND | C474881 | extended | $0.1020 | 85,251 | 2-way 5.0 mm screw terminal block, blue, wires enter from the side |
 | J5 | IN+ / GND | C474881 | extended | $0.1020 | 85,251 | 2-way 5.0 mm screw terminal block, blue, wires enter from the side |
@@ -199,7 +199,7 @@ upload shows it per line.
 | R8 | 330R | C17630 | basic | $0.0044 | 1,939,287 |  |
 | R9 | 12k | C17444 | basic | $0.0028 | 694,664 |  |
 | R15,R16 | 47R | C17714 | basic | $0.0029 | 667,379 | the output current limit's sense resistors: about 20 mA |
-| RV1 | 50R | C52754333 | extended | $0.3370 | 520 | 50 ohm single-turn cermet trimmer, top adjust: OFFSET NULL. Its two ends are the diff pair's emitter resistors (25 ohm each at centre) and its wiper is the tail; turning it unbalances the pair by up to +/-37 mV referred to the input |
+| RV1 | 50R | C52754333 | extended | $0.3370 | 520 | 50 ohm single-turn cermet trimmer, top adjust: OFFSET NULL. Its two ends are the diff pair's emitter resistors (25 ohm each at centre) and its wiper is the tail; turning it unbalances the pair by up to +/-33 mV referred to the input |
 | SW1 | TAIL | C54949 | extended | $0.3080 | 12,716 | 2-way SMD DIP switch, 2.54 mm pitch, raised sliders (KingTek DSIC, the same family as the Lorenz board's 6-way) |
 | SW2 | COMPENSATION | C54949 | extended | $0.3080 | 12,716 | 2-way SMD DIP switch, 2.54 mm pitch, raised sliders (KingTek DSIC, the same family as the Lorenz board's 6-way) |
 | SW3 | FEEDBACK | C54949 | extended | $0.3080 | 12,716 | 2-way SMD DIP switch, 2.54 mm pitch, raised sliders (KingTek DSIC, the same family as the Lorenz board's 6-way) |

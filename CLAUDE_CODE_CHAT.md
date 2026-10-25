@@ -465,3 +465,64 @@ patch (or its findings) through the generators, then rebuild. Lessons added to
 from intent; mark ON on the silk and check it in the preview; a teaching board's bench
 supply limit is part of the design, computed from a ground clip on every loop; check
 the stocked part's ratings, not the famous maker's.
+
+## Prompt 12
+
+> No other agents have done a review, so you should apply your fixes now before I start
+> the other agents. I'll wait.
+
+## Response 6
+
+2026-10-25 00:35 to 01:05 PDT.
+
+Applied `design_reviews/2026-10-24_Claude-Fable-5.1/patch_round1.diff` to the project
+(it applied cleanly, as the dry run had said) and fixed the review's finding 9 as well:
+the ground stubs of the two input terminals now turn down 1.1 mm before their vias, so
+their symbols point down like every other ground on the +15 V side. Rebuilt in place:
+ERC 0, 102 circuit assertions (Q7 and Q8 now checked), no sheet overlaps, DRC 0 with
+the silkscreen rules, fab checks, 28 of 28 document claims, BUILD OK.
+
+What changed on the board and the sheet:
+
+- **COMPENSATION.** Pole 2 now runs from Q2 C straight to the junction between R14 and
+  C1. On the board the Q2 C drop forks at (53.5, 37.5) into both of SW2's upper pads
+  and the lower right-hand pad runs down the switch's right side to the junction below
+  R14; the "SW2" label moved to the right of the switch. On the sheet SW2's pin 3 rises
+  to the Q2 C line and pin 2 drops to the R14 / C1 node. Position 1 is 100 pF + 1 k,
+  position 2 is the bare 100 pF, both together the same as 2, as every legend says.
+- **ON marks.** "ON" left of SW1's pads, above SW2's, and "ON>" above SW3's right-hand
+  pads (the box edge leaves no room beside them). The handbook says "on is toward the
+  word ON"; the preview check and the assembler note say to compare the part's own ON
+  marking with it.
+- **The back text.** POWER: "set the supply's limit to 50 mA"; COMPENSATION 2 is "the
+  bare 100 pF, no 1k (the book's)"; OUT is "±12 V into 1k, 15 mA; a short to ground is
+  survived, to a rail only for seconds".
+- **The sheet notes.** Eight transistors, wire loops and four grounds, the
+  COMPENSATION note, the OUTPUT note.
+
+What changed in the documents: the handbook's supply-limit rule (section 2), the
+output and input-protection numbers (section 3), the switch table and ON sentence
+(section 4), eight transistors in the bring-up (section 7), the 51 degrees and a probe's
+cost in the Lab 9L row, a "resistor smells hot" row in section 10; the design notes'
+stage-2 gain (34 at Q3 C, 0.37 through the resting push-pull), the input-resistor
+powers, the rewritten risk 3 (probe loading, not cable capacitance), risk 4's real
+powers against the stocked part's 0.2 W, the 47 ohm rev B item struck; `parts.py`'s
+null range and transistor count; the fiducial row of the order form; README's
+assertion count.
+
+Not changed: the "Q6 B" label beside TP5 still sits above R5's ground symbol. Every
+place I tried for it (left of the loop, above, below, up and right) lands on Q6's
+emitter wire, the Q6 B wire, R5 or R5's labels; it needs the Q6 area re-planned, which
+is not worth doing an hour before a review round. It is listed as open in the brief.
+
+![inputs, response 6](docs/history/2026-10-25-r5-inputs.png)
+![IN+ terminal, response 6](docs/history/2026-10-25-r5-in-plus.png)
+![SW2 rewired, response 6](docs/history/2026-10-25-r5-sw2.png)
+![SW1 with its ON mark](docs/history/2026-10-25-r5-sw1.png)
+![SW3 with its ON mark](docs/history/2026-10-25-r5-sw3.png)
+![board, response 6](docs/history/2026-10-25-r5-top.png)
+![back, response 6](docs/history/2026-10-25-r5-silk-bottom.png)
+![schematic, response 6](docs/history/2026-10-25-r5-schematic.png)
+
+The brief's "already known" section now says what was fixed and what is still open, so
+the other reviewers verify rather than re-find.

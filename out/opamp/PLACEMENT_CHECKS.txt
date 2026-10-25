@@ -32,7 +32,7 @@ scripts/parts.py JLC_ROTATION and rebuild.
 
 [PREDICTED] SW1, SW2, SW3  (C54949, +270 deg)
             DSIC02LSGET: JLCPCB draws the DSIC06 lying along x, KiCad standing; the Lorenz DSIC06 needed +270 (read)
-            look for: 2-way DIP switch: pads on pads; sliders move toward the '1 / 2' legends; should be: SW1 and SW2 sliders moving toward the labelled side; electrically it cannot go in wrong
+            look for: 2-way DIP switch: pads on pads; the part's own ON marking; should be: on the side of the silkscreen word ON (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it); electrically it cannot go in wrong
 
 [PREDICTED] D1, D2, D5, D6  (C81598, +0 deg)
             1N4148W SOD-123F: as the Schottky

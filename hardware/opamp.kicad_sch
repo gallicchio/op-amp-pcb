@@ -3263,17 +3263,6 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "flips, and a follower oscillates: the book's 'risky"
-		(exclude_from_sim no)
-		(at 198.12 281.9 0)
-		(effects
-			(font
-				(size 1.3 1.3)
-			)
-			(justify left)
-		)
-		(uuid "02c35dd4-938d-55ab-ba8e-c265a0c0846a")
-	)
 	(text "dead zone).  As a follower it settles in 0.6 us with 51 deg of phase margin; the x11 amplifier"
 		(exclude_from_sim no)
 		(at 33.02 54.42 0)
@@ -3351,7 +3340,7 @@
 		)
 		(uuid "132c3498-193a-5dfc-ab0e-d9f0384210a3")
 	)
-	(text "a scope hook grabs it.  Three pairs of ground"
+	(text "a scope hook grabs it.  Four ground loops for"
 		(exclude_from_sim no)
 		(at 370.84 292.04 0)
 		(effects
@@ -3362,16 +3351,16 @@
 		)
 		(uuid "1583e386-77a3-53ea-85c3-5016962d5e6d")
 	)
-	(text "stable either way.  Both OFF: no compensation,"
+	(text "A wire loop on every node named on the sheet;"
 		(exclude_from_sim no)
-		(at 198.12 289.505 0)
+		(at 370.84 289.505 0)
 		(effects
 			(font
 				(size 1.3 1.3)
 			)
 			(justify left)
 		)
-		(uuid "16f1c348-b42f-5d16-9c99-5f1a6839983a")
+		(uuid "160900cc-014a-52f9-93e7-04634ec9b09c")
 	)
 	(text "OUT"
 		(exclude_from_sim no)
@@ -3383,6 +3372,17 @@
 			(justify left)
 		)
 		(uuid "17dbcd59-c734-572c-8407-104bde089195")
+	)
+	(text "PNP of Chapter 4 as eight SOT-23 transistors, on a board whose silkscreen is this drawing."
+		(exclude_from_sim no)
+		(at 33.02 29.62 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+			)
+			(justify left)
+		)
+		(uuid "1af694b3-3138-5db9-93eb-5c52d58984b1")
 	)
 	(text "non-inverting input"
 		(exclude_from_sim no)
@@ -3504,6 +3504,28 @@
 		)
 		(uuid "3dd67e3f-1842-53df-b3fa-28fe7fd4571f")
 	)
+	(text "The 1k is not in the book.  A bare Miller cap feeds"
+		(exclude_from_sim no)
+		(at 198.12 279.365 0)
+		(effects
+			(font
+				(size 1.3 1.3)
+			)
+			(justify left)
+		)
+		(uuid "3def468e-f904-5972-b0f5-ceb85b6d9477")
+	)
+	(text "business'.  With the 1k the follower has 51 deg of"
+		(exclude_from_sim no)
+		(at 198.12 286.97 0)
+		(effects
+			(font
+				(size 1.3 1.3)
+			)
+			(justify left)
+		)
+		(uuid "41544010-a2a8-58cc-ae17-b9450cdcaaad")
+	)
 	(text "transistor.  The rails run 0.35 V below the"
 		(exclude_from_sim no)
 		(at 370.84 271.76 0)
@@ -3514,6 +3536,17 @@
 			(justify left)
 		)
 		(uuid "44749b92-d207-5bec-845e-78899c0940ff")
+	)
+	(text "2 ON: the bare 100 pF, no 1k: the book's version."
+		(exclude_from_sim no)
+		(at 198.12 271.76 0)
+		(effects
+			(font
+				(size 1.3 1.3)
+			)
+			(justify left)
+		)
+		(uuid "44f0d8ee-5ef7-5e46-a6c3-d364ab7e92b4")
 	)
 	(text "Normal: 1 ON, 2 OFF."
 		(exclude_from_sim no)
@@ -3603,6 +3636,17 @@
 		)
 		(uuid "5cacf0ab-577d-5316-bae6-347982c111a4")
 	)
+	(text "Normal: 1 ON, 2 OFF."
+		(exclude_from_sim no)
+		(at 198.12 297.11 0)
+		(effects
+			(font
+				(size 1.3 1.3)
+			)
+			(justify left)
+		)
+		(uuid "6335b93a-b3d6-54f7-8765-d79b6a238d85")
+	)
 	(text "INPUT PROTECTION  (R1, R2, D1, D2: not in the book)"
 		(exclude_from_sim no)
 		(at 33.02 274.295 0)
@@ -3614,17 +3658,6 @@
 		)
 		(uuid "64a796c9-d0ee-50ee-8f61-f02eecf2150d")
 	)
-	(text "PNP of Chapter 4 as six SOT-23 transistors, on a board whose silkscreen is this drawing."
-		(exclude_from_sim no)
-		(at 33.02 29.62 0)
-		(effects
-			(font
-				(size 1.5 1.5)
-			)
-			(justify left)
-		)
-		(uuid "65e57f5f-fdc3-55d4-bafe-4c8945a74f13")
-	)
 	(text "2 ON: 10k to -15 V, 1.4 mA  (Fig. 5L.1)"
 		(exclude_from_sim no)
 		(at 111.76 266.69 0)
@@ -3635,6 +3668,17 @@
 			(justify left)
 		)
 		(uuid "68bd508f-05dd-52a6-9308-2094e4380aa8")
+	)
+	(text "and the x11 amplifier rings."
+		(exclude_from_sim no)
+		(at 198.12 294.575 0)
+		(effects
+			(font
+				(size 1.3 1.3)
+			)
+			(justify left)
+		)
+		(uuid "6b24fa7f-5f43-5dea-a7a0-be81445a995a")
 	)
 	(text "x11 divider in one: X = OUT / 11."
 		(exclude_from_sim no)
@@ -3691,6 +3735,17 @@
 		)
 		(uuid "7486ecd5-4d15-58f2-9ba1-5d7c7d78e7be")
 	)
+	(text "op-amp does: a short to ground is survived, to a rail for seconds."
+		(exclude_from_sim no)
+		(at 284.48 294.575 0)
+		(effects
+			(font
+				(size 1.3 1.3)
+			)
+			(justify left)
+		)
+		(uuid "75d97d1e-17f2-56e4-9c8a-9082c1209c56")
+	)
 	(text "to the IN- terminal, so R1 and the clamp still guard"
 		(exclude_from_sim no)
 		(at 284.48 274.295 0)
@@ -3713,7 +3768,7 @@
 		)
 		(uuid "78a7f5a5-ba8e-5019-a9fd-584d2d3351ec")
 	)
-	(text "pins for the clip."
+	(text "the clip."
 		(exclude_from_sim no)
 		(at 370.84 294.575 0)
 		(effects
@@ -3722,7 +3777,7 @@
 			)
 			(justify left)
 		)
-		(uuid "7bc959c5-0016-5eed-91b0-947fd9535ef7")
+		(uuid "7aad3257-5084-5252-9068-a7a5065338e0")
 	)
 	(text "IN+"
 		(exclude_from_sim no)
@@ -3757,17 +3812,6 @@
 		)
 		(uuid "89d932b4-7474-5059-833a-ff0ad4824b73")
 	)
-	(text "the signal FORWARD above 4 MHz, the loop's sign"
-		(exclude_from_sim no)
-		(at 198.12 279.365 0)
-		(effects
-			(font
-				(size 1.3 1.3)
-			)
-			(justify left)
-		)
-		(uuid "8fa0f7b3-01e2-5658-bd7b-67661702d1f1")
-	)
 	(text "parallel; +/-12 V on either.  For a common-mode"
 		(exclude_from_sim no)
 		(at 33.02 266.69 0)
@@ -3789,17 +3833,6 @@
 			(justify left)
 		)
 		(uuid "97dac1e0-153d-56f3-bef7-c4b6ec88616c")
-	)
-	(text "The 1k is not in the book.  A bare Miller cap feeds"
-		(exclude_from_sim no)
-		(at 198.12 276.83 0)
-		(effects
-			(font
-				(size 1.3 1.3)
-			)
-			(justify left)
-		)
-		(uuid "98bfa1a8-bc47-56a6-8fba-04de1e65f295")
 	)
 	(text "PROBING"
 		(exclude_from_sim no)
@@ -3866,6 +3899,28 @@
 			(justify left)
 		)
 		(uuid "a7618611-402d-582a-8ed8-8530c47b32ac")
+	)
+	(text "1 and 2 ON: the same as 2."
+		(exclude_from_sim no)
+		(at 198.12 274.295 0)
+		(effects
+			(font
+				(size 1.3 1.3)
+			)
+			(justify left)
+		)
+		(uuid "aa58371c-4917-5f16-961a-e11be69491ad")
+	)
+	(text "the signal FORWARD above 4 MHz, the loop's sign"
+		(exclude_from_sim no)
+		(at 198.12 281.9 0)
+		(effects
+			(font
+				(size 1.3 1.3)
+			)
+			(justify left)
+		)
+		(uuid "abfca690-8ba3-565e-96b7-940b64de4fce")
 	)
 	(text "Series Schottkys: a supply connected backwards"
 		(exclude_from_sim no)
@@ -3955,28 +4010,6 @@
 		)
 		(uuid "b9c25043-5c00-5876-9b57-1e98c1394489")
 	)
-	(text "2 ON: shorts the 1k, leaving the bare 100 pF."
-		(exclude_from_sim no)
-		(at 198.12 271.76 0)
-		(effects
-			(font
-				(size 1.3 1.3)
-			)
-			(justify left)
-		)
-		(uuid "bc9a399b-f8e0-57ee-8861-07cbcff54ca5")
-	)
-	(text "business'.  With the 1k the follower has 51 deg of"
-		(exclude_from_sim no)
-		(at 198.12 284.435 0)
-		(effects
-			(font
-				(size 1.3 1.3)
-			)
-			(justify left)
-		)
-		(uuid "be436d68-3144-59c4-8d10-510a38e62015")
-	)
 	(text "+15 V, GND, -15 V from a bench supply, 20 mA."
 		(exclude_from_sim no)
 		(at 370.84 264.155 0)
@@ -3988,17 +4021,6 @@
 		)
 		(uuid "c096dc33-0f93-5d8b-8219-4d354c7cdea6")
 	)
-	(text "phase margin and settles in 0.6 us; the x11 amp is"
-		(exclude_from_sim no)
-		(at 198.12 286.97 0)
-		(effects
-			(font
-				(size 1.3 1.3)
-			)
-			(justify left)
-		)
-		(uuid "c78f32fa-23b5-52bd-8a14-b51ae80144e7")
-	)
 	(text "test, tee one generator into both jacks."
 		(exclude_from_sim no)
 		(at 33.02 269.225 0)
@@ -4009,6 +4031,17 @@
 			(justify left)
 		)
 		(uuid "cd495ee7-e7f3-5474-8ee2-a91c46ed2cbf")
+	)
+	(text "phase margin and settles in 0.6 us; the x11 amp is"
+		(exclude_from_sim no)
+		(at 198.12 289.505 0)
+		(effects
+			(font
+				(size 1.3 1.3)
+			)
+			(justify left)
+		)
+		(uuid "cfaf17ce-9a22-55ad-8c9a-387dc3fb3b8f")
 	)
 	(text "1 ON: X to IN-, gain 11  (Fig. 5L.16)"
 		(exclude_from_sim no)
@@ -4043,17 +4076,6 @@
 		)
 		(uuid "d45a062b-0a08-5f4e-8eda-bad7f4a94614")
 	)
-	(text "and the x11 amplifier rings."
-		(exclude_from_sim no)
-		(at 198.12 292.04 0)
-		(effects
-			(font
-				(size 1.3 1.3)
-			)
-			(justify left)
-		)
-		(uuid "d4682204-faea-51d5-acb0-2ec325062070")
-	)
 	(text "IN-"
 		(exclude_from_sim no)
 		(at 33.02 120.6 0)
@@ -4064,17 +4086,6 @@
 			(justify left)
 		)
 		(uuid "d473b8cb-366a-5cd0-ae14-453937fee0cd")
-	)
-	(text "A 2.54 mm pin on every node named on the sheet;"
-		(exclude_from_sim no)
-		(at 370.84 289.505 0)
-		(effects
-			(font
-				(size 1.3 1.3)
-			)
-			(justify left)
-		)
-		(uuid "d6c97429-931d-5bc0-a3ee-7800072317b7")
 	)
 	(text "inverting input"
 		(exclude_from_sim no)
@@ -4197,27 +4208,27 @@
 		)
 		(uuid "ebb67f27-8fc6-5b36-bd48-2ff89982773f")
 	)
-	(text "Normal: 1 ON, 2 OFF."
+	(text "flips, and a follower oscillates: the book's 'risky"
 		(exclude_from_sim no)
-		(at 198.12 294.575 0)
+		(at 198.12 284.435 0)
 		(effects
 			(font
 				(size 1.3 1.3)
 			)
 			(justify left)
 		)
-		(uuid "efb1938f-0d2f-5ade-9f36-e452dc598856")
+		(uuid "ec2134d8-6f13-5da0-b84f-aa484bf31151")
 	)
-	(text "op-amp does, so a short to a rail or ground is survived."
+	(text "stable either way.  Both OFF: no compensation,"
 		(exclude_from_sim no)
-		(at 284.48 294.575 0)
+		(at 198.12 292.04 0)
 		(effects
 			(font
 				(size 1.3 1.3)
 			)
 			(justify left)
 		)
-		(uuid "fa898183-fa08-5beb-86dc-bd4845d36ec2")
+		(uuid "f7f7b009-4388-5ece-ab95-33549abe1dc8")
 	)
 	(text "input is driven hard and the other is not."
 		(exclude_from_sim no)
@@ -4434,6 +4445,12 @@
 		(uuid "7a7706bf-e3df-5110-9002-4ba4080c1f92")
 	)
 	(junction
+		(at 248.92 111.76)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "7a9b929c-5ad2-5648-bd22-c9be42832096")
+	)
+	(junction
 		(at 281.94 142.24)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4444,12 +4461,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7da6072f-74d5-5a70-8fb8-f4d1f5391b7a")
-	)
-	(junction
-		(at 238.76 132.08)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "881fab6b-7763-56f1-ab3d-59f88b8155f4")
 	)
 	(junction
 		(at 68.58 111.76)
@@ -4639,6 +4650,16 @@
 	)
 	(wire
 		(pts
+			(xy 241.3 129.54) (xy 241.3 144.78)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "01825f54-9157-5af0-9d24-be8b8a36202a")
+	)
+	(wire
+		(pts
 			(xy 365.76 233.68) (xy 365.76 222.25)
 		)
 		(stroke
@@ -4766,16 +4787,6 @@
 			(type default)
 		)
 		(uuid "21ca4e0e-5879-55f1-8a51-7e46ca154d4e")
-	)
-	(wire
-		(pts
-			(xy 241.3 132.08) (xy 238.76 132.08)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "21e65caf-bfcd-5f6c-b971-37dbe2d6c43e")
 	)
 	(wire
 		(pts
@@ -5279,13 +5290,13 @@
 	)
 	(wire
 		(pts
-			(xy 241.3 129.54) (xy 241.3 132.08)
+			(xy 241.3 144.78) (xy 238.76 144.78)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "7d6d4a3f-a737-5a7b-85c8-20a7c295c88b")
+		(uuid "78fce843-c15b-5479-bf4d-7276e61871a1")
 	)
 	(wire
 		(pts
@@ -5316,6 +5327,16 @@
 			(type default)
 		)
 		(uuid "86b2c9eb-40da-56b5-8cbb-748f94af4062")
+	)
+	(wire
+		(pts
+			(xy 248.92 114.3) (xy 248.92 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "879b8f31-0615-512d-bcfb-4d058f53bdae")
 	)
 	(wire
 		(pts
@@ -5409,16 +5430,6 @@
 	)
 	(wire
 		(pts
-			(xy 248.92 144.78) (xy 238.76 144.78)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "971decba-3e1e-5e4a-a355-9d51565fdc63")
-	)
-	(wire
-		(pts
 			(xy 60.96 162.56) (xy 74.93 162.56)
 		)
 		(stroke
@@ -5456,16 +5467,6 @@
 			(type default)
 		)
 		(uuid "9b383148-c722-5e1b-a6e1-2c62d0705f73")
-	)
-	(wire
-		(pts
-			(xy 248.92 114.3) (xy 248.92 144.78)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9bcbd6c0-4592-5708-8a5d-67d67f6acb3d")
 	)
 	(wire
 		(pts

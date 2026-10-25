@@ -77,7 +77,7 @@ export KICAD_APPIMAGE=$HOME/.local/bin/kicad-10.0.7-x86_64.AppImage   # or kicad
 ./make.py --clean      # delete everything it generates
 ```
 
-The build stops on any ERC or DRC violation, on any of the 98 circuit assertions
+The build stops on any ERC or DRC violation, on any of the 102 circuit assertions
 that read the exported netlist back against the book's circuit, on a schematic text
 overlap, on a fab-package problem (an order code whose JLCPCB description no longer
 matches, a QR code that does not decode from the board file) and on any number in

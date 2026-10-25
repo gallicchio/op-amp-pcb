@@ -19,7 +19,7 @@ rounds sort themselves.
 
 | directory | reviewer | verdict |
 |---|---|---|
-| `2026-10-24_Claude-Fable-5.1/` | the author's own review, written before reading any other | order after named fixes: COMPENSATION 2 alone is open circuit, not the bare 100 pF (rewire pole 2); "a short to a rail is survived" is false for the stocked SOT-23 (words); the 50 mA supply limit as the rule; ON marks on the switches; stale numbers. Patch in its `patch_round1.diff`, built clean in its copy |
+| `2026-10-24_Claude-Fable-5.1/` | the author's own review, written before reading any other | order after named fixes: COMPENSATION 2 alone is open circuit, not the bare 100 pF (rewire pole 2); "a short to a rail is survived" is false for the stocked SOT-23 (words); the 50 mA supply limit as the rule; ON marks on the switches; stale numbers. Patch in its `patch_round1.diff`, built clean in its copy; applied to the project on 2026-10-25 before the round opened, with the input terminals' ground symbols turned down as well |
 
 Reconciliation of the round (what each found, what changed) is written up in
 `CLAUDE_CODE_CHAT.md` when the round closes.

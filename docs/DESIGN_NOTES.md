@@ -32,7 +32,7 @@ symbol's transistor.
 | offset null | RV1, 50 ohm between the emitters, wiper to the tail | a discrete pair has millivolts of offset; a trimmer whose ends are the two emitter resistors (25 ohm each at centre) is the textbook null and costs one part.  Its wiper is the tail, so grit under the wiper cannot open the tail: the resistance only rises |
 | series 1 k with the Miller capacitor | R14 | the book's bare 100 pF puts a right-half-plane zero at 1 / (2 pi C / gm): the follower is unstable with it.  1 k in series moves the zero to the left half plane.  SW2 pole 2 shorts it so the book's version can be shown ringing |
 | three 2-way DIP switches | SW1 TAIL, SW2 COMPENSATION, SW3 FEEDBACK | the book's variants (resistor tail or current sink; compensation or not; x11, follower or your own) without jumpers to lose |
-| input protection | R1, R2 1 k 1206; D1, D2 1N4148W anti-parallel between the bases | a real op-amp's input clamps.  A 2N3904's base-emitter junction breaks down at 6 V reverse; a student with a 10 V generator on one input and the other grounded would otherwise degrade Q1 or Q2.  The 1206 resistors take 0.14 W when an input is held at a rail |
+| input protection | R1, R2 1 k 1206; D1, D2 1N4148W anti-parallel between the bases | a real op-amp's input clamps.  A 2N3904's base-emitter junction breaks down at 6 V reverse; a student with a 10 V generator on one input and the other grounded would otherwise degrade Q1 or Q2.  The 1206 resistors take 50 mW each with one input at a rail and the other grounded, 0.21 W each with the two inputs at opposite rails |
 | output current limit | R15, R16 47 ohm in the emitters; Q7, Q8 sensing them; D5, D6 | a 741's scheme: when 0.65 V stands across a sense resistor the sense transistor steals the push-pull's drive.  Students will short OUT in Lab 6; the '411 shrugs, a bare Q4 would die.  The diodes are not in the 741: with the book's class-B pair the idle sense transistor's base-collector junction is forward-biased by the other half's Vbe and, without a diode, injects current into the drive node and halves the negative swing (found in simulation).  Drawn in its own box, labelled as the safety net it is |
 | reverse-supply protection | D3, D4 B5819W in series with each rail | a reversed bench supply forward-biases every junction on the board; a 0.35 V drop at 4 mA costs nothing here |
 | rail LEDs | LED1, LED2 through 10 k | rails at a glance, 1.2 mA each |
@@ -54,9 +54,9 @@ offset with everything nominal is -5.6 mV, from Q1's collector sitting at the
 rail while Q2's sits 1 V below it (Early effect); the null range of about
 +/-33 mV covers it and the pair's real mismatch several times over.
 
-**Gain.** Stage 1 gives 11.1 at Q2 C, stage 2 gives 12.5 at Q3 C loaded as it is
-(12 k against Q3's Early resistance and the push-pull's input), and the
-push-pull at rest is barely conducting, so the small-signal open-loop gain at
+**Gain.** Stage 1 gives 11.1 at Q2 C, stage 2 gives 34 at Q3 C, and the
+push-pull at rest is barely conducting (its small-signal gain at the quiescent
+point is 0.37, the dead band), so the small-signal open-loop gain at
 the quiescent point of about 138 is what a student measuring tiny signals
 around zero will see.  Once the output moves and Q4 or Q5 is on, the follower's
 gain goes to 1 and the loop gain is several hundred.  Consequently the x11
@@ -111,7 +111,7 @@ Choices worth knowing:
 In the order of how likely each is to make the board dead on arrival, and what
 is there to catch it.
 
-1. **The six SOT-23s fitted a half turn round.**  JLCPCB's drawing of the SOT-23
+1. **The eight SOT-23s fitted a half turn round.**  JLCPCB's drawing of the SOT-23
    has its pin 1 where KiCad has pin 3, so the upload CPL turns them by 180
    degrees.  This is predicted from their land pattern, not yet read in a preview
    of these two codes.  `PLACEMENT_CHECKS.txt` says what to look at; the lone pad
@@ -120,13 +120,17 @@ is there to catch it.
 2. **A DIP switch turned.**  Also predicted (from the 6-way of the same family,
    which was read).  Electrically symmetric: any orientation with the pads on the
    pads works, only the sliders' direction changes.
-3. **Oscillation at a few MHz** when a long unterminated cable hangs on OUT (a
-   metre of coax is 100 pF on the follower's output).  The 55 degrees of margin is
-   the simulation's; the real board has less.  Rev B puts 47 ohm in series with
-   the OUT jack.
+3. **Less phase margin than the models say.**  The 51 degrees as a follower is
+   the simulation's; the real board has less, and a 10x probe (15 pF) on Q3 C
+   or Q2 C takes the model to 39 or 35 degrees, both probes to 25.  Cable
+   capacitance on OUT is not the problem: with the 47 ohm sense resistors
+   between the emitters and OUT, 100 pF of coax raises the margin to 90
+   degrees and 10 nF still leaves 30.
 4. **A shorted output held for minutes.**  The limit holds Q4 or Q5 at about
-   22 mA with 15 V across it, 0.3 W in a SOT-23: it survives a student's slip,
-   not an afternoon.
+   14.5 mA (22 mA reaches the short, the rest through the sense transistor): to
+   ground that is 0.21 W in a SOT-23 whose stocked part (C20526) is rated 0.2 W
+   at 625 K/W, so minutes; to either rail it is 0.43 W, twice the rating: it
+   survives a student's slip, not a minute.
 5. **The BNC's rotation**, +90 degrees, was read on a built board of the same
    jack on the same footprint, so it is the least likely of the connectors to be
    wrong; the terminal blocks' and the trimmer's are predicted, but their hole
@@ -136,7 +140,6 @@ is there to catch it.
 
 ## 6. Rev B list
 
-* 47 ohm in series with OUT at the jack (cable capacitance).
 * A fourth switch position or a jumper to lift the 1 k input resistors for a
   bandwidth measurement without them.
 * A place for a 1 nF to try as the compensation capacitor.

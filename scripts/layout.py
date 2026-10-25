@@ -164,7 +164,8 @@ WIRES = [
     # the gain stage
     ("/Q2 C", [("R3", "2"), ("Q2", "3")], W_SIG),
     ("/Q2 C", [(45.6, 30.0), ("Q3", "1")], W_SIG),
-    ("/Q2 C", [(53.5, 30.0), ("SW2", "4")], W_SIG),
+    ("/Q2 C", [(53.5, 30.0), (53.5, 37.5), ("SW2", "4")], W_SIG),
+    ("/Q2 C", [(53.5, 37.5), (56.04, 37.5), ("SW2", "3")], W_SIG),
     ("Net-(Q3-E)", [("Q3", "2"), ("R8", "2")], W_SIG),
     ("/Q3 C", [("Q3", "3"), (60.0, OUT_Y), (60.0, 61.5), ("R9", "1")], W_SIG),
     ("/Q3 C", [(60.0, OUT_Y), (QC_X, OUT_Y)], W_SIG),
@@ -174,9 +175,8 @@ WIRES = [
     ("/Q3 C", [("C1", "2"), (53.5, 61.5), (60.0, 61.5)], W_SIG),
     # compensation
     ("Net-(R14-Pad1)", [("SW2", "1"), ("R14", "1")], W_SIG),
-    ("Net-(R14-Pad1)", [("SW2", "2"), (56.04, 51.0), (53.5, 51.0)], W_SIG),
     ("Net-(C1-Pad1)", [("R14", "2"), ("C1", "1")], W_SIG),
-    ("Net-(C1-Pad1)", [("SW2", "3"), (58.3, 40.1), (58.3, 56.0), (53.5, 56.0)], W_SIG),
+    ("Net-(C1-Pad1)", [("SW2", "2"), (56.04, 50.5), (58.3, 50.5), (58.3, 56.0), (53.5, 56.0)], W_SIG),
     # push-pull: emitters through the sense resistors to OUT; the sense
     # transistors' bases tap the emitter wires
     ("Net-(Q4-E)", [("Q4", "2"), (70.9, 38.0), ("R15", "1")], W_SIG),
@@ -222,7 +222,8 @@ HOPS = [
 # Ground: a stub from the pad to a via (a point, or a path of points), the
 # ground symbol drawn at the via pointing the way the last segment runs.
 GND_STUBS = [
-    (("J4", "2"), (9.8, 19.5)), (("J5", "2"), (9.8, 69.5)),
+    # the input terminals' grounds turn down before the via so the symbol points down
+    (("J4", "2"), [(9.8, 19.5), (9.8, 20.6)]), (("J5", "2"), [(9.8, 69.5), (9.8, 70.6)]),
     (("J7", "2"), [(90.8, 60.5), (90.8, 63.0)]), (("J6", "2"), [(90.6, 82.0), (90.6, 84.0)]),
     (("C2", "2"), (24.0, 21.5)), (("C3", "2"), (27.5, 21.5)),
     (("C4", "1"), (24.0, 76.5)), (("C5", "1"), (27.5, 76.5)),
@@ -287,6 +288,7 @@ TEXTS = [
     (36.5, 47.4, "NULL", 0.9, 0.15, "right", 0),
     (36.5, 48.8, "RV1", 0.8, 0.15, "right", 0),
     (37.5, 56.6, "SW1", 0.8, 0.15, "center", 0),
+    (33.8, 61.6, "ON", 0.8, 0.15, "center", 0),
     (46.6, 59.7, "2: 10k", 0.8, 0.15, "left", 0),
     (43.8, 64.6, "1: current", 0.8, 0.15, "left", 0),
     (43.8, 65.9, "source Q6", 0.8, 0.15, "left", 0),
@@ -296,11 +298,13 @@ TEXTS = [
     (31.3, 66.5, "R4", 0.8, 0.15, "left", 0),
     (31.3, 67.8, "10k", 0.8, 0.15, "left", 0),
     # the compensation switch, named and explained along the box's right side
-    (54.2, 37.7, "SW2", 0.8, 0.15, "left", 0),
+    (58.2, 37.6, "SW2", 0.8, 0.15, "center", 0),
     (64.0, 54.0, "COMPENSATION", 0.9, 0.15, "center", 90),
+    (58.2, 39.4, "ON", 0.8, 0.15, "center", 0),
     (62.3, 54.5, "1: 100pF+1k   2: no 1k", 0.8, 0.15, "center", 90),
     # the feedback box, explained beside its switch
     (86.2, 60.3, "FEEDBACK", 0.9, 0.18, "right", 0),
+    (85.0, 72.4, "ON>", 0.8, 0.15, "center", 0),
     (78.0, 61.7, "R10 10k", 0.8, 0.15, "left", 0),
     (82.3, 67.5, "R11 1k", 0.8, 0.15, "right", 0),
     (73.8, 79.8, "1: X to IN- (x11)", 0.8, 0.15, "left", 0),
@@ -380,13 +384,13 @@ BACK_TEXT = [
     "(Hayes & Horowitz, 2016), built from eight",
     "2N3904 / 2N3906 so you can probe every node.",
     "",
-    "POWER: +15 V, GND, -15 V into the terminal, 20 mA.",
-    "   Both green LEDs light when it is right way round.",
+    "POWER: +15 V, GND, -15 V into the terminal, 20 mA; set",
+    "   the supply's limit to 50 mA.  Both LEDs light if right.",
     "SWITCHES, usual: TAIL 1 on (Q6 current source),",
     "   COMPENSATION 1 on (100 pF + 1k), FEEDBACK as needed.",
     "   TAIL 2 = 10k tail resistor instead.",
-    "   COMPENSATION 2 shorts the 1k: the book's bare",
-    "   100 pF; the x11 amp still works, a follower rings.",
+    "   COMPENSATION 2 = the bare 100 pF, no 1k (the book's):",
+    "   the x11 amp still works, a follower rings.",
     "FEEDBACK 1 = X to IN-: gain 11.  2 = OUT to IN-:",
     "   follower.  Both off: it is a bare op-amp.",
     "AS AN OP-AMP IN YOUR OWN CIRCUIT (Labs 6-9): FEEDBACK",
@@ -396,8 +400,8 @@ BACK_TEXT = [
     "   at 20 mA, like a real one (Q7, Q8: not in the book).",
     "OFFSET NULL: as a follower with IN+ grounded,",
     "   turn RV1 until OUT reads 0 V.",
-    "INPUTS: ±12 V.  OUT: ±13 V into 1k or more; a short",
-    "   to ground or a rail is survived, not enjoyed.",
+    "INPUTS: ±12 V.  OUT: ±12 V into 1k, 15 mA; a short to",
+    "   ground is survived, to a rail only for seconds.",
     "PROBING: a loop on every named node for a scope",
     "   hook, and GND loops for the clip.",
 ]

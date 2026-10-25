@@ -10,8 +10,8 @@ Q1-Q8 -- SOT-23 transistors, 1 = B, 2 = E, 3 = C.  Each sits inside a silkscreen
   emitter, the single pad on the other side is the collector.
 
 SW1, SW2, SW3 -- 2-way DIP switches.  Any orientation that puts the pads on the
-  pads is electrically right; the sliders should move toward the side the
-  silkscreen "1"/"2" legends sit on.
+  pads is electrically right; the part's own ON marking goes on the side of
+  the silkscreen word ON beside each switch (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it).
 
 RV1 -- 3362P trimmer, keyed by its three holes: it fits one way only.
 

@@ -53,7 +53,7 @@ PARTS = {
         desc="50 ohm single-turn cermet trimmer, top adjust: OFFSET NULL. Its two "
              "ends are the diff pair's emitter resistors (25 ohm each at centre) "
              "and its wiper is the tail; turning it unbalances the pair by up to "
-             "+/-37 mV referred to the input",
+             "+/-33 mV referred to the input",
         alt=["3362P-1-101 / C52754331 (100 ohm, 1168 in stock): same footprint, "
              "twice the null range, stage-1 gain 9 instead of 11"]),
     # ---- the three selectors: 2-way DIP switches, so nothing ships loose ----
@@ -103,7 +103,7 @@ PARTS = {
         process="SMT", stock=589077, price=0.026,
         footprint="Diode_SMD:D_SOD-123", symbol="Device:D_Schottky",
         desc="1 A 40 V Schottky in series with each supply: a reversed supply "
-             "does nothing instead of forward-biasing six transistors. "
+             "does nothing instead of forward-biasing eight transistors. "
              "Drops about 0.35 V at this board's 3 mA",
         alt=["B5819W / C64885 (Preferred, 751k)"]),
     "DSW": dict(
