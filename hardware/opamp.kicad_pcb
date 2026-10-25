@@ -26395,10 +26395,10 @@
 			(justify left)
 		)
 	)
-	(gr_text "\"Op-Amps aren't magic, they're just transistors.\""
+	(gr_text "\"Op-Amps aren't magic; they're just transistors.\""
 		(at 48 7 0)
 		(layer "F.SilkS")
-		(uuid "fd176c7f-9a60-5048-86ba-dde2399a8256")
+		(uuid "72e83ef9-0d16-5df9-87af-653726c49bbb")
 		(effects
 			(font
 				(size 1.8 1.8)

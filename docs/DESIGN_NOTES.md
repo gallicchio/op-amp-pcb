@@ -103,7 +103,7 @@ Choices worth knowing:
   tenth of a dollar, and takes the hook every scope probe has.  A 2.54 mm pin
   header would take the hook too but is through-hole and lies down with it.
 * **Identity**: the title, the authors, the revision and date and the repository
-  URL in the band under the -15 V rail; the motto, "Op-Amps aren't magic, they're
+  URL in the band under the -15 V rail; the motto, "Op-Amps aren't magic; they're
   just transistors.", in the band above the +15 V rail between the fiducials; the
   user's instructions and a QR code to the repository on the back.
 

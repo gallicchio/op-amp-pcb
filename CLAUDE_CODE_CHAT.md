@@ -545,3 +545,19 @@ DRC 0 (the silk rules include the new text), 28 of 28 document claims. Only the 
 silkscreen, its gerber, the assembly drawing and the renders changed.
 
 ![board with the motto, response 7](docs/history/2026-10-25-r6-top.png)
+
+## Prompt 14
+
+> If the comma there should be a semicolon or something else, change it to be more
+> grammatically proper.
+
+## Response 8
+
+2026-10-25 08:07 PDT.
+
+It should: the comma joined two independent clauses, a comma splice. A semicolon is
+the usual repair when the second clause explains the first, so the board now reads
+"Op-Amps aren't magic; they're just transistors." The design notes say the same.
+Rebuilt in place, every gate clean; the response 7 render was replaced.
+
+![board with the motto, response 8](docs/history/2026-10-25-r6-top.png)
