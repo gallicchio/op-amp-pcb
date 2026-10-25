@@ -1,0 +1,409 @@
+--- scripts/layout.py	2026-10-24 18:41:04.838104627 -0700
++++ design_reviews/2026-10-24_Claude-Fable-5.1/project/scripts/layout.py	2026-10-25 00:02:51.872734070 -0700
+@@ -164,7 +164,8 @@
+     # the gain stage
+     ("/Q2 C", [("R3", "2"), ("Q2", "3")], W_SIG),
+     ("/Q2 C", [(45.6, 30.0), ("Q3", "1")], W_SIG),
+-    ("/Q2 C", [(53.5, 30.0), ("SW2", "4")], W_SIG),
++    ("/Q2 C", [(53.5, 30.0), (53.5, 37.5), ("SW2", "4")], W_SIG),
++    ("/Q2 C", [(53.5, 37.5), (56.04, 37.5), ("SW2", "3")], W_SIG),
+     ("Net-(Q3-E)", [("Q3", "2"), ("R8", "2")], W_SIG),
+     ("/Q3 C", [("Q3", "3"), (60.0, OUT_Y), (60.0, 61.5), ("R9", "1")], W_SIG),
+     ("/Q3 C", [(60.0, OUT_Y), (QC_X, OUT_Y)], W_SIG),
+@@ -174,9 +175,8 @@
+     ("/Q3 C", [("C1", "2"), (53.5, 61.5), (60.0, 61.5)], W_SIG),
+     # compensation
+     ("Net-(R14-Pad1)", [("SW2", "1"), ("R14", "1")], W_SIG),
+-    ("Net-(R14-Pad1)", [("SW2", "2"), (56.04, 51.0), (53.5, 51.0)], W_SIG),
+     ("Net-(C1-Pad1)", [("R14", "2"), ("C1", "1")], W_SIG),
+-    ("Net-(C1-Pad1)", [("SW2", "3"), (58.3, 40.1), (58.3, 56.0), (53.5, 56.0)], W_SIG),
++    ("Net-(C1-Pad1)", [("SW2", "2"), (56.04, 50.5), (58.3, 50.5), (58.3, 56.0), (53.5, 56.0)], W_SIG),
+     # push-pull: emitters through the sense resistors to OUT; the sense
+     # transistors' bases tap the emitter wires
+     ("Net-(Q4-E)", [("Q4", "2"), (70.9, 38.0), ("R15", "1")], W_SIG),
+@@ -287,6 +287,7 @@
+     (36.5, 47.4, "NULL", 0.9, 0.15, "right", 0),
+     (36.5, 48.8, "RV1", 0.8, 0.15, "right", 0),
+     (37.5, 56.6, "SW1", 0.8, 0.15, "center", 0),
++    (33.8, 61.6, "ON", 0.8, 0.15, "center", 0),
+     (46.6, 59.7, "2: 10k", 0.8, 0.15, "left", 0),
+     (43.8, 64.6, "1: current", 0.8, 0.15, "left", 0),
+     (43.8, 65.9, "source Q6", 0.8, 0.15, "left", 0),
+@@ -296,11 +297,13 @@
+     (31.3, 66.5, "R4", 0.8, 0.15, "left", 0),
+     (31.3, 67.8, "10k", 0.8, 0.15, "left", 0),
+     # the compensation switch, named and explained along the box's right side
+-    (54.2, 37.7, "SW2", 0.8, 0.15, "left", 0),
++    (58.2, 37.6, "SW2", 0.8, 0.15, "center", 0),
+     (64.0, 54.0, "COMPENSATION", 0.9, 0.15, "center", 90),
++    (58.2, 39.4, "ON", 0.8, 0.15, "center", 0),
+     (62.3, 54.5, "1: 100pF+1k   2: no 1k", 0.8, 0.15, "center", 90),
+     # the feedback box, explained beside its switch
+     (86.2, 60.3, "FEEDBACK", 0.9, 0.18, "right", 0),
++    (85.0, 72.4, "ON>", 0.8, 0.15, "center", 0),
+     (78.0, 61.7, "R10 10k", 0.8, 0.15, "left", 0),
+     (82.3, 67.5, "R11 1k", 0.8, 0.15, "right", 0),
+     (73.8, 79.8, "1: X to IN- (x11)", 0.8, 0.15, "left", 0),
+@@ -380,13 +383,13 @@
+     "(Hayes & Horowitz, 2016), built from eight",
+     "2N3904 / 2N3906 so you can probe every node.",
+     "",
+-    "POWER: +15 V, GND, -15 V into the terminal, 20 mA.",
+-    "   Both green LEDs light when it is right way round.",
++    "POWER: +15 V, GND, -15 V into the terminal, 20 mA; set",
++    "   the supply's limit to 50 mA.  Both LEDs light if right.",
+     "SWITCHES, usual: TAIL 1 on (Q6 current source),",
+     "   COMPENSATION 1 on (100 pF + 1k), FEEDBACK as needed.",
+     "   TAIL 2 = 10k tail resistor instead.",
+-    "   COMPENSATION 2 shorts the 1k: the book's bare",
+-    "   100 pF; the x11 amp still works, a follower rings.",
++    "   COMPENSATION 2 = the bare 100 pF, no 1k (the book's):",
++    "   the x11 amp still works, a follower rings.",
+     "FEEDBACK 1 = X to IN-: gain 11.  2 = OUT to IN-:",
+     "   follower.  Both off: it is a bare op-amp.",
+     "AS AN OP-AMP IN YOUR OWN CIRCUIT (Labs 6-9): FEEDBACK",
+@@ -396,8 +399,8 @@
+     "   at 20 mA, like a real one (Q7, Q8: not in the book).",
+     "OFFSET NULL: as a follower with IN+ grounded,",
+     "   turn RV1 until OUT reads 0 V.",
+-    "INPUTS: ±12 V.  OUT: ±13 V into 1k or more; a short",
+-    "   to ground or a rail is survived, not enjoyed.",
++    "INPUTS: ±12 V.  OUT: ±12 V into 1k, 15 mA; a short to",
++    "   ground is survived, to a rail only for seconds.",
+     "PROBING: a loop on every named node for a scope",
+     "   hook, and GND loops for the clip.",
+ ]
+--- scripts/gen_sch.py	2026-10-24 18:28:09.645555762 -0700
++++ design_reviews/2026-10-24_Claude-Fable-5.1/project/scripts/gen_sch.py	2026-10-24 23:59:51.190599828 -0700
+@@ -327,7 +327,6 @@
+     s.wire((CX, C2_Y), c4)
+     RZ_Y = g(54.5)
+     s.wire(c1, (CX, RZ_Y - 3.81))
+-    s.junction(CX, g(52))
+     res("R14", "1k", CX, RZ_Y, side="left")
+     CC_Y = g(59.5)
+     s.wire((CX, RZ_Y + 3.81), (CX, CC_Y - 3.81))
+@@ -335,10 +334,11 @@
+     cap("C1", "100pF", CX, CC_Y, side="left")
+     s.wire((CX, CC_Y + 3.81), (CX, g(64)), (q3c[0], g(64)))
+     s.junction(q3c[0], g(64))
+-    # pole 2 shorts the 1k: its lower pin to the node above R14, its upper pin
+-    # round the outside to the node below it
+-    s.wire(c2_, (c2_[0], g(52)), (CX, g(52)))
+-    s.wire(c3_, (g(98), c3_[1]), (g(98), g(57)), (CX, g(57)))
++    # pole 2 bypasses the 1k: its upper pin up to Q2 C, its lower pin to the
++    # node between R14 and C1, so "2" alone is the book's bare 100 pF
++    s.wire(c3_, (g(98), c3_[1]), (g(98), C2_Y))
++    s.junction(g(98), C2_Y)
++    s.wire(c2_, (c2_[0], g(57)), (CX, g(57)))
+ 
+     # ======================================================= push-pull =======
+     # Q4 / Q5 with the book's bare emitters joined at OUT, plus the output
+@@ -553,7 +553,7 @@
+     note([f"{parts.BOARD_NAME.upper()}",
+           "",
+           "The op-amp of Lab 5L (Learning the Art of Electronics, Hayes & Horowitz, 2016), built from the NPN and",
+-          "PNP of Chapter 4 as six SOT-23 transistors, on a board whose silkscreen is this drawing.",
++          "PNP of Chapter 4 as eight SOT-23 transistors, on a board whose silkscreen is this drawing.",
+           "Three stages, as the book's Fig. 5L.11 and 5N.32:",
+           "",
+           f"    difference    Q1 Q2, 1.5k collector load on the + side, tail from RV1 through SW1     x{R.get('gdiff1', 11):.0f}",
+@@ -604,7 +604,8 @@
+           "1 ON: 100 pF from Q3's collector to its base, Miller-",
+           "multiplied by the stage's gain of 30 into a 3 nF",
+           "low-pass at C2.  The book's Fig. 5L.17.",
+-          "2 ON: shorts the 1k, leaving the bare 100 pF.",
++          "2 ON: the bare 100 pF, no 1k: the book's version.",
++          "1 and 2 ON: the same as 2.",
+           "",
+           "The 1k is not in the book.  A bare Miller cap feeds",
+           "the signal FORWARD above 4 MHz, the loop's sign",
+@@ -628,7 +629,7 @@
+           f"{R['swing'][0]:+.0f} to {R['swing'][1]:+.0f} V into the 11k; 10 mA max." if "swing" in R else "+/-13 V into the 11k; 10 mA max.",
+           "Q7, Q8, D5, D6 and the 47 ohm resistors are not in the",
+           "book: they limit the output to about 20 mA, as a real",
+-          "op-amp does, so a short to a rail or ground is survived."],
++          "op-amp does: a short to ground is survived, to a rail for seconds."],
+          col[3], NOTE_Y)
+     note(["POWER",
+           "+15 V, GND, -15 V from a bench supply, 20 mA.",
+@@ -641,9 +642,9 @@
+           "says the supply is on and the right way round.",
+           "",
+           "PROBING",
+-          "A 2.54 mm pin on every node named on the sheet;",
+-          "a scope hook grabs it.  Three pairs of ground",
+-          "pins for the clip."],
++          "A wire loop on every node named on the sheet;",
++          "a scope hook grabs it.  Four ground loops for",
++          "the clip."],
+          col[4], NOTE_Y)
+     return s
+ 
+--- scripts/check_circuit.py	2026-10-24 18:28:09.807520282 -0700
++++ design_reviews/2026-10-24_Claude-Fable-5.1/project/scripts/check_circuit.py	2026-10-24 23:59:51.190148321 -0700
+@@ -78,8 +78,8 @@
+         (ok if cond else bad).append(what)
+ 
+     # --- the transistors: 1 = B, 2 = E, 3 = C on every SOT-23 ----------------
+-    for q, kind in (("Q1", "2N3904"), ("Q2", "2N3904"), ("Q3", "2N3906"),
+-                    ("Q4", "2N3904"), ("Q5", "2N3906"), ("Q6", "2N3904")):
++    for q, kind in (("Q1", "2N3904"), ("Q2", "2N3904"), ("Q3", "2N3906"), ("Q4", "2N3904"),
++                    ("Q5", "2N3906"), ("Q6", "2N3904"), ("Q7", "2N3904"), ("Q8", "2N3906")):
+         check(N.value[q] == kind, f"{q} is a {kind}")
+         check(N.footprint[q].endswith("SOT-23"), f"{q} is in SOT-23")
+ 
+@@ -91,14 +91,14 @@
+     check(N.net("Q1", 2) == N.net("RV1", 3) and N.net("Q2", 2) == N.net("RV1", 1),
+           "the two emitters are the ends of the null trimmer RV1")
+     check(N.net("RV1", 2) == "TAIL", "RV1's wiper is the tail")
+-    check(N.value["RV1"] == "50R", "RV1 is 50 ohm: 25 ohm per emitter at centre, +/-19 mV of null")
++    check(N.value["RV1"] == "50R", "RV1 is 50 ohm: 25 ohm per emitter at centre, +/-33 mV of null")
+     check(N.net("Q1", 1) == "Q1 B" and N.net("Q2", 1) == "Q2 B", "Q1's base is the - input, Q2's the + input")
+ 
+     # --- input protection ---------------------------------------------------
+     check(N.between("IN-", "Q1 B") == ["R1"] and ohms(N.value["R1"]) == 1000, "R1 = 1k from IN- to Q1's base")
+     check(N.between("IN+", "Q2 B") == ["R2"] and ohms(N.value["R2"]) == 1000, "R2 = 1k from IN+ to Q2's base")
+     check(N.footprint["R1"].endswith("R_1206_3216Metric") and N.footprint["R2"].endswith("R_1206_3216Metric"),
+-          "R1 and R2 are 1206: a rail on an input puts 0.2 W in them")
++          "R1 and R2 are 1206: the two inputs at opposite rails put 0.21 W in each")
+     check(N.net("D1", 2) == "Q1 B" and N.net("D1", 1) == "Q2 B" and N.net("D2", 1) == "Q1 B" and N.net("D2", 2) == "Q2 B",
+           "D1 and D2 are back to back between the bases (anode of one to the cathode of the other)")
+ 
+@@ -136,7 +136,8 @@
+     check(N.between(n1, N.net("C1", 1)) == ["R14"] and ohms(N.value["R14"]) == 1000,
+           "R14 = 1k between SW2's pole 1 and C1")
+     check(N.net("C1", 2) == "Q3 C" and abs(farads(N.value["C1"]) - 100e-12) < 1e-13, "C1 = 100 pF to Q3 C (Q3's collector)")
+-    check(N.net("SW2", 2) == n1 and N.net("SW2", 3) == N.net("C1", 1), "SW2 pole 2 shorts R14")
++    check(N.net("SW2", 3) == "Q2 C" and N.net("SW2", 2) == N.net("C1", 1),
++          "SW2 pole 2 takes Q2 C straight to C1, bypassing R14: the book's bare 100 pF on its own")
+     f_z = 1 / (2 * math.pi * 100e-12 * (1000 - 350))
+     check(f_z > 1e6, f"with the 1k the Miller zero sits in the left half-plane at {f_z/1e6:.1f} MHz")
+ 
+--- scripts/parts.py	2026-10-24 16:10:10.647806695 -0700
++++ design_reviews/2026-10-24_Claude-Fable-5.1/project/scripts/parts.py	2026-10-24 23:59:51.189747956 -0700
+@@ -53,7 +53,7 @@
+         desc="50 ohm single-turn cermet trimmer, top adjust: OFFSET NULL. Its two "
+              "ends are the diff pair's emitter resistors (25 ohm each at centre) "
+              "and its wiper is the tail; turning it unbalances the pair by up to "
+-             "+/-37 mV referred to the input",
++             "+/-33 mV referred to the input",
+         alt=["3362P-1-101 / C52754331 (100 ohm, 1168 in stock): same footprint, "
+              "twice the null range, stage-1 gain 9 instead of 11"]),
+     # ---- the three selectors: 2-way DIP switches, so nothing ships loose ----
+@@ -103,7 +103,7 @@
+         process="SMT", stock=589077, price=0.026,
+         footprint="Diode_SMD:D_SOD-123", symbol="Device:D_Schottky",
+         desc="1 A 40 V Schottky in series with each supply: a reversed supply "
+-             "does nothing instead of forward-biasing six transistors. "
++             "does nothing instead of forward-biasing eight transistors. "
+              "Drops about 0.35 V at this board's 3 mA",
+         alt=["B5819W / C64885 (Preferred, 751k)"]),
+     "DSW": dict(
+--- scripts/gen_docs.py	2026-10-24 16:10:10.681574597 -0700
++++ design_reviews/2026-10-24_Claude-Fable-5.1/project/scripts/gen_docs.py	2026-10-25 00:01:36.551752781 -0700
+@@ -104,7 +104,7 @@
+         ("PCBA Type", "Economic", "all parts on one side, nothing fine-pitch"),
+         ("Assembly Side", "Top", "every part is on the front"),
+         ("PCBA Qty", "2, or as many as the class needs", "the per-order fees are the same for 2 or 20"),
+-        ("Edge Rails/Fiducials", "Added by JLCPCB", "the board carries no fiducials; let them add rails with fiducials, removed before delivery"),
++        ("Edge Rails/Fiducials", "Added by JLCPCB", "the board has three 1 mm fiducials in its corners; let them add rails anyway, removed before delivery"),
+         ("Confirm Parts Placement", "Yes", "look at the preview against PLACEMENT_CHECKS.txt before paying"),
+         ("Parts Selection", "By JLCPCB", "every BOM line has an LCSC code"),
+         ("Through-hole parts", f"keep them: {', '.join(tht_refs)}",
+@@ -397,8 +397,8 @@
+     ("Q1, Q3, Q4, Q5, Q7, Q8", "SOT-23: the lone pad (collector) on the side the collector wire leaves",
+      "lone pad at the TOP, the pair at the bottom"),
+     ("Q2, Q6", "the same, the other way up", "lone pad at the BOTTOM, the pair at the top"),
+-    ("SW1, SW2, SW3", "2-way DIP switch: pads on pads; sliders move toward the '1 / 2' legends",
+-     "SW1 and SW2 sliders moving toward the labelled side; electrically it cannot go in wrong"),
++    ("SW1, SW2, SW3", "2-way DIP switch: pads on pads; the part's own ON marking",
++     "on the side of the silkscreen word ON (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it); electrically it cannot go in wrong"),
+     ("RV1", "3362P trimmer, keyed", "fits one way; screw on top"),
+     ("J1, J2", "BNC barrel", "pointing off the LEFT edge"),
+     ("J3", "BNC barrel", "pointing off the RIGHT edge"),
+--- scripts/gen_outputs.py	2026-10-24 16:10:10.681421105 -0700
++++ design_reviews/2026-10-24_Claude-Fable-5.1/project/scripts/gen_outputs.py	2026-10-25 00:01:36.551887543 -0700
+@@ -229,8 +229,8 @@
+   emitter, the single pad on the other side is the collector.
+ 
+ SW1, SW2, SW3 -- 2-way DIP switches.  Any orientation that puts the pads on the
+-  pads is electrically right; the sliders should move toward the side the
+-  silkscreen "1"/"2" legends sit on.
++  pads is electrically right; the part's own ON marking goes on the side of
++  the silkscreen word ON beside each switch (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it).
+ 
+ RV1 -- 3362P trimmer, keyed by its three holes: it fits one way only.
+ 
+--- docs/HANDBOOK.md	2026-10-24 18:28:09.808010279 -0700
++++ design_reviews/2026-10-24_Claude-Fable-5.1/project/docs/HANDBOOK.md	2026-10-25 00:09:42.309077415 -0700
+@@ -20,8 +20,8 @@
+ | TAIL | Q6, R5, R6, R7, R4, SW1 | the 1.4 mA current sink, or the 10 k resistor |
+ | GAIN x30 | Q3, R8, R9 | PNP common-emitter stage, 330 ohm emitter, 12 k collector; its output is Q3 C |
+ | COMPENSATION | C1, R14, SW2 | the 100 pF Miller capacitor from C3 back to C2, with 1 k in series |
+-| PUSH-PULL FOLLOWER x1 | Q4, Q5, R15, R16 | the output followers, with 47 ohm in each emitter for the limit below |
+-| OUTPUT CURRENT LIMIT | Q7, Q8, D5, D6 | not in the book: a safety net, as in a real op-amp.  Q7 (Q8) turns on when more than about 0.65 V stands across R15 (R16) and steals the drive; the diodes keep the idle one out of the way.  It limits at about 22 mA and does nothing below that |
++| PUSH-PULL FOLLOWER | Q4, Q5, R15, R16 | the output followers, with 47 ohm in each emitter for the limit below |
++| OUTPUT CURRENT LIMIT | Q7, Q8, D5, D6 | not in the book: a safety net, as in a real op-amp.  Q7 (Q8) turns on when more than about 0.65 V stands across R15 (R16) and steals the drive; the diodes keep the idle one out of the way.  It limits at about 22 mA into a dead short (15 mA through Q4 or Q5) and does nothing below that |
+ | FEEDBACK | R10, R11, SW3 | the book's 10 k / 1 k load and x11 divider; its tap is X, and the switch returns X or OUT to IN- |
+ 
+ ## 2. Power
+@@ -33,8 +33,11 @@
+ | protection | a Schottky in each rail: reversed leads do nothing (no LED), they do not kill it |
+ | signs of life | both green LEDs on, one beside each rail |
+ 
+-A current-limited bench supply at 30 mA is the right thing for a new board.  The
+-two 10 uF bypass capacitors hold the rails if the leads are long.
++Set the bench supply's current limit to 50 mA, always, not only for a new board:
++the board never needs more than 30 mA a rail, and with the limit a scope's
++ground clip on the wrong loop (Q2 C or Q3 E to ground would otherwise put
++0.6 W into the 0805 R8) or a shorted output cannot burn anything.  The two
++10 uF bypass capacitors hold the rails if the leads are long.
+ 
+ ## 3. Inputs and output
+ 
+@@ -42,24 +45,28 @@
+ |---|---|---|---|
+ | IN- | J1, left, upper | J4 IN- / GND | +/-12 V |
+ | IN+ | J2, left, lower | J5 IN+ / GND | +/-12 V |
+-| OUT | J3, right | J7 OUT / GND | +/-13 V into 1 k or more, 20 mA |
++| OUT | J3, right | J7 OUT / GND | +/-12 V into 1 k, 15 mA |
+ 
+ The jack and the terminal of each input are the same node, so a generator can
+ come in on the BNC while a feedback network goes on the screws.  Each input has
+ 1 k in series before the transistor base, so the 1N4148 clamp between the bases
+-limits the current a wrong input can push to about 6 mA.  The output limits
+-itself at about 22 mA, so a short to ground or to a rail is survived (the
+-transistor runs hot: do not leave it).  Loads of 1 k and up are the design.
++limits the current a wrong input can push to about 7 mA (15 mA, 0.2 W in each
++1 k, with the two inputs at opposite rails).  The output limits itself (about
++15 mA through Q4 or Q5, 22 mA into a dead short with the sense transistor's
++share), so a short to ground is survived for minutes, not an afternoon: 0.21 W
++in a SOT-23 whose stocked part is rated 0.2 W.  A short to a rail puts 0.43 W
++into Q4 or Q5, twice its rating: a slip, not a minute.  Loads of 1 k and up are
++the design.
+ 
+ ## 4. The switches
+ 
+ Each DIP switch has two sliders, numbered 1 and 2 on the board.  "On" is toward
+-the number.
++the word ON beside the switch.
+ 
+ | switch | 1 on | 2 on | both off |
+ |---|---|---|---|
+ | **TAIL** SW1 | Q6 current sink (normal) | 10 k tail resistor, the book's first version | no tail: the diff pair is dead, nothing works |
+-| **COMPENSATION** SW2 | 100 pF + 1 k from C3 to C2 (normal) | shorts the 1 k: the book's bare 100 pF | no compensation |
++| **COMPENSATION** SW2 | 100 pF + 1 k from C3 to C2 (normal) | the bare 100 pF, no 1 k: the book's version | no compensation |
+ | **FEEDBACK** SW3 | X to IN-: gain of 11, non-inverting | OUT to IN-: follower | open loop, or your own feedback on the terminals |
+ 
+ Both TAIL sliders on puts the resistor in parallel with the sink, which is
+@@ -109,8 +116,8 @@
+ 
+ ## 7. Bringing up a new board
+ 
+-1. Look at it.  Six transistors with their lone pad on the collector side (up for
+-   Q1, Q3, Q4, Q5; down for Q2 and Q6), the diode bands where the silkscreen bars
++1. Look at it.  Eight transistors with their lone pad on the collector side (up
++   for Q1, Q3, Q4, Q5, Q7, Q8; down for Q2 and Q6), the diode bands where the silkscreen bars
+    are, the BNC barrels off the edges, the trimmer screw up.
+ 2. Set TAIL 1, COMPENSATION 1, FEEDBACK 2.  Nothing on the inputs.
+ 3. Power from a current-limited supply at 30 mA.  Both LEDs light; each rail
+@@ -173,7 +180,7 @@
+ | input bias current | about 2 uA (a BJT pair at 0.7 mA a side) | 50 pA |
+ | input offset | millivolts, nullable with RV1 | 0.8 mV |
+ | open-loop gain | about 140 at rest, a few hundred once the output moves | 200,000 |
+-| output current | +/-13 V into 1 k and up; limits at about 22 mA, a short is survived | 25 mA, limited |
++| output current | +/-12 V into 1 k; limits at about 15 mA (22 mA into a dead short); a short to ground is survived | 25 mA, limited |
+ | slew rate | several V/us | 15 V/us |
+ | inputs | anti-parallel diodes between the bases conduct above 0.7 V of difference, through the two 1 k | none |
+ 
+@@ -190,7 +197,7 @@
+ | 7L.4 single-supply microphone amplifier | no | needs both rails |
+ | 8L.1 comparator, 8L.1.3 Schmitt trigger, 8L.2 relaxation oscillator | yes | keep the hysteresis under a volt or so, or the input clamp loads the divider |
+ | 8L.7 Wien bridge | yes at modest amplitude | 15 mA of output current is the ceiling |
+-| 9L.3 capacitive loads, 9L.4 buffer in the loop | yes | 55 degrees of phase margin to lose |
++| 9L.3 capacitive loads, 9L.4 buffer in the loop | yes | 51 degrees of phase margin to lose; a probe on Q3 C costs 12 of them |
+ 
+ Loads of 1 k and up are the design; a short is survived, not enjoyed.
+ 
+@@ -205,3 +212,4 @@
+ | OUT clips at a few volts into a low load | the current limit at work: raise the load to 1 k |
+ | rings or oscillates as a follower | COMPENSATION 1 off; a long unterminated cable on OUT |
+ | hum | the scope's ground clip is not on a GND loop |
++| a resistor smells hot | a ground clip on a signal loop: Q2 C or Q3 E to ground puts 0.6 W into R8, Q6 E or Q6 B to ground 0.2 W into R7.  The 50 mA supply limit is what saves R8; power off and move the clip |
+--- docs/DESIGN_NOTES.md	2026-10-24 18:46:18.294036839 -0700
++++ design_reviews/2026-10-24_Claude-Fable-5.1/project/docs/DESIGN_NOTES.md	2026-10-25 00:09:42.309221477 -0700
+@@ -32,7 +32,7 @@
+ | offset null | RV1, 50 ohm between the emitters, wiper to the tail | a discrete pair has millivolts of offset; a trimmer whose ends are the two emitter resistors (25 ohm each at centre) is the textbook null and costs one part.  Its wiper is the tail, so grit under the wiper cannot open the tail: the resistance only rises |
+ | series 1 k with the Miller capacitor | R14 | the book's bare 100 pF puts a right-half-plane zero at 1 / (2 pi C / gm): the follower is unstable with it.  1 k in series moves the zero to the left half plane.  SW2 pole 2 shorts it so the book's version can be shown ringing |
+ | three 2-way DIP switches | SW1 TAIL, SW2 COMPENSATION, SW3 FEEDBACK | the book's variants (resistor tail or current sink; compensation or not; x11, follower or your own) without jumpers to lose |
+-| input protection | R1, R2 1 k 1206; D1, D2 1N4148W anti-parallel between the bases | a real op-amp's input clamps.  A 2N3904's base-emitter junction breaks down at 6 V reverse; a student with a 10 V generator on one input and the other grounded would otherwise degrade Q1 or Q2.  The 1206 resistors take 0.14 W when an input is held at a rail |
++| input protection | R1, R2 1 k 1206; D1, D2 1N4148W anti-parallel between the bases | a real op-amp's input clamps.  A 2N3904's base-emitter junction breaks down at 6 V reverse; a student with a 10 V generator on one input and the other grounded would otherwise degrade Q1 or Q2.  The 1206 resistors take 50 mW each with one input at a rail and the other grounded, 0.21 W each with the two inputs at opposite rails |
+ | output current limit | R15, R16 47 ohm in the emitters; Q7, Q8 sensing them; D5, D6 | a 741's scheme: when 0.65 V stands across a sense resistor the sense transistor steals the push-pull's drive.  Students will short OUT in Lab 6; the '411 shrugs, a bare Q4 would die.  The diodes are not in the 741: with the book's class-B pair the idle sense transistor's base-collector junction is forward-biased by the other half's Vbe and, without a diode, injects current into the drive node and halves the negative swing (found in simulation).  Drawn in its own box, labelled as the safety net it is |
+ | reverse-supply protection | D3, D4 B5819W in series with each rail | a reversed bench supply forward-biases every junction on the board; a 0.35 V drop at 4 mA costs nothing here |
+ | rail LEDs | LED1, LED2 through 10 k | rails at a glance, 1.2 mA each |
+@@ -54,9 +54,9 @@
+ rail while Q2's sits 1 V below it (Early effect); the null range of about
+ +/-33 mV covers it and the pair's real mismatch several times over.
+ 
+-**Gain.** Stage 1 gives 11.1 at Q2 C, stage 2 gives 12.5 at Q3 C loaded as it is
+-(12 k against Q3's Early resistance and the push-pull's input), and the
+-push-pull at rest is barely conducting, so the small-signal open-loop gain at
++**Gain.** Stage 1 gives 11.1 at Q2 C, stage 2 gives 34 at Q3 C, and the
++push-pull at rest is barely conducting (its small-signal gain at the quiescent
++point is 0.37, the dead band), so the small-signal open-loop gain at
+ the quiescent point of about 138 is what a student measuring tiny signals
+ around zero will see.  Once the output moves and Q4 or Q5 is on, the follower's
+ gain goes to 1 and the loop gain is several hundred.  Consequently the x11
+@@ -111,7 +111,7 @@
+ In the order of how likely each is to make the board dead on arrival, and what
+ is there to catch it.
+ 
+-1. **The six SOT-23s fitted a half turn round.**  JLCPCB's drawing of the SOT-23
++1. **The eight SOT-23s fitted a half turn round.**  JLCPCB's drawing of the SOT-23
+    has its pin 1 where KiCad has pin 3, so the upload CPL turns them by 180
+    degrees.  This is predicted from their land pattern, not yet read in a preview
+    of these two codes.  `PLACEMENT_CHECKS.txt` says what to look at; the lone pad
+@@ -120,13 +120,17 @@
+ 2. **A DIP switch turned.**  Also predicted (from the 6-way of the same family,
+    which was read).  Electrically symmetric: any orientation with the pads on the
+    pads works, only the sliders' direction changes.
+-3. **Oscillation at a few MHz** when a long unterminated cable hangs on OUT (a
+-   metre of coax is 100 pF on the follower's output).  The 55 degrees of margin is
+-   the simulation's; the real board has less.  Rev B puts 47 ohm in series with
+-   the OUT jack.
++3. **Less phase margin than the models say.**  The 51 degrees as a follower is
++   the simulation's; the real board has less, and a 10x probe (15 pF) on Q3 C
++   or Q2 C takes the model to 39 or 35 degrees, both probes to 25.  Cable
++   capacitance on OUT is not the problem: with the 47 ohm sense resistors
++   between the emitters and OUT, 100 pF of coax raises the margin to 90
++   degrees and 10 nF still leaves 30.
+ 4. **A shorted output held for minutes.**  The limit holds Q4 or Q5 at about
+-   22 mA with 15 V across it, 0.3 W in a SOT-23: it survives a student's slip,
+-   not an afternoon.
++   14.5 mA (22 mA reaches the short, the rest through the sense transistor): to
++   ground that is 0.21 W in a SOT-23 whose stocked part (C20526) is rated 0.2 W
++   at 625 K/W, so minutes; to either rail it is 0.43 W, twice the rating: it
++   survives a student's slip, not a minute.
+ 5. **The BNC's rotation**, +90 degrees, was read on a built board of the same
+    jack on the same footprint, so it is the least likely of the connectors to be
+    wrong; the terminal blocks' and the trimmer's are predicted, but their hole
+@@ -136,7 +140,6 @@
+ 
+ ## 6. Rev B list
+ 
+-* 47 ohm in series with OUT at the jack (cable capacitance).
+ * A fourth switch position or a jumper to lift the 1 k input resistors for a
+   bandwidth measurement without them.
+ * A place for a 1 nF to try as the compensation capacitor.
+--- README.md	2026-10-24 18:42:12.148058204 -0700
++++ design_reviews/2026-10-24_Claude-Fable-5.1/project/README.md	2026-10-24 23:59:51.190256013 -0700
+@@ -77,7 +77,7 @@
+ ./make.py --clean      # delete everything it generates
+ ```
+ 
+-The build stops on any ERC or DRC violation, on any of the 98 circuit assertions
++The build stops on any ERC or DRC violation, on any of the 102 circuit assertions
+ that read the exported netlist back against the book's circuit, on a schematic text
+ overlap, on a fab-package problem (an order code whose JLCPCB description no longer
+ matches, a QR code that does not decode from the board file) and on any number in

@@ -372,3 +372,96 @@ Lessons written to `~/OpticsPCBs/CLAUDE_PCB.md`: the symbol geometry that works 
 a SOT-23 and why the package rotations are what they are; KiCad's stroke font is as
 wide as it is tall (measure, do not estimate); nothing sits on a box edge and buses
 run along the band between boxes; a wire through a title band gets a jog.
+
+## Prompt 11
+
+> Make a new directory called design_reviews and make a prompt to send to other LLMs to
+> do a design review. They should make a new directory within this design_reviews
+> directory that includes the date and their name. They should write a report in their
+> own directory and only ever modify files within their own directory, since many agents
+> will be doing the review at the same time. If they need to copy or clone any part of
+> this project, they should do it in their own directory. Some of these instructions are
+> in CLAUDE_PCB.md in OpticsPCBs, and you should read those instructions and update them
+> as necessary. There are other examples of design review prompts that you can build on
+> in the other PCB projects that I pointed you to initially. When you are done writing
+> the prompt, you follow the prompt to do the design review yourself.
+
+## Response 5
+
+2026-10-24 23:00 to 2026-10-25 00:30 PDT.
+
+**The brief.** `design_reviews/DESIGN_REVIEW_PROMPT.md`, built on the gps-gh-adapters
+brief, the OWL review package and the Lorenz board's self-review, with the rules from
+`CLAUDE_PCB.md`: in bold first, only files count; each reviewer in
+`design_reviews/<YYYY-MM-DD>_<Model-Version>/` with `REPORT.md` and a gitignored
+`project/` copy to build in (the `rsync` line is in the brief, and `.gitignore` now has
+`/design_reviews/*/project/`); what the build rewrites, so "do not run it in place" is
+concrete; the claim to break with the board's own numbers; eight numbered things to
+attack with the file to read for each; the rules file's points as checks; a tools table
+with what each command writes; what is already known or decided; and the report's
+sections. `design_reviews/README.md` explains the layout and indexes the rounds.
+`~/OpticsPCBs/CLAUDE_PCB.md`'s outside-reviews bullet now describes this convention
+(dated directories under one `design_reviews/`, a later date for a later round, the
+author's own review in the same place) and names this brief as the template.
+
+**The review.** Done as the brief says, in `design_reviews/2026-10-24_Claude-Fable-5.1/`,
+before reading anyone else's: a fresh copy rebuilt there (byte-identical to the
+committed files except the STEP and the raytrace), every net printed and read against
+the book, the land pattern of every non-passive code fetched from JLCPCB and compared
+with the footprints, the CPL angles re-derived, the DIP switch's and the stocked
+transistor's datasheets read, and two simulation scripts asking what the project's
+simulation had not been asked. `REPORT.md` there has eleven findings; the ones that
+matter:
+
+1. **COMPENSATION 2 on its own is no compensation at all** (major). Pole 2 shorts R14,
+   but the chain Q2 C -> pole 1 -> R14 -> C1 is open unless pole 1 is on, so "2 =
+   the book's bare 100 pF", which the back of the board, the sheet and the handbook
+   all say, is false; the bare capacitor needs both sliders, which nothing says. The
+   checker's assertion "pole 2 shorts R14" was true and did not catch it. The
+   simulation says what the student would have seen in exercise 8: the x11 amplifier
+   with 18 degrees of margin and a 54 % overshoot, twice. Fix: pole 2 from Q2 C
+   straight to the R14 / C1 junction, on the sheet and the board; then 1, 2 and both
+   do what the legends say.
+2. **"A short to a rail is survived" is false for the part JLCPCB stocks** (major).
+   The limiter holds Q4 or Q5 at 14.5 mA (the 22 mA is the total into the short, the
+   rest through the sense transistor): 0.21 W into a short to ground, 0.43 W into a
+   short to a rail, in a SOT-23 whose C20526 datasheet says 200 mW and 625 K/W. Ground:
+   minutes. A rail: seconds. Fix: words; 100 ohm sense resistors would make a rail
+   short survivable at the cost of +/-6.5 V into 1 k, not recommended.
+3. **A scope's ground clip on Q2 C or Q3 E puts 0.55 to 0.68 W into the 0805 R8**
+   (major); on Q6 E or Q6 B, 0.2 W into R7. A 50 mA limit on the bench supply ends the
+   R8 cases, and nothing on the board or in the handbook asks for it after bring-up.
+   Fix: the limit as the rule, on the back silk and in the handbook.
+4. The DIP switches have no ON mark, and "On is toward the number" is not true as
+   drawn (SW1's ON side is away from its legends); the preview check has nothing to
+   compare against. Fix: silk ON marks on the footprint's ON side, and the preview
+   check against the part's own ON marking.
+5. Cable capacitance on OUT does not destabilise the follower in the model (100 pF
+   raises the margin from 51 to 90 degrees; 10 nF leaves 30); the rev B "47 ohm in
+   series" item is moot. A 10x probe on Q3 C or Q2 C is what eats margin (39, 35,
+   both 25 degrees): still stable, no overshoot.
+6. Stale numbers: six transistors in four places, 55 degrees twice, three null
+   ranges (33 / 37 / 19 mV), two input-resistor powers (the truth: 51 mW with one input
+   at a rail, 214 mW with both at opposite rails), stage 2's gain attributed as 12.5
+   when it is 34 at Q3 C times the push-pull's 0.37 at rest, "no fiducials" when
+   there are three, "2.54 mm pins" on the sheet.
+
+Found right: the circuit, the sense of every stage, every diode's polarity, the SOT-23
+pin order and the package rotations, every JLCPCB correction against JLCPCB's own land
+patterns, every custom footprint against them, the DIP's poles across the body, the
+handbook's loop voltages, the null range, the input protection (no junction ever
+reversed by more than 0.02 V), the slew rate (4.4 V/us), Economic PCBA taking the
+through-hole parts.
+
+**The patch.** `patch_round1.diff` in the review directory does findings 1 to 7 and
+builds clean in the copy: ERC 0, 102 circuit assertions (Q7 and Q8 added), DRC 0,
+28 of 28 claims. The project itself is unchanged: the brief says reviewers do not touch
+it while a round runs, and that holds for this one. Renders of the patched switch area
+and sheet are beside the report (`zp_*.png`).
+
+**Next.** Send the brief; when the round is in, reconcile by evidence and apply the
+patch (or its findings) through the generators, then rebuild. Lessons added to
+`CLAUDE_PCB.md`: derive what each switch position does on its own from the netlist, not
+from intent; mark ON on the silk and check it in the preview; a teaching board's bench
+supply limit is part of the design, computed from a ground clip on every loop; check
+the stocked part's ratings, not the famous maker's.

@@ -1,0 +1,83 @@
+=== 1. baseline (reproduce the project's numbers) ===
+  as built, 100 pF + 1 k                             A0   138  x1:  14.96 MHz PM  +50.8 deg  x11:   0.42 MHz PM +120.0 deg
+  bare 100 pF                                        A0   138  x1:   8.91 MHz PM  -42.6 deg  x11:   0.42 MHz PM +105.8 deg
+
+=== 2. a 10x scope probe (15 pF) on the loops: open-loop margins ===
+  with 1 k     no probe                              A0   138  x1:  14.96 MHz PM  +50.8 deg  x11:   0.42 MHz PM +120.0 deg
+  with 1 k     probe on TP8 (Q3 C)                   A0   138  x1:  11.89 MHz PM  +39.2 deg  x11:   0.40 MHz PM +118.6 deg
+  with 1 k     probe on TP6 (Q2 C)                   A0   138  x1:  13.34 MHz PM  +35.1 deg  x11:   0.42 MHz PM +119.2 deg
+  with 1 k     probes on TP6 and TP8                 A0   138  x1:  10.59 MHz PM  +25.0 deg  x11:   0.40 MHz PM +117.8 deg
+  with 1 k     probe on TP9 (OUT)                    A0   138  x1:   8.91 MHz PM  +63.0 deg  x11:   0.35 MHz PM +108.2 deg
+  with 1 k     probe on TP7 (Q3 E)                   A0   138  x1:  14.13 MHz PM  +77.3 deg  x11:   0.42 MHz PM +120.2 deg
+  bare 100 pF  no probe                              A0   138  x1:   8.91 MHz PM  -42.6 deg  x11:   0.42 MHz PM +105.8 deg
+  bare 100 pF  probe on TP8 (Q3 C)                   A0   138  x1:   7.94 MHz PM  -45.5 deg  x11:   0.40 MHz PM +105.5 deg
+  bare 100 pF  probe on TP6 (Q2 C)                   A0   138  x1:   7.94 MHz PM  -45.9 deg  x11:   0.42 MHz PM +105.1 deg
+  bare 100 pF  probes on TP6 and TP8                 A0   138  x1:   7.50 MHz PM  -50.9 deg  x11:   0.40 MHz PM +104.8 deg
+  bare 100 pF  probe on TP9 (OUT)                    A0   138  x1:   5.31 MHz PM  -16.7 deg  x11:   0.38 MHz PM  +95.6 deg
+  bare 100 pF  probe on TP7 (Q3 E)                   A0   138  x1:   7.50 MHz PM  -36.4 deg  x11:   0.42 MHz PM +105.9 deg
+  -- follower steps, 0.5 V, with the 1 k:
+  no probe                                           final +0.493 V  peak +0.493 V  overshoot  -0.0 %  late p-p     0.0 mV
+  probe on TP8                                       final +0.493 V  peak +0.493 V  overshoot  -0.0 %  late p-p     0.0 mV
+  probe on TP6                                       final +0.493 V  peak +0.493 V  overshoot  -0.0 %  late p-p     0.0 mV
+
+=== 3. cable capacitance on OUT (a metre of coax = 100 pF) ===
+  as built, 100p on OUT                              A0   138  x1:   2.00 MHz PM  +90.1 deg  x11:   0.22 MHz PM  +78.0 deg
+     step, 100p on OUT                               final +0.493 V  peak +0.557 V  overshoot   6.4 %  late p-p     0.0 mV
+  as built, 300p on OUT                              A0   138  x1:   0.75 MHz PM  +74.8 deg  x11:   0.14 MHz PM  +57.8 deg
+     step, 300p on OUT                               final +0.493 V  peak +0.581 V  overshoot   8.8 %  late p-p     0.0 mV
+  as built, 1n on OUT                                A0   138  x1:   0.32 MHz PM  +51.1 deg  x11:   0.08 MHz PM  +44.7 deg
+     step, 1n on OUT                                 final +0.493 V  peak +0.622 V  overshoot  12.9 %  late p-p     0.0 mV
+  as built, 10n on OUT                               A0   138  x1:   0.09 MHz PM  +30.5 deg  x11:   0.02 MHz PM  +55.6 deg
+     step, 10n on OUT                                final +0.493 V  peak +0.674 V  overshoot  18.1 %  late p-p     0.0 mV
+  -- without the limiter's 47 ohm (the bare push-pull the rev B '47 ohm in series' note assumed):
+  bare push-pull, 100p on OUT                        A0   139  x1:   1.68 MHz PM  +88.6 deg  x11:   0.22 MHz PM  +74.4 deg
+     step, 100p on OUT                               final +0.493 V  peak +0.549 V  overshoot   5.7 %  late p-p     0.0 mV
+  bare push-pull, 1n on OUT                          A0   139  x1:   0.30 MHz PM  +44.9 deg  x11:   0.08 MHz PM  +42.9 deg
+     step, 1n on OUT                                 final +0.493 V  peak +0.576 V  overshoot   8.3 %  late p-p     0.0 mV
+
+=== 4. does the limiter itself change the loop? (Q7/Q8/D5/D6 removed, emitters to OUT) ===
+  no limiter, with 1 k                               A0   139  x1:  14.13 MHz PM  +54.8 deg  x11:   0.38 MHz PM +117.1 deg
+  no limiter, bare                                   A0   139  x1:   8.41 MHz PM  -38.4 deg  x11:   0.38 MHz PM +104.4 deg
+
+=== 5. COMPENSATION as wired: pole 2 alone opens the chain = no compensation ===
+  no compensation (both off, or 2 alone)             A0   138  x1:  28.18 MHz PM  -39.2 deg  x11:   8.91 MHz PM  +17.8 deg
+     follower step, no compensation                  final +0.496 V  peak +1.531 V  overshoot 103.6 %  late p-p  2148.9 mV
+     x11 step, no compensation                       final +1.066 V  peak +2.235 V  overshoot  53.1 %  late p-p  1651.0 mV
+
+=== 6. both FEEDBACK on: R10 shorted, follower into 1 k ===
+  OUT = -3.0 mV, X = -3.0 mV
+  R10 shorted (1 k load)                             A0    15  x1:   9.44 MHz PM  +97.0 deg  x11:   0.02 MHz PM +139.4 deg
+
+=== 7. the output shorted: currents and powers (follower asked for +/-10 V) ===
+  to ground, +10 V asked         OUT  +0.000 V  I(R15)  +14.5 mA  I(R16)   -0.0 mA  P(Q4)   208 mW  P(Q5)    -0 mW  Q3 C   +1.41 V
+  to ground, -10 V asked         OUT  -0.000 V  I(R15)   -0.0 mA  I(R16)  +14.0 mA  P(Q4)    -0 mW  P(Q5)   201 mW  Q3 C   -1.38 V
+  to -15 V rail, +10 V asked     OUT -15.000 V  I(R15)  +14.7 mA  I(R16)   -0.0 mA  P(Q4)   431 mW  P(Q5)    -0 mW  Q3 C  -13.59 V
+  to -15 V rail, 0 V asked       OUT -15.000 V  I(R15)  +14.7 mA  I(R16)   -0.0 mA  P(Q4)   431 mW  P(Q5)    -0 mW  Q3 C  -13.59 V
+  to +15 V rail, -10 V asked     OUT +15.000 V  I(R15)   -0.0 mA  I(R16)  +14.4 mA  P(Q4)    -0 mW  P(Q5)   423 mW  Q3 C  +13.60 V
+  to +15 V rail, 0 V asked       OUT +15.000 V  I(R15)   -0.0 mA  I(R16)  +14.4 mA  P(Q4)    -0 mW  P(Q5)   423 mW  Q3 C  +13.60 V
+  -- 100 ohm load, +/-10 V asked:
+    vin +10: OUT +2.04 V, I(R15) +14.5 mA, P(Q4) 177 mW, P(Q5) -0 mW
+    vin -10: OUT -1.84 V, I(R15) -0.0 mA, P(Q4) -0 mW, P(Q5) 174 mW
+
+=== 8. input abuse, open loop (inputs driven directly) ===
+  IN+ = +15, IN- = 0       b1   +7.16 b2   +7.84 e   +7.14 V  I(R1)  -7.16 mA   51 mW  I(R2)  +7.16 mA   51 mW  Vbe1 +0.02 Vbe2 +0.66  OUT +13.35
+  IN+ = -15, IN- = 0       b1   -7.16 b2   -7.84 e   -7.82 V  I(R1)  +7.16 mA   51 mW  I(R2)  -7.16 mA   51 mW  Vbe1 +0.66 Vbe2 +0.02  OUT -14.20
+  IN+ = +15, IN- = -15     b1   -0.36 b2   +0.36 e   -0.34 V  I(R1) -14.64 mA  214 mW  I(R2) +14.64 mA  214 mW  Vbe1 -0.02 Vbe2 +0.66  OUT +13.35
+  IN+ = -15, IN- = +15     b1   +0.36 b2   -0.36 e   -0.31 V  I(R1) +14.64 mA  214 mW  I(R2) -14.64 mA  214 mW  Vbe1 +0.66 Vbe2 -0.02  OUT -14.20
+  IN+ = +20, IN- = 0       b1   +9.65 b2  +10.34 e   +9.65 V  I(R1)  -9.65 mA   93 mW  I(R2)  +9.66 mA   93 mW  Vbe1 +0.01 Vbe2 +0.66  OUT +13.34
+  IN+ = 0, IN- = -20       b1  -10.35 b2   -9.66 e  -10.35 V  I(R1)  -9.65 mA   93 mW  I(R2)  +9.66 mA   93 mW  Vbe1 +0.00 Vbe2 +0.66  OUT +13.35
+
+=== 9. the null trimmer at its ends ===
+  pot 0.0: follower OUT  -37.51 mV;                                                     A0   144  x1:  14.96 MHz PM  +49.6 deg  x11:   0.45 MHz PM +119.2 deg
+  pot 0.5: follower OUT   -5.58 mV;                                                     A0   138  x1:  14.96 MHz PM  +50.8 deg  x11:   0.42 MHz PM +120.0 deg
+  pot 1.0: follower OUT  +28.83 mV;                                                     A0   246  x1:  14.96 MHz PM  +51.3 deg  x11:   0.60 MHz PM +103.3 deg
+
+=== 10. slew rate (follower, +/-5 V square) ===
+  rising: 8 V in 1.80 us = 4.4 V/us; extreme +5.00 V
+  falling: 8 V in 1.79 us = 4.5 V/us; extreme -5.03 V
+
+=== 11. x11 into real loads ===
+  1.0 V peak in, 1k ohm load: OUT -10.62 .. +10.59 V (ideal +/-11.0)
+  1.3 V peak in, 1k ohm load: OUT -11.72 .. +12.62 V (ideal +/-14.3)
+  1.0 V peak in, 330 ohm load: OUT -4.62 .. +5.32 V (ideal +/-11.0)
+  0.5 V peak in, 100 ohm load: OUT -1.47 .. +1.68 V (ideal +/-5.5)

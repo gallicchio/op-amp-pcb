@@ -1,0 +1,16 @@
+=== A. stage gains at 100 Hz, open loop, IN- grounded for AC (where does 138 come from?) ===
+  |c2| = 11.1  |c3| = 375.5  |out| = 138.2   -> stage 2 = 33.8, push-pull at rest = 0.37
+  with 1 k load: |c2| = 11.1  |c3| = 374.3  |out| = 17.1
+  biased (OUT at +0.5 V): |c2| = 11.1  |c3| = 374.9  |out| = 355.4
+
+=== B. a scope's ground clip on a signal loop (node shorted to ground), open loop, inputs as given ===
+    power in the 0805 resistors (rated 0.125 W) and in the transistors
+  TP6 Q2 C -> 0, IN+ = IN- = 0         +rail about  51.9 mA; over 50 mW: {'R3': 150, 'R8': 545}
+  TP7 Q3 E -> 0, IN+ = IN- = 0         +rail about  47.3 mA; over 50 mW: {'R8': 682, 'Q3': 678}
+  TP8 Q3 C -> 0, IN+ = +0.1, IN- = 0   +rail about   6.1 mA; over 50 mW: {'Q3': 51}
+  TP8 Q3 C -> 0, IN+ = -0.1, IN- = 0   +rail about   1.3 mA; over 50 mW: nothing
+  TP3 TAIL -> 0, IN+ = IN- = 0         +rail about   1.2 mA; over 50 mW: nothing
+  TP4 Q6 E -> 0, IN+ = IN- = 0         +rail about   1.2 mA; over 50 mW: {'R7': 225}
+  TP5 Q6 B -> 0, IN+ = IN- = 0         +rail about   9.4 mA; over 50 mW: {'R9': 66, 'R7': 200}
+  TP13 Q1 E -> 0, IN+ = IN- = 0        +rail about   1.2 mA; over 50 mW: nothing
+  TP9 OUT -> 0, IN+ = +1, IN- = 0      +rail about  21.1 mA; over 50 mW: {'Q3': 50, 'Q4': 207}

@@ -1,0 +1,72 @@
+KiCad 10.0.7
+  runner    /tmp/.mount_kicadremp17350511091871881925/AppRun
+  mounted   /home/jason/.local/bin/kicad-10.0.7-x86_64.AppImage
+  libraries /tmp/.mount_kicadremp17350511091871881925/usr/share/kicad
+
+=== footprints, models and project files ============================
+  wrote hardware/lib/opamp.3dshapes/BNC_KYWE_RightAngle.wrl
+  wrote hardware/lib/opamp.3dshapes/SW_DIP_x02_DSIC02.wrl
+  wrote hardware/lib/opamp.3dshapes/Potentiometer_3362P.wrl
+  wrote hardware/lib/opamp.3dshapes/TestLoop_RH-5019.wrl
+  wrote hardware/lib/opamp.3dshapes/TerminalBlock_KF301_1x02.wrl
+  wrote hardware/lib/opamp.3dshapes/TerminalBlock_KF301_1x03.wrl
+  wrote hardware/lib/opamp.pretty/BNC_KYWE_RightAngle.kicad_mod
+  wrote hardware/lib/opamp.pretty/SW_DIP_SPSTx02_KingTek_DSIC02_P2.54mm.kicad_mod
+  wrote hardware/lib/opamp.pretty/Potentiometer_Bourns_3362P_Vertical.kicad_mod
+  wrote hardware/lib/opamp.pretty/TestPoint_Loop_RH-5019.kicad_mod
+  wrote hardware/lib/opamp.pretty/TerminalBlock_KF301_1x02_P5.00mm.kicad_mod
+  wrote hardware/lib/opamp.pretty/TerminalBlock_KF301_1x03_P5.00mm.kicad_mod
+  wrote hardware/opamp.kicad_pro
+  wrote hardware/sym-lib-table
+  wrote hardware/fp-lib-table
+
+=== simulation (ngspice) ============================================
+  wrote sim/results.json: A0 138.2, follower PM 50.8 deg, x11 10.23 at 421.7 kHz, Vos -5.58 mV, null +/-33.2 mV
+
+=== schematic =======================================================
+  auto-placed 1 junction(s) where wires meet end-to-middle
+  wrote hardware/opamp.kicad_sch
+  ERC: 0 violation(s)
+  102 circuit checks passed
+  all circuit checks passed
+  sheet 594 x 420 mm, 219 text items checked
+  no text overlaps, nothing outside the frame or in the title block
+
+=== PCB =============================================================
+  wrote hardware/opamp.kicad_pcb: 70 footprints, 224 tracks, 32 vias, 8 hops
+  wrote hardware/opamp.kicad_pro
+  wrote hardware/sym-lib-table
+  wrote hardware/fp-lib-table
+  DRC: 0 violation(s)
+
+=== manufacturing outputs ===========================================
+  opamp: 14 gerber/drill files -> out/opamp/opamp-gerbers.zip
+  opamp: 66 placements -> out/opamp/opamp_cpl_kicad_native.csv
+  opamp: 14 of them turned for JLCPCB -> out/opamp/opamp_cpl_jlcpcb_upload.csv
+  opamp: assembler's notes -> out/opamp/opamp-assembly-notes.txt
+  opamp: 40 BOM lines, parts $7.77/board -> out/opamp/opamp_bom_jlcpcb_upload.csv
+  opamp: 8 images -> docs/images/, plus STEP and stats
+  ok   opamp: gerber zip has 14 files (2 drill)
+  ok   opamp: outline 100.00 x 100.00 mm, origin at (0.00, 0.00)
+  ok   opamp: 66 placements, 40 BOM lines, all with order codes
+  ok   opamp: the JLCPCB placement file turns 14 parts and moves none
+  ok   opamp: the project QR code on B.Silkscreen decodes to https://github.com/gallicchio/op-amp-pcb (version 3, mask 6)
+  ok   opamp: RV1's 3 holes fit only one way round, so no preview can mislead it
+  ok   opamp: 66 3D model(s) resolve on disk
+  ok   15 part types, 11 passive values, all with order codes
+  ok   22 LCSC codes match JLCPCB's own descriptions (MPN, value, package)
+
+ALL FAB CHECKS PASSED
+
+=== documentation ===================================================
+  wrote docs/MANUFACTURING.md (parts $7.78/board, 112 SMT + 18 THT joints, 7 extended codes)
+  wrote out/opamp/opamp-fabrication-notes.txt
+  wrote out/opamp/PLACEMENT_CHECKS.txt
+  28 of 28 document claims match the build
+
+=== project files ===================================================
+  wrote hardware/opamp.kicad_pro
+  wrote hardware/sym-lib-table
+  wrote hardware/fp-lib-table
+
+BUILD OK
