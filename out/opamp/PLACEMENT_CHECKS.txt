@@ -20,7 +20,7 @@ scripts/parts.py JLC_ROTATION and rebuild.
             KF301-3P: pins along x at -5/0/+5, as drawn here
             look for: screw terminal wire openings; should be: facing the RIGHT edge
 
-[PREDICTED] TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9, TP11, TP12, TP13, TP14, TP100, TP101, TP102, TP103  (C5199800, +0 deg)
+[PREDICTED] TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9, TP10, TP11, TP12, TP13, TP14, TP100, TP101, TP102, TP103  (C5199800, +0 deg)
             RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x
 
 [PREDICTED] RV1  (C52754333, +0 deg)

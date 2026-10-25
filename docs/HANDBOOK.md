@@ -70,8 +70,8 @@ Usual, as the back of the board says: TAIL 1, COMPENSATION 1, FEEDBACK as needed
 
 ## 5. The probe loops
 
-17 probe loops, one per named node, take a scope probe's hook or a mini-grabber.
-Three of them are ground, for the probe's clip.  The voltages are what the
+18 probe loops, one per named node, take a scope probe's hook or a mini-grabber.
+Four of them are ground, for the probe's clip, one per scope channel.  The voltages are what the
 simulation gives as a follower (FEEDBACK 2 on) with IN+ grounded, TAIL 1,
 COMPENSATION 1, +/-15 V in.  Expect a few hundred millivolts of spread from transistor
 to transistor; a volt off is a fault.
@@ -89,12 +89,10 @@ to transistor; a volt off is a fault.
 | TP7 | Q3 E | Q3's emitter | +14.6 V |
 | TP8 | Q3 C | Q3's collector, the push-pull's input | +0.5 V |
 | TP9 | OUT | the output, beside the jack | 0.0 V |
+| TP10 | X | the 10 k / 1 k tap, in the FEEDBACK box | 0.0 V |
 | TP11 | +15V | the rail, after the Schottky | +14.6 V |
 | TP12 | -15V | the rail, after the Schottky | -14.6 V |
 | TP100 - TP103 | GND | for the clip, one per scope channel | 0 |
-
-X, the 10 k / 1 k tap, has no loop of its own: probe it on the upper pad of R11
-or on the FEEDBACK switch's pin 1 when slider 1 is on.
 
 The 0.6 V steps are the story of the board: Q1 and Q2's emitters sit a diode
 below their grounded bases; Q2 C sits where the 1.5 k drops half the tail

@@ -409,6 +409,7 @@ def build():
     s.wire((OUT_X0, g(61) + 3.81), (OUT_X0, X_Y))
     s.junction(OUT_X0, X_Y)
     label("X", OUT_X0 + 2.54, X_Y)
+    testpoint(OUT_X0, g(66), "X", rot=90, dx=-3.4, dy=0.5, justify="right")
     res("R11", "1k", OUT_X0, g(69.5))
     s.wire((OUT_X0, X_Y), (OUT_X0, g(69.5) - 3.81))
     s.wire((OUT_X0, g(69.5) + 3.81), (OUT_X0, g(74)))

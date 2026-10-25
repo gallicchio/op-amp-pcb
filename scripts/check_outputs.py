@@ -370,7 +370,7 @@ def check_stock(problems, notes):
     for key, p in parts.PARTS.items():
         if "stock" not in p:
             continue
-        need = {"NPN": 5, "PNP": 3, "BNC": 3, "DIP2": 3, "TERM2": 3, "TP": 18, "DSCH": 2, "DSW": 4, "LED": 2}.get(key, 1)
+        need = {"NPN": 5, "PNP": 3, "BNC": 3, "DIP2": 3, "TERM2": 3, "TP": 19, "DSCH": 2, "DSW": 4, "LED": 2}.get(key, 1)
         boards = p["stock"] // need
         if boards < 50:
             low.append(f"{p['mpn']} ({p['stock']} in stock = {boards} boards)")

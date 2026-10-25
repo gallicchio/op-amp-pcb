@@ -25,6 +25,12 @@ SHARE_FP = None
 
 SILK_W = 0.3            # the schematic wires on the silkscreen
 SILK_CLEAR = 0.3        # silkscreen to pad
+# The transistor symbol, in a frame whose origin is the SOT-23's centre, with
+# the base bar on the left and the collector leg going up; mirrored per part.
+Q_BAR_X, Q_BAR_H = 2.2, 1.4     # the bar: x = -Q_BAR_X, from -Q_BAR_H to +Q_BAR_H
+Q_BEND = 3.6                    # the legs leave the bar's ends at 45 degrees and turn vertical here
+Q_W_CIRCLE, Q_W_LEAD, Q_W_BAR, Q_W_STUB = 0.25, 0.45, 0.55, 0.16
+Q_STUB_GAP = 0.15               # a hairline starts this far from its pad
 VIA_DIA, VIA_DRILL = 0.8, 0.3
 
 
@@ -137,6 +143,7 @@ class Board:
                 self.pad_net[node] = name
         self.fps = {}
         self.pads = {}            # (ref, pad) -> dict(x, y, w, h, through, net)
+        self.qgeom = {}           # ref -> the symbol round each transistor (q_geometry)
         self.problems = []
 
     # ------------------------------------------------------------ parts --
@@ -195,6 +202,10 @@ class Board:
                 raise SystemExit(f"wire on {net}: no pad {p[0]}.{p[1]}")
             if pad["net"] != net:
                 self.problems.append(f"wire on {net} ends on {p[0]}.{p[1]}, which is on {pad['net']!r}")
+            if p[0] in L.TRANSISTORS:
+                # a wire reaches a transistor where the symbol's lead leaves
+                # the circle; the copper inside follows the symbol (q_geometry)
+                return self.q_geometry(p[0])["exit"][p[1]]
             return (pad["x"], pad["y"])
         return (float(p[0]), float(p[1]))
 
@@ -236,6 +247,11 @@ class Board:
                     self.hops.append((net, a, b))
                 else:
                     self.track(a, b, width, net)
+        for ref in L.TRANSISTORS:
+            for num, path in self.q_geometry(ref)["copper"].items():
+                net = self.pads[(ref, num)]["net"]
+                for a, b in zip(path, path[1:]):
+                    self.track(a, b, L.W_SIG, net)
         self.stub_dir = {}
         for (padref, path) in L.GND_STUBS:
             pad = self.pads[padref]
@@ -344,6 +360,9 @@ class Board:
                 box = [tomm(bb.GetLeft()) - 0.4, tomm(bb.GetTop()) - 0.4, tomm(bb.GetRight()) + 0.4, tomm(bb.GetBottom()) + 0.4]
                 boxes.append(tuple(box))
         self.boxes = boxes
+        # a wire stops at a transistor's circle: the symbol takes it from there
+        self.circles = [(g["cx"], g["cy"], L.Q_RADIUS + 0.1)
+                        for g in (self.q_geometry(ref) for ref in L.TRANSISTORS)]
         return boxes
 
     def clip(self, a, b):
@@ -367,6 +386,20 @@ class Board:
                 else:
                     t1 = min(t1, r)
             if ok and t0 < t1:
+                cuts.append((max(0.0, t0), min(1.0, t1)))
+        for (qx, qy, qr) in getattr(self, "circles", ()):
+            fx, fy = x1 - qx, y1 - qy
+            A = dx * dx + dy * dy
+            if A < 1e-12:
+                continue
+            B = 2 * (fx * dx + fy * dy)
+            C = fx * fx + fy * fy - qr * qr
+            disc = B * B - 4 * A * C
+            if disc <= 0:
+                continue
+            r = math.sqrt(disc)
+            t0, t1 = (-B - r) / (2 * A), (-B + r) / (2 * A)
+            if t1 > 0 and t0 < 1:
                 cuts.append((max(0.0, t0), min(1.0, t1)))
         cuts.sort()
         pieces, t = [], 0.0
@@ -466,55 +499,111 @@ class Board:
             cx, cy = x + ux * s, y + uy * s
             self._line((cx - px * w / 2, cy - py * w / 2), (cx + px * w / 2, cy + py * w / 2), width=0.25)
 
+    def q_geometry(self, ref):
+        """The symbol round transistor `ref`, in board millimetres: where its
+        three leads leave the circle (so the wires can end there), the hairline
+        from each pad to its lead, and the copper that follows the hairline and
+        the lead out to the circle.  Worked out in a frame with the bar on the
+        left and the collector up, then mirrored for a base on the right and
+        for a PNP (collector down).  The SOT-23 must be turned so its base pad
+        is on the bar's side; the lone (collector) pad then sits either under
+        the collector leg or under the emitter leg, and the hairlines differ."""
+        if ref in self.qgeom:
+            return self.qgeom[ref]
+        kind, side = L.TRANSISTORS[ref]
+        fp = self.fps[ref]
+        cx, cy = tomm(fp.GetPosition().x), tomm(fp.GetPosition().y)
+        m = 1 if side == "left" else -1
+        n = 1 if kind == "NPN" else -1
+
+        def P(x, y):
+            return (cx + m * x, cy + n * y)
+
+        R, BX, BH, BEND = L.Q_RADIUS, Q_BAR_X, Q_BAR_H, Q_BEND
+        pins = {}
+        for num, name in (("1", "B"), ("2", "E"), ("3", "C")):
+            p = self.pads[(ref, num)]
+            pins[name] = (m * (p["x"] - cx), n * (p["y"] - cy), (p["x1"] - p["x0"]) / 2, (p["y1"] - p["y0"]) / 2)
+        xb, yb, hwb, hhb = pins["B"]
+        xe, ye, hwe, hhe = pins["E"]
+        xc, yc, hwc, hhc = pins["C"]
+        if not (xb < -0.5 and xe > 0.5 and abs(xc) < 0.1):
+            raise SystemExit(f"{ref}: the SOT-23 is not turned with its base pad on the bar's side")
+        u = (math.sqrt(0.5), math.sqrt(0.5))          # along the emitter leg, bar to bend
+
+        def foot(sx, sy):                             # the point of the emitter leg square on to (sx, sy)
+            t = (sx + BX) * u[0] + (sy - BH) * u[1]
+            return (-BX + t * u[0], BH + t * u[1])
+
+        g = Q_STUB_GAP
+        stubs, copper = {}, {}
+        # B: a hairline from the pad's inner edge straight across to the bar
+        stubs["1"] = [(xb - hwb - g, yb), (-BX + Q_W_BAR / 2, yb)]
+        copper["1"] = [(-R, 0), (-BX, 0), (-BX, yb), (xb, yb)]
+        # C: straight along the collector's vertical, pad to bend
+        stubs["3"] = [(0, yc - hhc - g), (0, -BEND)]
+        copper["3"] = [(0, -R), (0, yc)]
+        # E: square on to the emitter leg; round the lone pad first if it is in the way
+        if ye > 0:
+            e_s = (xe, ye + hhe + g)
+            e_f = foot(*e_s)
+            stubs["2"] = [e_s, e_f]
+            copper["2"] = [(0, R), (0, BEND), e_f, e_s, (xe, ye)]
+        else:
+            e_s, e_m = (xe, ye + hhe + g), (xe, 2.1)
+            e_f = foot(*e_m)
+            stubs["2"] = [e_s, e_m, e_f]
+            copper["2"] = [(0, R), (0, BEND), e_f, e_m, e_s, (xe, ye)]
+        # the arrow is on the emitter leg: at its outer end pointing out for an
+        # NPN, against the bar pointing in for a PNP
+        if kind == "NPN":
+            tip = (0, BEND)
+            tail = (tip[0] - u[0] * 1.1, tip[1] - u[1] * 1.1)
+        else:
+            tip = (-BX + u[0] * 0.12, BH + u[1] * 0.12)
+            tail = (tip[0] + u[0] * 1.1, tip[1] + u[1] * 1.1)
+        px, py = -u[1], u[0]
+        arrow = [tip, (tail[0] + px * 0.5, tail[1] + py * 0.5), (tail[0] - px * 0.5, tail[1] - py * 0.5)]
+        geom = dict(
+            cx=cx, cy=cy, R=R,
+            exit={"1": P(-R, 0), "3": P(0, -R), "2": P(0, R)},
+            bar=[P(-BX, -BH), P(-BX, BH)],
+            leads=[[P(-R, 0), P(-BX, 0)],
+                   [P(-BX, -BH), P(0, -BEND), P(0, -R)],
+                   [P(-BX, BH), P(0, BEND), P(0, R)]],
+            arrow=[P(*q) for q in arrow],
+            stubs={k: [P(*q) for q in v] for k, v in stubs.items()},
+            copper={k: [P(*q) for q in v] for k, v in copper.items()},
+            letters={"B": P(-3.0, -0.9), "C": P(1.15, -3.0), "E": P(1.15, 3.0)},
+        )
+        self.qgeom[ref] = geom
+        return geom
+
     def silk_transistors(self):
-        """The textbook symbol drawn round each SOT-23, inside a circle: the base
-        bar on the side the base wire arrives from, a slanted collector lead up
-        to the collector wire, a slanted emitter lead with the arrow on it (out
-        of the bar for an NPN, into it for a PNP), and B, C, E beside the three
-        wires where they leave the circle.  The package sits between the leads;
-        the copper wires enter the circle exactly where the symbol's leads end."""
-        R = L.Q_RADIUS
-        for ref, (kind, side) in L.TRANSISTORS.items():
+        """The textbook symbol round each SOT-23: a circle, the base bar, the
+        two legs at 45 degrees turning vertical to leave the circle, the arrow
+        on the emitter, B C E lettered inside, and a hairline from each pad to
+        its lead so the package is visibly the symbol's transistor.  The
+        footprint's own outline is dropped; the wires outside stop at the
+        circle (clip) and the copper inside follows the hairlines (wires)."""
+        for ref in L.TRANSISTORS:
             fp = self.fps[ref]
-            cx, cy = tomm(fp.GetPosition().x), tomm(fp.GetPosition().y)
-            # the package's own outline would clutter the symbol: drop it
             for item in list(fp.GraphicalItems()):
                 if item.GetLayer() == pcbnew.F_SilkS:
                     fp.Remove(item)
-            self._circle(cx, cy, R)
-            b = self.pads[(ref, "1")]; e = self.pads[(ref, "2")]; c = self.pads[(ref, "3")]
-            sx = -1 if side == "left" else 1          # the bar's side
-            cu = -1 if kind == "NPN" else 1            # collector direction: NPN up, PNP down
-            bx = cx + sx * 2.05
-            # the bar, and the two legs the book draws: collector from one end to
-            # the collector wire (x = cx), emitter from the other end to the emitter
-            # wire, which the layout brings out at x = cx + sx * 0.4.  The legs leave
-            # the bar near its ends so they clear the base pad under them.
-            self._line((bx, cy - 1.9), (bx, cy + 1.9), width=0.4)
-            self._line((bx, cy + cu * 1.6), (cx - sx * 0.2, cy + cu * 2.9), width=0.3)
-            p0 = (bx, cy - cu * 1.9)
-            p1 = (cx + sx * 0.4, cy - cu * 2.9)
-            self._line(p0, p1, width=0.3)
-            # the arrow is always on the emitter: at the leg's far end pointing out
-            # for an NPN, at the bar pointing in for a PNP
-            dx, dy = p1[0] - p0[0], p1[1] - p0[1]
-            n = math.hypot(dx, dy); ux, uy = dx / n, dy / n
-            px, py = -uy, ux
-            if kind == "NPN":
-                tip = p1
-                tail = (p1[0] - ux * 1.3, p1[1] - uy * 1.3)
-            else:
-                tip = (p0[0] + ux * 0.1, p0[1] + uy * 0.1)
-                tail = (tip[0] + ux * 1.3, tip[1] + uy * 1.3)
-            self._poly([tip, (tail[0] + px * 0.55, tail[1] + py * 0.55), (tail[0] - px * 0.55, tail[1] - py * 0.55)])
-            # B, C, E where the wires leave the circle (or where the layout says)
-            letters = {"B": (cx + sx * (R + 0.9), b["y"] - 0.9),
-                       "C": (cx + sx * 1.1, cy + cu * (R + 0.7)),
-                       "E": (cx + sx * 1.5, cy - cu * (R + 0.7))}
-            letters.update(getattr(L, "Q_LETTER", {}).get(ref, {}))
-            for name, (lx, ly) in letters.items():
+            g = self.q_geometry(ref)
+            self._circle(g["cx"], g["cy"], g["R"], width=Q_W_CIRCLE)
+            self._line(g["bar"][0], g["bar"][1], width=Q_W_BAR)
+            for lead in g["leads"]:
+                for a, b in zip(lead, lead[1:]):
+                    self._line(a, b, width=Q_W_LEAD)
+            self._poly(g["arrow"])
+            for path in g["stubs"].values():
+                for a, b in zip(path, path[1:]):
+                    self._line(a, b, width=Q_W_STUB)
+            for name, (lx, ly) in g["letters"].items():
                 self._text(lx, ly, name, 0.8, 0.15, justify="center")
-            # caption: reference and type, where the layout says
+            # caption: the reference, where the layout says (the type is in the band)
             fp.Value().SetVisible(False)
             fp.Reference().SetVisible(False)
             cap = L.Q_CAPTION[ref]
@@ -551,7 +640,9 @@ class Board:
                 if where is None:                      # a loop on a labelled rail needs no name
                     v.SetVisible(False)
                     continue
-                dx, dy, j = where
+                dx, dy, j = where[:3]
+                if len(where) > 3:
+                    v.SetTextSize(pcbnew.VECTOR2I(mm(where[3]), mm(where[3])))
                 v.SetPosition(pt(cx + dx, cy + dy))
                 v.SetHorizJustify({"left": pcbnew.GR_TEXT_H_ALIGN_LEFT, "right": pcbnew.GR_TEXT_H_ALIGN_RIGHT,
                                    "center": pcbnew.GR_TEXT_H_ALIGN_CENTER}[j])

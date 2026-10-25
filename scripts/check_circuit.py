@@ -184,7 +184,7 @@ def main(path):
 
     # --- probe loops on the nodes they claim ---------------------------------------
     for tp, net in (("TP1", "Q1 B"), ("TP2", "Q2 B"), ("TP3", "TAIL"), ("TP6", "Q2 C"), ("TP8", "Q3 C"),
-                    ("TP9", "OUT"), ("TP11", "+15V"), ("TP12", "-15V"),
+                    ("TP9", "OUT"), ("TP10", "X"), ("TP11", "+15V"), ("TP12", "-15V"),
                     ("TP100", "GND"), ("TP101", "GND"), ("TP102", "GND"), ("TP103", "GND")):
         check(N.net(tp, 1) == net, f"{tp} ({N.value[tp]}) is on {net}")
     check(N.net("TP4", 1) == N.net("Q6", 2), "TP4 is Q6's emitter")

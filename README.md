@@ -47,12 +47,12 @@ What the board adds, so a class of first-year students can use it:
 * **Input protection**: 1 k in series with each input and anti-parallel 1N4148s between
   the bases, so no base-emitter junction ever sees its 6 V reverse breakdown.
 * **Reverse-supply protection** (a Schottky in each rail) and a green LED per rail.
-* 17 probe loops, four of them ground (one per scope channel), placed on every node
+* 18 probe loops, four of them ground (one per scope channel), placed on every node
   the book asks you to look at.  Dashed boxes name each stage on the silkscreen, and
   every transistor sits inside its own symbol with B, C and E marked.
 
-Parts cost about $7.68 in parts per board at JLCPCB; the fixed assembly fees make the
-first board about $66 and each further one about $8, so about $15 each for 10 assembled boards.  See
+Parts cost about $7.78 in parts per board at JLCPCB; the fixed assembly fees make the
+first board about $67 and each further one about $9, so about $15 each for 10 assembled boards.  See
 [docs/MANUFACTURING.md](docs/MANUFACTURING.md).
 
 ![Schematic](docs/images/schematic.png)
@@ -77,7 +77,7 @@ export KICAD_APPIMAGE=$HOME/.local/bin/kicad-10.0.7-x86_64.AppImage   # or kicad
 ./make.py --clean      # delete everything it generates
 ```
 
-The build stops on any ERC or DRC violation, on any of the 97 circuit assertions
+The build stops on any ERC or DRC violation, on any of the 98 circuit assertions
 that read the exported netlist back against the book's circuit, on a schematic text
 overlap, on a fab-package problem (an order code whose JLCPCB description no longer
 matches, a QR code that does not decode from the board file) and on any number in

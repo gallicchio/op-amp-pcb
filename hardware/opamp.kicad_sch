@@ -4608,6 +4608,12 @@
 		(uuid "f2d0eb84-d181-5a83-97be-8e69422e3f7b")
 	)
 	(junction
+		(at 320.04 167.64)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f5acf716-8bfb-5613-964a-041a1d33c3b6")
+	)
+	(junction
 		(at 347.98 142.24)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -14682,6 +14688,106 @@
 			(project "opamp"
 				(path "/9eb78eaa-30d0-5848-9a54-3294ec10adc7"
 					(reference "TP4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 320.04 167.64 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "ea44aacd-6aa0-583f-a3ff-97e32ea6b719")
+		(property "Reference" "TP10"
+			(at 320.04 160.02 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "X"
+			(at 316.64 168.14 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "opamp:TestPoint_Loop_RH-5019"
+			(at 320.04 167.64 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 320.04 167.64 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 320.04 167.64 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C5199800"
+			(at 320.04 167.64 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "RH-5019"
+			(at 320.04 167.64 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "c6da5112-5d24-52fe-99a6-fe8f7fc8e050")
+		)
+		(instances
+			(project "opamp"
+				(path "/9eb78eaa-30d0-5848-9a54-3294ec10adc7"
+					(reference "TP10")
 					(unit 1)
 				)
 			)

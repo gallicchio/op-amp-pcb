@@ -19,9 +19,11 @@ the board keeps every value the book uses:
 | load and feedback | 10 k / 1 k divider, tap to IN- for a gain of 11 | R10, R11; SW3 pole 1 |
 
 The transistors are the SOT-23 versions of the book's 2N3904 and 2N3906 so each
-is a separate part on the silkscreen schematic, inside its own symbol: base bar,
-slanted collector and emitter leads with the arrow on the emitter, and B, C, E
-lettered where the wires leave the circle.
+is a separate part on the silkscreen schematic, at the centre of its own symbol:
+the base bar, the collector and emitter leads at 45 degrees with the arrow on the
+emitter, B, C and E lettered inside the circle, and a hairline from each pad to
+its lead (the copper follows the hairline) so the package is visibly the
+symbol's transistor.
 
 ## 2. What the board adds, and why
 
@@ -35,7 +37,7 @@ lettered where the wires leave the circle.
 | reverse-supply protection | D3, D4 B5819W in series with each rail | a reversed bench supply forward-biases every junction on the board; a 0.35 V drop at 4 mA costs nothing here |
 | rail LEDs | LED1, LED2 through 10 k | rails at a glance, 1.2 mA each |
 | bypass | C2, C4 10 uF; C3, C5 100 nF | long bench leads |
-| probe loops | TP1 - TP14, TP100 - TP102 | one per node the book asks you to look at, plus three grounds for the clip |
+| probe loops | TP1 - TP14, TP100 - TP103 | one per node the book asks you to look at, X included, plus four grounds for the clip, one per scope channel |
 | BNCs and screw terminals | J1 - J7 | BNCs for the generator and the scope; terminals for the feedback network a student wires and for a bench supply |
 
 ## 3. What the simulation says
@@ -77,13 +79,13 @@ from 0.073 with the resistor to 0.0004 with the sink.
 ## 4. The board
 
 100 x 100 mm, two layers, every part on the front, a solid ground plane on the
-back with 32 vias stitching the ground stubs and the hops into it.  111 SMT and 18
+back with 32 vias stitching the ground stubs and the hops into it.  112 SMT and 18
 through-hole joints.  The silkscreen wires *are* the copper: `gen_pcb.py` routes
 each track along the drawn wire, so the picture on the board is the netlist and
-not a decoration.  Nine crossings are hops: the crossing track dives to the
+not a decoration.  Eight crossings are hops: the crossing track dives to the
 back layer between two vias and the silkscreen draws a small arc over it, as
-the book draws a jump.  Six of the nine came with the current limit, whose two
-sense leads and two diode returns have to cross the output's own wires.
+the book draws a jump.  Four of the eight came with the current limit, whose
+diode returns and sense leads have to cross the output's own wires.
 
 Choices worth knowing:
 

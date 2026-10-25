@@ -9,21 +9,21 @@ Board
 - Width: 100.0000 mm
 - Height: 100.0000 mm
 - Area: 9992.261 mm²
-- Front copper area: 945.543 mm²
-- Back copper area: 9798.737 mm²
-- Min track clearance: 0.3865 mm
+- Front copper area: 953.881 mm²
+- Back copper area: 9800.342 mm²
+- Min track clearance: 0.4250 mm
 - Min track width: 0.3500 mm
 - Min drill diameter: 0.3000 mm
 - Board stackup thickness: 1.6000 mm
 
-- Front footprint area: 2313.722 mm²
+- Front footprint area: 2326.528 mm²
 - Back footprint area: 197.166 mm²
-- Front component density: 23.16 %
+- Front component density: 23.28 %
 - Back component density: 1.97 %
 Pads
 ----
 - Through hole: 27
-- SMD: 111
+- SMD: 112
 - Connector: 0
 - NPTH: 4
 - Castellated: 0
@@ -42,9 +42,9 @@ Components
 |              | Front Side | Back Side | Total |
 |--------------|------------|-----------|-------|
 |THT:          |          8 |         0 |     8 |
-|SMD:          |         57 |         0 |    57 |
+|SMD:          |         58 |         0 |    58 |
 |Unspecified:  |          4 |         0 |     4 |
-|Total:        |         69 |         0 |    69 |
+|Total:        |         70 |         0 |    70 |
 
 Drill holes
 -----------

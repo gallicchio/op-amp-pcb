@@ -283,3 +283,92 @@ designator elsewhere (Prompt 6, in Jason's words); the transistor symbol a novic
 can read; grounds point down; the class-B limiter needs its diodes; a drawn symbol
 replaces the footprint's outline; and the cost of adding six parts to a finished
 board.
+
+## Prompt 10
+
+> There is a component right on the border of the "OUTPUT CURRENT LIMIT" box and the
+> "FEEDBACK" box that prevents the bottom of the  "OUTPUT CURRENT LIMIT" box and the
+> top of the "FEEDBACK" box from being drawn. Move that component down into the
+> feedback box if it belongs there, or move everything in the "PUSH-PULL FOLLOWER"
+> AND "OUTPUT CURRENT LIMIT" boxes up a bit.
+>
+> The transistor symbol still looks bad. The vertical line where the base comes in,
+> the emitter arrow, and the collector's line should all be more well within the
+> circle. Maybe the circle just needs to be bigger. The "E", "B", and "C" labels can
+> be inside of the circle. The 3 SMT pads themselves also awkwardly connect to the
+> symbol lines, especially for E and C. It's good to show those connections, but on
+> the silkscreen, make them much thinner than the lines for the symbol itself.
+
+## Response 4
+
+**The border.** The culprit was the FEEDBACK switch: its courtyard reached 0.2 mm below
+the limiter box, and the box generator clips its dashes round every courtyard, so the
+bottom edge of the OUTPUT CURRENT LIMIT box and the top edge of the FEEDBACK box were
+both erased along the switch.  Rather than nudge one part, the right-hand third is
+re-planned, which the bigger transistor symbols needed anyway:
+
+- The push-pull and limiter boxes now end at y = 57.8 and the feedback box starts at
+  59.4, with the limiter's lower diode return running along the clear band between
+  them; its upper return runs above the push-pull box the same way.  Both boxes keep
+  all four edges.
+- The 10 k / 1 k divider moved from beside the limiter into the FEEDBACK box, which is
+  where it belongs: OUT comes down between the two boxes into R10, X is the tap with
+  its own loop again (TP10), R11 hangs from X to ground, and the switch, turned so its
+  inputs face left, takes X straight down into pin 1 and OUT round the left into pin 2.
+  R10 and R11 are labelled again ("R10 10k", "R11 1k"); so are R15 and R16 ("47R").
+- The limiter's title says what it is in full: OUTPUT CURRENT LIMIT, a safety net, not
+  in book.
+- Q4's collector steps 4 mm left before rising to +15 V so that "PUSH-PULL FOLLOWER"
+  fits in the box's top band without a wire through it.
+
+**The transistor symbol**, drawn again from the book's picture (Fig. 5L.15 was
+rendered at 200 dpi and copied):
+
+- The circle is r 4.0 mm (was 3.0) with a thinner ring (0.25 mm) than the symbol
+  (0.45 mm leads, 0.55 mm bar).  The base bar is 2.2 mm from the centre, 2.8 mm long;
+  the legs leave its ends at 45 degrees, turn vertical at 3.6 mm and leave the circle
+  straight above and below the package, so the wires outside are straight lines.  The
+  arrowhead is on the emitter leg: outward at its end for an NPN, against the bar for a
+  PNP.
+- B, C and E are 0.8 mm letters inside the circle, in the three corners the symbol
+  leaves empty.
+- Each pad is joined to its lead by a 0.16 mm hairline, square on to the leg, and the
+  copper follows the hairline and the lead out to the circle, so the wire, the drawn
+  symbol and the pad are one conductor.  For an NPN with its base from the left every
+  pad lies under its own lead.  For a PNP (and for Q2 and Q6, whose bases come from the
+  right) the lone collector pad sits under the emitter leg; its hairline runs down
+  between the other two pads to the collector leg, and the emitter's goes round the
+  side.  The other package rotations were tried on paper and put a pad where its copper
+  cannot reach without crossing another lead.
+- The footprint's own outline is gone; the wires stop at the ring (the ring is a
+  keep-out for the wire clipper) and a wire reaches the ring square on: Q2's base
+  riser now turns horizontal 1.4 mm before the circle instead of grazing it.
+
+Around the symbols: Q1 and Q2 sit 0.4 mm lower and 0.4 mm apart from where they were,
+their emitter loops turned flat under them; R3 and the Q2 C loop moved up; R8 stands
+straight above Q3 as the book draws the 330, with the Q3 E loop between them; Q6 and
+R7 moved 0.5 mm down; the TAIL's 10 k moved left; the COMPENSATION legend stands up
+the box's side as one line; the two ground loops that were in the way (TP100, TP103)
+moved to clear ground; the left side's input clamp moved 0.4 mm left to give the IN-
+and IN+ loops room for their names.
+
+What the build says: ERC 0, DRC 0 with KiCad's silkscreen rules on (0.8 mm minimum
+text, 0.15 mm silk-to-silk clearance, 53 violations on the first pass, all placement),
+98 circuit checks (one more: TP10 is X), fab checks pass, 28 of 28 document claims
+match.  Eight hops as before (Q4's collector hops under the limiter's bus instead of
+the bus under it).  Parts $7.78 a board (the loop added a dime); 10 assembled boards
+$146.17, $14.62 each.
+
+![Q1 and Q2](docs/history/2026-10-24-r4-q1-q2.png)
+![Q3](docs/history/2026-10-24-r4-q3.png)
+![Q6](docs/history/2026-10-24-r4-q6.png)
+![Q4, Q5, Q7, Q8](docs/history/2026-10-24-r4-q4-q8.png)
+![the feedback box and the power corner](docs/history/2026-10-24-r4-feedback-power.png)
+![board, response 4](docs/history/2026-10-24-r4-top.png)
+![render, response 4](docs/history/2026-10-24-r4-render-iso.png)
+![schematic, response 4](docs/history/2026-10-24-r4-schematic.png)
+
+Lessons written to `~/OpticsPCBs/CLAUDE_PCB.md`: the symbol geometry that works round
+a SOT-23 and why the package rotations are what they are; KiCad's stroke font is as
+wide as it is tall (measure, do not estimate); nothing sits on a box edge and buses
+run along the band between boxes; a wire through a title band gets a jog.

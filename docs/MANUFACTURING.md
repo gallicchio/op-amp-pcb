@@ -2,7 +2,7 @@
 
 One board, two layers, 100 x 100 mm, every part on the top side, a solid
 ground plane on the back.  It passes ERC, DRC with schematic parity, the
-97 circuit assertions and the fab-package checks with zero violations,
+98 circuit assertions and the fab-package checks with zero violations,
 and `./make.py` rebuilds and rechecks everything from scratch in about a minute.
 
 ## What to upload
@@ -60,55 +60,55 @@ ordering.  The values that come from the board are computed, not typed.
 
 ## Cost
 
-The board has **111 SMT joints** and **18 through-hole joints** on
-39 BOM lines; 7 distinct order codes are JLCPCB *Extended* parts
+The board has **112 SMT joints** and **18 through-hole joints** on
+40 BOM lines; 7 distinct order codes are JLCPCB *Extended* parts
 (the BNCs, the terminal blocks, the trimmer, the DIP switches, the test loops
 and the PNPs), each with a one-off $3.00 feeder fee.  Parts alone are
-**$7.68 per board**, of which the three BNC jacks are
-$3.88 and the 17 test loops $1.64.
+**$7.78 per board**, of which the three BNC jacks are
+$3.88 and the 18 test loops $1.74.
 
 **2 boards, fully assembled, through-hole parts included**
 
 | line | cost |
 |---|---|
 | bare PCBs (5 made) | $2.00 |
-| parts ($7.68 x 2) | $15.36 |
-| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 222 SMT and 36 THT joints | $35.54 |
+| parts ($7.78 x 2) | $15.56 |
+| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 224 SMT and 36 THT joints | $35.54 |
 | shipping (DHL) | $22.00 |
-| **total** | **$74.90**  ($37.45 each) |
+| **total** | **$75.10**  ($37.55 each) |
 
 **5 boards, fully assembled, through-hole parts included**
 
 | line | cost |
 |---|---|
 | bare PCBs (5 made) | $2.00 |
-| parts ($7.68 x 5) | $38.41 |
-| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 555 SMT and 90 THT joints | $37.72 |
+| parts ($7.78 x 5) | $38.89 |
+| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 560 SMT and 90 THT joints | $37.73 |
 | shipping (DHL) | $22.00 |
-| **total** | **$100.13**  ($20.03 each) |
+| **total** | **$100.63**  ($20.13 each) |
 
 **10 boards, fully assembled, through-hole parts included**
 
 | line | cost |
 |---|---|
 | bare PCBs (10 made) | $5.00 |
-| parts ($7.68 x 10) | $76.82 |
-| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 1110 SMT and 180 THT joints | $41.37 |
+| parts ($7.78 x 10) | $77.79 |
+| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 1120 SMT and 180 THT joints | $41.38 |
 | shipping (DHL) | $22.00 |
-| **total** | **$145.19**  ($14.52 each) |
+| **total** | **$146.17**  ($14.62 each) |
 
 **20 boards, fully assembled, through-hole parts included**
 
 | line | cost |
 |---|---|
 | bare PCBs (20 made) | $9.00 |
-| parts ($7.68 x 20) | $153.64 |
-| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 2220 SMT and 360 THT joints | $48.65 |
+| parts ($7.78 x 20) | $155.58 |
+| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 2240 SMT and 360 THT joints | $48.69 |
 | shipping (DHL) | $22.00 |
-| **total** | **$233.29**  ($11.66 each) |
+| **total** | **$235.27**  ($11.76 each) |
 
 The fixed fees dominate a small order: a second board costs about
-$8.41 more than the first, so order one per bench, not one per class.
+$8.51 more than the first, so order one per bench, not one per class.
 
 ## Rotations JLCPCB needs
 
@@ -126,7 +126,7 @@ angles already applied, per LCSC code, from `scripts/parts.py`:
 | LED1, LED2 | C2297 | 0 deg | read: KT-0805G on KiCad's LED_0805: GPiBridge rev A preview, cathode at pad 1 |
 | J4, J5, J7 | C474881 | 0 deg | predicted: KF301-2P: pins along x at +/-2.5, as drawn here; wire entry side to be seen |
 | J6 | C474882 | 0 deg | predicted: KF301-3P: pins along x at -5/0/+5, as drawn here |
-| TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9, TP11, TP12, TP13, TP14, TP100, TP101, TP102, TP103 | C5199800 | 0 deg | predicted: RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x |
+| TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9, TP10, TP11, TP12, TP13, TP14, TP100, TP101, TP102, TP103 | C5199800 | 0 deg | predicted: RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x |
 | RV1 | C52754333 | 0 deg | predicted: 3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here |
 | D1, D2, D5, D6 | C81598 | 0 deg | predicted: 1N4148W SOD-123F: as the Schottky |
 | D3, D4 | C8598 | 0 deg | predicted: B5819W SOD-123: their pad 1 at -1.7 as KiCad's; cathode band end to be seen |
@@ -212,6 +212,7 @@ upload shows it per line.
 | TP7 | Q3 E | C5199800 | extended | $0.0966 | 101,462 | SMT test loop, 3.8 x 2.0 mm wire loop on one pad (Keystone 5019 style): a scope probe's hook or a mini-grabber clips onto it |
 | TP8 | Q3 C | C5199800 | extended | $0.0966 | 101,462 | SMT test loop, 3.8 x 2.0 mm wire loop on one pad (Keystone 5019 style): a scope probe's hook or a mini-grabber clips onto it |
 | TP9 | OUT | C5199800 | extended | $0.0966 | 101,462 | SMT test loop, 3.8 x 2.0 mm wire loop on one pad (Keystone 5019 style): a scope probe's hook or a mini-grabber clips onto it |
+| TP10 | X | C5199800 | extended | $0.0966 | 101,462 | SMT test loop, 3.8 x 2.0 mm wire loop on one pad (Keystone 5019 style): a scope probe's hook or a mini-grabber clips onto it |
 | TP11 | +15V | C5199800 | extended | $0.0966 | 101,462 | SMT test loop, 3.8 x 2.0 mm wire loop on one pad (Keystone 5019 style): a scope probe's hook or a mini-grabber clips onto it |
 | TP12 | -15V | C5199800 | extended | $0.0966 | 101,462 | SMT test loop, 3.8 x 2.0 mm wire loop on one pad (Keystone 5019 style): a scope probe's hook or a mini-grabber clips onto it |
 | TP13 | Q1 E | C5199800 | extended | $0.0966 | 101,462 | SMT test loop, 3.8 x 2.0 mm wire loop on one pad (Keystone 5019 style): a scope probe's hook or a mini-grabber clips onto it |
