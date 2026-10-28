@@ -714,3 +714,20 @@ Thanks.  The reviews README now says Kimi K3 is confirmed rather than "by Jason'
 account".  The report inside `2026-10-27_KimiK3/` still calls itself "Claude (Copilot
 SDK session)"; it stays as written, since each reviewer writes only in its own
 directory.  Nothing in the design depended on the attribution.
+
+## Prompt 22
+
+> Compare and contrast our op amp design with the one from this analog devices lab: https://wiki.analog.com/university/courses/electronics/electronics-lab-13
+
+## Response 12
+
+Answered in the terminal (comparison of ADI Lab 13's three circuits: the
+AC-coupled three-stage amplifier, the current-mirror unity-gain buffer, and the
+ALM1000 appendix's DIP/SIP op-amp PCB, against this board).  ADI's schematics
+were read from their wiki and not copied into the repo.  Main points: same
+three-stage skeleton; ADI's PCB is the "improved" version (current-mirror load,
+mirror-biased current sources, Vbe-multiplier class AB, 27 pF, about 10^4 gain,
+DIP pinout, ±5 V), ours is the book's deliberately simple version (resistor
+load, class B, gain about 126) wrapped in teaching and protection features
+(switches for the variants, R14 zero, current limit, R17, clamps, probe loops,
+silkscreen schematic, ±15 V).
