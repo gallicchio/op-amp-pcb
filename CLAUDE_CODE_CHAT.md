@@ -731,3 +731,21 @@ DIP pinout, ±5 V), ours is the book's deliberately simple version (resistor
 load, class B, gain about 126) wrapped in teaching and protection features
 (switches for the variants, R14 zero, current limit, R17, clamps, probe loops,
 silkscreen schematic, ±15 V).
+
+## Prompt 23
+
+> Does the book just discuss these upgrades as open-ended exploration questions, or does it have circuits that we could implement as "switched in" options like we do elsewhere? If there is no room on this board for any of that, I agree that we should drop it. Plus, if one of the points is to convince students that op amps are "just transistors," the more complicated our thing is, the less likely the students will take the "just" part of "just transistors" to heart. I'm already worried that things like the output protection are needlessly complicating our design.
+
+## Response 13
+
+The book has no circuits for the upgrades: Lab 5L builds only the simple version;
+the current mirror is in supplementary §5S.2 (about Early effect), and worked example
+5W.3 explains the '411's mirror load, current-source load and two-Vbe crossover fix
+qualitatively.  Nothing to switch in; dropped.
+
+Simulated a simpler output: delete the 741-style limit (Q7, Q8, R15, R16, D5, D6),
+make R17 330 ohm (R8's 2512 part) and take all feedback from the jack side of it.
+A short at the jacks then gives 42 mA, 0.13 W in Q4/Q5 (rated 200 mW), stable with
+0-2.2 nF on the jacks, swing into 1 k +/-10.3 V.  Also found in rev A: a student's
+follower wired from J7 with 100 pF on the jacks rings 80 mV p-p at negative levels.
+Asked Jason before changing anything.
