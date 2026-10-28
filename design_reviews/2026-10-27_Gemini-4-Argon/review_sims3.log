@@ -1,0 +1,56 @@
+=================================================================
+2d. EFFECT OF LIMITER (Q7, Q8, D5, D6) ON NORMAL OPERATION
+=================================================================
+  With limiter (Q7,Q8,D5,D6):
+    A0 = 138.2 | x1: f_u = 14.25 MHz, PM = +53.7 deg | x11: f_11 = 409.1 kHz, PM = +119.8 deg | swing = [-14.29, +13.41] V
+  Without Q7,Q8,D5,D6 (R15/R16 kept):
+    A0 = 138.4 | x1: f_u = 13.96 MHz, PM = +55.2 deg | x11: f_11 = 370.0 kHz, PM = +117.0 deg | swing = [-14.29, +13.41] V
+
+=================================================================
+3a. PROBE LOADING ON TP8 (Q3 C) AND TP6 (Q2 C) (10 pF & 15 pF + 10 MOhm)
+=================================================================
+
+--- COMP 1 (100pF + 1k) ---
+  No probe (3pF stray only)     : x1 f_u=14.25MHz PM= +53.7deg | x11 f= 409.1kHz PM=+119.8deg
+  10pF//10M on TP8 (Q3 C)       : x1 f_u=12.17MHz PM= +44.4deg | x11 f= 397.6kHz PM=+119.0deg
+  15pF//10M on TP8 (Q3 C)       : x1 f_u=11.31MHz PM= +42.3deg | x11 f= 392.3kHz PM=+118.5deg
+  10pF//10M on TP6 (Q2 C)       : x1 f_u=13.54MHz PM= +40.9deg | x11 f= 409.3kHz PM=+119.0deg
+  15pF//10M on TP6 (Q2 C)       : x1 f_u=13.00MHz PM= +37.0deg | x11 f= 408.6kHz PM=+118.8deg
+  15pF//10M on BOTH TP6 & TP8   : x1 f_u=10.52MHz PM= +25.5deg | x11 f= 392.2kHz PM=+117.5deg
+
+--- COMP 2 (bare 100pF) ---
+  No probe (3pF stray only)     : x1 f_u= 8.46MHz PM= -39.4deg | x11 f= 413.3kHz PM=+105.9deg
+  10pF//10M on TP8 (Q3 C)       : x1 f_u= 7.98MHz PM= -42.7deg | x11 f= 401.7kHz PM=+105.7deg
+  15pF//10M on TP8 (Q3 C)       : x1 f_u= 7.75MHz PM= -43.7deg | x11 f= 396.1kHz PM=+105.6deg
+  10pF//10M on TP6 (Q2 C)       : x1 f_u= 8.12MHz PM= -44.1deg | x11 f= 413.3kHz PM=+105.2deg
+  15pF//10M on TP6 (Q2 C)       : x1 f_u= 7.93MHz PM= -45.8deg | x11 f= 412.5kHz PM=+104.9deg
+  15pF//10M on BOTH TP6 & TP8   : x1 f_u= 7.16MHz PM= -47.4deg | x11 f= 395.6kHz PM=+104.5deg
+
+--- COMP OFF (no C1) ---
+  No probe (3pF stray only)     : x1 f_u=28.12MHz PM= -39.1deg | x11 f=8566.1kHz PM= +19.8deg
+  10pF//10M on TP8 (Q3 C)       : x1 f_u=21.58MHz PM= -33.0deg | x11 f=6538.4kHz PM= +24.9deg
+  15pF//10M on TP8 (Q3 C)       : x1 f_u=19.72MHz PM= -30.3deg | x11 f=5913.8kHz PM= +27.7deg
+  10pF//10M on TP6 (Q2 C)       : x1 f_u=22.94MHz PM= -49.9deg | x11 f=7817.3kHz PM= +10.3deg
+  15pF//10M on TP6 (Q2 C)       : x1 f_u=21.29MHz PM= -51.7deg | x11 f=7469.7kHz PM=  +7.7deg
+  15pF//10M on BOTH TP6 & TP8   : x1 f_u=15.33MHz PM= -44.2deg | x11 f=5212.5kHz PM= +16.1deg
+
+=================================================================
+3b. COAX / CAPACITIVE LOAD ON OUT (FOLLOWER, COMP 1)
+=================================================================
+  Cload=   0: x1 f_u=14.25MHz, PM= +53.7deg | +/-0.5V step peak=+0.493V, final=+0.493V, overshoot= 0.0%
+  Cload=100p: x1 f_u= 1.96MHz, PM= +90.1deg | +/-0.5V step peak=+0.557V, final=+0.493V, overshoot= 6.4%
+  Cload=470p: x1 f_u= 0.51MHz, PM= +65.1deg | +/-0.5V step peak=+0.593V, final=+0.493V, overshoot=10.1%
+  Cload=  1n: x1 f_u= 0.31MHz, PM= +50.5deg | +/-0.5V step peak=+0.622V, final=+0.493V, overshoot=12.9%
+  Cload= 10n: x1 f_u= 0.09MHz, PM= +30.6deg | +/-0.5V step peak=+0.674V, final=+0.493V, overshoot=18.1%
+
+=================================================================
+3c. BOTH FEEDBACK SLIDERS ON (R10 SHORTED -> FOLLOWER WITH 1k LOAD)
+=================================================================
+  Both FEEDBACK on: Vos=-3.04mV, A0(with 1k load)=15.2, PM=+100.0deg, max swing into R11(1k)=[-11.96, +11.96]V
+
+=================================================================
+3d. SLEW RATE AND CROSSOVER DEADBAND AT TP8 (Q3 C)
+=================================================================
+  Follower +/-5V step: SR_rise = 4.44 V/us, SR_fall = 4.47 V/us
+  Follower +/-10V step: SR_rise = 5.13 V/us, SR_fall = 5.18 V/us
+  Crossover jump at TP8 (Q3 C) for v(out) crossing 0 (+/-20mV): v(c3) jumps from -0.020V to +0.526V (span = 0.546V)

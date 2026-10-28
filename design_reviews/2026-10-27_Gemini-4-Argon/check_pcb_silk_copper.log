@@ -1,0 +1,62 @@
+F.Cu tracks: 218, B.Cu tracks: 8, Vias: 32
+F.SilkS dots: 36, hop arcs: 8, lines: 765, visible texts: 155
+B.SilkS visible texts: 32
+
+--- 2a. Junction dots on F.SilkS ---
+  dot  1: ( 12.50,  36.00) r=0.50mm | F.Cu branch degree=3 | net=['/IN-']
+  dot  2: ( 12.50,  58.00) r=0.50mm | F.Cu branch degree=3 | net=['/IN+']
+  dot  3: ( 14.50,  36.00) r=0.50mm | F.Cu branch degree=3 | net=['/IN-']
+  dot  4: ( 21.10,  36.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q1 B']
+  dot  5: ( 21.10,  58.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q2 B']
+  dot  6: ( 24.10,  36.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q1 B']
+  dot  7: ( 24.10,  58.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q2 B']
+  dot  8: ( 27.50,  15.00) r=0.50mm | F.Cu branch degree=3 | net=['+15V']
+  dot  9: ( 27.50,  84.00) r=0.50mm | F.Cu branch degree=3 | net=['-15V']
+  dot 10: ( 30.80,  84.00) r=0.50mm | F.Cu branch degree=3 | net=['-15V']
+  dot 11: ( 33.00,  15.00) r=0.50mm | F.Cu branch degree=3 | net=['+15V']
+  dot 12: ( 38.00,  84.00) r=0.50mm | F.Cu branch degree=3 | net=['-15V']
+  dot 13: ( 43.50,  69.00) r=0.50mm | F.Cu branch degree=3 | net=['Net-(Q6-B)']
+  dot 14: ( 43.50,  84.00) r=0.50mm | F.Cu branch degree=3 | net=['-15V']
+  dot 15: ( 45.60,  15.00) r=0.50mm | F.Cu branch degree=3 | net=['+15V']
+  dot 16: ( 45.60,  30.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q2 C']
+  dot 17: ( 53.50,  30.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q2 C']
+  dot 18: ( 53.50,  37.50) r=0.50mm | F.Cu branch degree=3 | net=['/Q2 C']
+  dot 19: ( 53.50,  56.00) r=0.50mm | F.Cu branch degree=3 | net=['Net-(C1-Pad1)']
+  dot 20: ( 60.00,  15.00) r=0.50mm | F.Cu branch degree=3 | net=['+15V']
+  dot 21: ( 60.00,  43.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q3 C']
+  dot 22: ( 60.00,  61.50) r=0.50mm | F.Cu branch degree=3 | net=['/Q3 C']
+  dot 23: ( 60.00,  84.00) r=0.50mm | F.Cu branch degree=3 | net=['-15V']
+  dot 24: ( 65.50,  33.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q3 C']
+  dot 25: ( 65.50,  43.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q3 C']
+  dot 26: ( 65.50,  53.00) r=0.50mm | F.Cu branch degree=3 | net=['/Q3 C']
+  dot 27: ( 66.90,  15.00) r=0.50mm | F.Cu branch degree=3 | net=['+15V']
+  dot 28: ( 70.90,  38.00) r=0.50mm | F.Cu branch degree=3 | net=['Net-(Q4-E)']
+  dot 29: ( 70.90,  43.00) r=0.50mm | F.Cu branch degree=3 | net=['/OUT']
+  dot 30: ( 70.90,  48.00) r=0.50mm | F.Cu branch degree=3 | net=['Net-(Q5-E)']
+  dot 31: ( 70.90,  84.00) r=0.50mm | F.Cu branch degree=3 | net=['-15V']
+  dot 32: ( 76.50,  43.00) r=0.50mm | F.Cu branch degree=3 | net=['/OUT']
+  dot 33: ( 76.50,  60.60) r=0.50mm | F.Cu branch degree=3 | net=['/OUT']
+  dot 34: ( 76.50,  65.10) r=0.50mm | F.Cu branch degree=3 | net=['/X']
+  dot 35: ( 82.10,  43.00) r=0.50mm | F.Cu branch degree=4 | net=['/OUT']
+  dot 36: ( 88.50,  15.00) r=0.50mm | F.Cu branch degree=3 | net=['+15V']
+
+--- 2b. Are there any F.Cu T-junctions (branch degree >= 3, not on a pad or Q-circle) WITHOUT a silk dot? ---
+
+--- 2c. Are there any F.SilkS wire crossings that are NOT hops? ---
+  Hop 1: +15V       (66.90,25.30)->(66.90,22.50) | arc=True | crosses=[('+15V', (66.9, 22.5), (66.9, 15.0)), ('+15V', (66.9, 28.4), (66.9, 25.3)), ('/Q3 C', (82.1, 23.9), (65.5, 23.9))]
+  Hop 2: +15V       (88.50,45.20)->(88.50,40.80) | arc=True | crosses=[('+15V', (88.5, 72.35), (88.5, 45.2)), ('+15V', (88.5, 40.8), (88.5, 15.0)), ('/OUT', (70.9, 43.0), (94.3, 43.0))]
+  Hop 3: /IN-       (87.30,17.50)->(87.30,12.50) | arc=True | crosses=[('+15V', (24.0, 15.0), (93.0, 15.0)), ('/IN-', (87.3, 40.0), (87.3, 17.5)), ('/IN-', (87.3, 12.5), (87.3, 9.0))]
+  Hop 4: /IN-       (87.30,46.00)->(87.30,40.00) | arc=True | crosses=[('/IN-', (87.3, 40.0), (87.3, 17.5)), ('/IN-', (87.3, 74.13), (87.3, 46.0)), ('/OUT', (70.9, 43.0), (94.3, 43.0))]
+  Hop 5: /OUT       (76.50,47.00)->(76.50,49.00) | arc=True | crosses=[('/OUT', (76.5, 43.0), (76.5, 47.0)), ('/OUT', (76.5, 49.0), (76.5, 60.6)), ('Net-(Q5-E)', (70.9, 48.0), (78.1, 48.0))]
+  Hop 6: /Q2 B      (38.50,52.00)->(42.50,52.00) | arc=True | crosses=[('/Q2 B', (28.5, 52.0), (38.5, 52.0)), ('/Q2 B', (42.5, 52.0), (50.8, 52.0)), ('/TAIL', (40.5, 47.27), (40.5, 58.0))]
+  Hop 7: /Q3 C      (77.50,58.50)->(75.50,58.50) | arc=True | crosses=[('/OUT', (76.5, 49.0), (76.5, 60.6)), ('/Q3 C', (75.5, 58.5), (71.9, 58.5)), ('/Q3 C', (82.1, 58.5), (77.5, 58.5))]
+  Hop 8: /Q3 C      (71.90,58.50)->(69.90,58.50) | arc=True | crosses=[('-15V', (70.9, 57.0), (70.9, 84.0)), ('/Q3 C', (69.9, 58.5), (65.5, 58.5)), ('/Q3 C', (75.5, 58.5), (71.9, 58.5))]
+
+--- 3. F.SilkS text-to-text, text-to-line, and text-to-pad checks ---
+  TEXT-TEXT OVERLAP: board 'R10 10k' (77.7, 62.21875, 83.094763, 63.68125) <-> board 'FEEDBACK' (79.26857, 60.8076, 86.4, 62.4924)
+  TEXT-TEXT OVERLAP: board 'PUSH-PULL' (67.5, 25.1161, 75.041904, 26.6839) <-> board 'FOLLOWER' (67.5, 26.4161, 73.975238, 27.9839)
+  TEXT-TEXT OVERLAP: board 'Q1 Q2 Q4 Q6 Q7 = 2N3904 NPN       Q3 Q5 Q8 = 2N3906 PNP' (25.043574, 87.11025, 70.956427, 88.68975) <-> board '-15 V' (24.0, 85.247, 30.074285, 87.353)
+  TEXT-TEXT OVERLAP: board 'Q1 Q2 Q4 Q6 Q7 = 2N3904 NPN       Q3 Q5 Q8 = 2N3906 PNP' (25.043574, 87.11025, 70.956427, 88.68975) <-> board '-15 V' (67.925715, 85.247, 74.0, 87.353)
+  TEXT-TEXT OVERLAP: board 'Q1 Q2 Q4 Q6 Q7 = 2N3904 NPN       Q3 Q5 Q8 = 2N3906 PNP' (25.043574, 87.11025, 70.956427, 88.68975) <-> board 'DISCRETE TRANSISTOR OP-AMP' (19.240001, 88.194, 76.76, 92.406)
+  TEXT-TEXT OVERLAP: board '-15V' (87.629999, 88.11025, 91.5, 89.68975) <-> R13.Reference 'R13' (86.25, 89.36875, 88.86381, 90.83125)
+  TEXT-TEXT OVERLAP: board 'OPTIONAL' (79.697144, 59.4076, 86.4, 61.0924) <-> board 'FEEDBACK' (79.26857, 60.8076, 86.4, 62.4924)

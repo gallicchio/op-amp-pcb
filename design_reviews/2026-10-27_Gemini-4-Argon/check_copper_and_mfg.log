@@ -1,0 +1,23 @@
+=================================================================
+1. CLEARANCES TO M3 MOUNTING HOLES (MH1..MH4)
+=================================================================
+  MH1 at (4.0,4.0): nearest track/via center-to-edge=11.45mm (track(/IN-) (87.3,9.0)->(14.5,9.0)); nearest pad center=15.51mm (J4.2 at (4.5,19.5)); nearest fiducial center=7.62mm
+  MH2 at (96.0,4.0): nearest track/via center-to-edge=9.86mm (track(/IN-) (87.3,9.0)->(14.5,9.0)); nearest pad center=13.43mm (R12.1 at (93.0,17.1)); nearest fiducial center=7.62mm
+  MH3 at (4.0,96.0): nearest track/via center-to-edge=14.44mm (via(GND) at (12.0,83.5)); nearest pad center=17.89mm (TP101.1 at (12.0,80.0)); nearest fiducial center=8.06mm
+  MH4 at (96.0,96.0): nearest track/via center-to-edge=8.71mm (track(/-15V_IN) (95.5,87.0)->(87.2,87.0)); nearest pad center=9.01mm (J6.3 at (95.5,87.0)); nearest fiducial center=85.09mm
+
+=================================================================
+2. BNC JACKS (J1, J2, J3) SETBACK & BARREL OVERHANG
+=================================================================
+  J1 at (6.0,36.0, rot=180): body front face at x=1.0mm (board edge at 0.0mm -> setback=+1.0mm), barrel tip at x=-18.5mm
+  J2 at (6.0,58.0, rot=180): body front face at x=1.0mm (board edge at 0.0mm -> setback=+1.0mm), barrel tip at x=-18.5mm
+  J3 at (94.3,43.0, rot=0): body front face at x=99.3mm (board edge at 100.0mm -> setback=+0.7mm), barrel tip at x=118.8mm
+
+=================================================================
+3. B.Cu GROUND PLANE INTEGRITY & HOP SLOTS
+=================================================================
+  Zone on B.Cu: net=GND, filled outline count=1, hole count=0
+    Outline 0: bbox=(0.30,0.30)..(99.70,99.70), holes=0
+  Nearby B.Cu hops (<10mm): Hop 2 (+15V (88.5, 45.2)->(88.5, 40.8)) <-> Hop 4 (/IN- (87.3, 46.0)->(87.3, 40.0)): min_endpoint_dist = 1.44mm
+  Nearby B.Cu hops (<10mm): Hop 5 (/OUT (76.5, 47.0)->(76.5, 49.0)) <-> Hop 7 (/Q3 C (77.5, 58.5)->(75.5, 58.5)): min_endpoint_dist = 9.55mm
+  Nearby B.Cu hops (<10mm): Hop 7 (/Q3 C (77.5, 58.5)->(75.5, 58.5)) <-> Hop 8 (/Q3 C (71.9, 58.5)->(69.9, 58.5)): min_endpoint_dist = 3.60mm

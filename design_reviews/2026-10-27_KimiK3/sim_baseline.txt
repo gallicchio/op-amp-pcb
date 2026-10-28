@@ -1,0 +1,55 @@
+=== operating point, follower (IN- tied to OUT), IN+ = 0 ===
+  v(c2  ) = +13.9138 V
+  v(e3  ) = +14.5725 V
+  v(c3  ) =  +0.4756 V
+  v(out ) =  -0.0056 V
+  v(tail) =  -0.6642 V
+  v(e6  ) = -13.6129 V
+  v(b6  ) = -12.9521 V
+  v(x   ) =  -0.0005 V
+  tail current (R7) = 1.387 mA;  Q3 Ie = 1.295 mA
+  input offset as a follower (OUT with IN+ = 0): -5.58 mV
+=== operating point, open loop, IN+ = IN- = 0 (where does OUT sit?) ===
+  v(c3) = -1.612 V,  v(out) = -1.018 V
+=== open loop, tail=cs, pot=0.5, Ccomp=100p: A0 = 138 (42.8 dB)
+         1000 Hz: |A| =   138.10  phase    -2.3 deg
+        10000 Hz: |A| =   127.57  phase   -22.0 deg
+       100000 Hz: |A| =    33.16  phase   -70.2 deg
+      1000000 Hz: |A| =     6.42  phase   -93.4 deg
+     10000000 Hz: |A| =     0.85  phase  +130.6 deg
+    unity gain at 8.91 MHz, phase +137 deg -> phase margin as follower 317 deg
+    |A| = 11 at 0.447 MHz, phase -75 deg -> phase margin at x11 105 deg
+=== open loop, tail=cs, pot=0.5, Ccomp=0: A0 = 138 (42.8 dB)
+         1000 Hz: |A| =   138.22  phase    -0.1 deg
+        10000 Hz: |A| =   138.23  phase    -0.6 deg
+       100000 Hz: |A| =   137.61  phase    -5.5 deg
+      1000000 Hz: |A| =   111.50  phase   -47.3 deg
+     10000000 Hz: |A| =     8.26  phase  -167.9 deg
+    unity gain at 28.18 MHz, phase +141 deg -> phase margin as follower 321 deg
+    |A| = 11 at 8.913 MHz, phase -162 deg -> phase margin at x11 18 deg
+=== open loop, tail=cs, pot=0.5, Ccomp=470p: A0 = 138 (42.8 dB)
+         1000 Hz: |A| =   135.84  phase   -10.6 deg
+        10000 Hz: |A| =    65.00  phase   -61.8 deg
+       100000 Hz: |A| =     7.62  phase   -85.4 deg
+      1000000 Hz: |A| =     2.00  phase  -128.3 deg
+     10000000 Hz: |A| =     0.79  phase  +112.6 deg
+    unity gain at 7.94 MHz, phase +122 deg -> phase margin as follower 302 deg
+    |A| = 11 at 0.071 MHz, phase -84 deg -> phase margin at x11 96 deg
+=== step follower, Ccomp=100p: +/-0.5 V in -> final +0.410 V (ideal +0.500), peak +0.799 V, overshoot 39 %, late zero crossings 611
+=== step x11, Ccomp=100p: +/-0.1 V in -> final +1.023 V (ideal +1.100), peak +1.029 V, overshoot 0 %, late zero crossings 0
+=== step follower, Ccomp=470p: +/-0.5 V in -> final +0.338 V (ideal +0.500), peak +0.779 V, overshoot 44 %, late zero crossings 257
+=== step x11, Ccomp=470p: +/-0.1 V in -> final +1.023 V (ideal +1.100), peak +1.023 V, overshoot 0 %, late zero crossings 0
+=== x11, 2 V peak in: OUT swings -14.28 .. +13.41 V (into 11k)
+=== follower, 50 mV peak, 1k load: OUT -52.8 .. +44.2 mV (crossover shows as a wiggle)
+=== offset null: follower offset vs pot position (IN+ = 0)
+    pot 0.00: OUT =  -37.51 mV
+    pot 0.25: OUT =  -21.12 mV
+    pot 0.50: OUT =   -5.58 mV
+    pot 0.75: OUT =  +11.62 mV
+    pot 1.00: OUT =  +28.83 mV
+=== beta spread: follower offset with Q1 Bf=150 / Q2 Bf=300 (pot centred)
+    OUT = -3.81 mV
+=== common-mode gain of stage 1 (both inputs driven, measured at c2), tail R vs current source
+    tail=r: Gcm(stage1) = 0.0726 at 100 Hz, 0.0672 at 10 kHz
+    tail=cs: Gcm(stage1) = 0.0004 at 100 Hz, 0.0006 at 10 kHz
+    Gdiff(stage1) = 11.11 at 100 Hz (pot centred: 25 ohm per emitter)

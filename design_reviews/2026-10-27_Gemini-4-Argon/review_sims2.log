@@ -1,0 +1,39 @@
+=================================================================
+2d. OUTPUT CURRENT LIMIT: BOTH POLARITIES, SHORTS TO GND, +15V, -15V
+=================================================================
+
+--- OUT shorted to GND (0V) (+0.0 V) ---
+  Vin= +1.0V: I_short=+17.40mA | V(R15)=+681.1mV (I_R15=+14.49mA) | V(R16)=  -0.0mV (I_R16=-0.00mA) | I(R8)= 4.10mA | V(c2)=+12.96V, V(c3)= +1.41V
+  Vin=+10.0V: I_short=+21.85mA | V(R15)=+681.2mV (I_R15=+14.49mA) | V(R16)=  -0.0mV (I_R16=-0.00mA) | I(R8)= 4.11mA | V(c2)=+12.96V, V(c3)= +1.41V
+  Vin= -1.0V: I_short=-15.30mA | V(R15)=  -0.0mV (I_R15=-0.00mA) | V(R16)=+657.2mV (I_R16=+13.98mA) | I(R8)= 0.00mA | V(c2)=+15.00V, V(c3)= -1.38V
+  Vin=-10.0V: I_short=-19.73mA | V(R15)=  -0.0mV (I_R15=-0.00mA) | V(R16)=+657.2mV (I_R16=+13.98mA) | I(R8)= 0.00mA | V(c2)=+15.00V, V(c3)= -1.38V
+
+--- OUT shorted to +15V rail (+15.0 V) ---
+  Vin= +1.0V: I_short=-24.78mA | V(R15)=  -0.0mV (I_R15=-0.00mA) | V(R16)=+677.6mV (I_R16=+14.42mA) | I(R8)= 0.00mA | V(c2)=+15.00V, V(c3)=+13.60V
+  Vin=+10.0V: I_short=-20.31mA | V(R15)=  -0.0mV (I_R15=-0.00mA) | V(R16)=+677.5mV (I_R16=+14.42mA) | I(R8)= 0.00mA | V(c2)=+15.00V, V(c3)=+13.60V
+  Vin= -1.0V: I_short=-25.78mA | V(R15)=  -0.0mV (I_R15=-0.00mA) | V(R16)=+677.5mV (I_R16=+14.42mA) | I(R8)= 0.00mA | V(c2)=+15.00V, V(c3)=+13.60V
+  Vin=-10.0V: I_short=-30.27mA | V(R15)=  -0.0mV (I_R15=-0.00mA) | V(R16)=+677.5mV (I_R16=+14.42mA) | I(R8)= 0.00mA | V(c2)=+15.00V, V(c3)=+13.60V
+
+--- OUT shorted to -15V rail (-15.0 V) ---
+  Vin= +1.0V: I_short=+27.67mA | V(R15)=+691.4mV (I_R15=+14.71mA) | V(R16)=  -0.0mV (I_R16=-0.00mA) | I(R8)= 4.10mA | V(c2)=+12.96V, V(c3)=-13.59V
+  Vin=+10.0V: I_short=+32.17mA | V(R15)=+691.4mV (I_R15=+14.71mA) | V(R16)=  -0.0mV (I_R16=-0.00mA) | I(R8)= 4.11mA | V(c2)=+12.96V, V(c3)=-13.59V
+  Vin= -1.0V: I_short=+26.67mA | V(R15)=+691.4mV (I_R15=+14.71mA) | V(R16)=  -0.0mV (I_R16=-0.00mA) | I(R8)= 4.09mA | V(c2)=+12.96V, V(c3)=-13.59V
+  Vin=-10.0V: I_short=+22.18mA | V(R15)=+691.3mV (I_R15=+14.71mA) | V(R16)=  -0.0mV (I_R16=-0.00mA) | I(R8)= 4.08mA | V(c2)=+12.97V, V(c3)=-13.59V
+
+--- Exact transistor currents & powers under short-circuit conditions ---
+  vsup=+/-15.0V, Vin=+10.0V, Vshort=  +0.0V:
+    I_short= +4.67mA | Ic(Q4)= 0.00mA, P(Q4)=  0.0mW | Ic(Q5)= 0.00mA, P(Q5)=  0.0mW | I(R15)= 0.00mA, I(R16)=-0.00mA | I(R8)= 2.74mA, P(R8)= 2.5mW
+  vsup=+/-15.0V, Vin=-10.0V, Vshort=  +0.0V:
+    I_short= -4.67mA | Ic(Q4)= 0.00mA, P(Q4)=  0.0mW | Ic(Q5)= 0.00mA, P(Q5)=  0.0mW | I(R15)=-0.00mA, I(R16)= 0.00mA | I(R8)= 0.00mA, P(R8)= 0.0mW
+  vsup=+/-15.0V, Vin=+10.0V, Vshort= -15.0V:
+    I_short=+13.51mA | Ic(Q4)= 0.00mA, P(Q4)=  0.0mW | Ic(Q5)= 0.00mA, P(Q5)=  0.0mW | I(R15)= 0.00mA, I(R16)=-0.00mA | I(R8)= 2.73mA, P(R8)= 2.5mW
+  vsup=+/-15.0V, Vin=-10.0V, Vshort= +15.0V:
+    I_short=-13.51mA | Ic(Q4)= 0.00mA, P(Q4)=  0.0mW | Ic(Q5)= 0.00mA, P(Q5)=  0.0mW | I(R15)=-0.00mA, I(R16)= 0.00mA | I(R8)= 0.00mA, P(R8)= 0.0mW
+  vsup=+/-14.6V, Vin=+10.0V, Vshort=  +0.0V:
+    I_short= +4.67mA | Ic(Q4)=-0.00mA, P(Q4)= -0.0mW | Ic(Q5)=-0.00mA, P(Q5)= -0.0mW | I(R15)= 0.00mA, I(R16)=-0.00mA | I(R8)= 2.64mA, P(R8)= 2.3mW
+  vsup=+/-14.6V, Vin=-10.0V, Vshort=  +0.0V:
+    I_short= -4.67mA | Ic(Q4)=-0.00mA, P(Q4)= -0.0mW | Ic(Q5)=-0.00mA, P(Q5)= -0.0mW | I(R15)=-0.00mA, I(R16)= 0.00mA | I(R8)= 0.00mA, P(R8)= 0.0mW
+  vsup=+/-14.6V, Vin=+10.0V, Vshort= -14.6V:
+    I_short=+13.27mA | Ic(Q4)=-0.00mA, P(Q4)= -0.0mW | Ic(Q5)=-0.00mA, P(Q5)= -0.0mW | I(R15)= 0.00mA, I(R16)=-0.00mA | I(R8)= 2.64mA, P(R8)= 2.3mW
+  vsup=+/-14.6V, Vin=-10.0V, Vshort= +14.6V:
+    I_short=-13.28mA | Ic(Q4)=-0.00mA, P(Q4)= -0.0mW | Ic(Q5)=-0.00mA, P(Q5)= -0.0mW | I(R15)=-0.00mA, I(R16)= 0.00mA | I(R8)= 0.00mA, P(R8)= 0.0mW

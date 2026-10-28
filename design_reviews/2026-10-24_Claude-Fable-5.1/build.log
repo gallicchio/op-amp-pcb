@@ -1,6 +1,6 @@
 KiCad 10.0.7
   runner    /tmp/.mount_kicadremp17350511091871881925/AppRun
-  mounted   /home/jason/.local/bin/kicad-10.0.7-x86_64.AppImage
+  mounted   ~/.local/bin/kicad-10.0.7-x86_64.AppImage
   libraries /tmp/.mount_kicadremp17350511091871881925/usr/share/kicad
 
 === footprints, models and project files ============================

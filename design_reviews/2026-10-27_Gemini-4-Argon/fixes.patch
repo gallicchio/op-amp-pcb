@@ -1,0 +1,321 @@
+diff -ru '--exclude=.git' '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=hardware' '--exclude=out' '--exclude=build' '--exclude=datasheets' '--exclude=datasheets_not_in_git' '--exclude=design_reviews' '--exclude=images' '--exclude=history' '--exclude=MANUFACTURING.md' '--exclude=results.json' '--exclude=jlc_cache.json' '--exclude=easyeda_cache.json' ./docs/DESIGN_NOTES.md design_reviews/2026-10-27_Gemini-4-Argon/project/docs/DESIGN_NOTES.md
+--- ./docs/DESIGN_NOTES.md	2026-10-25 08:07:21.648627000 -0700
++++ design_reviews/2026-10-27_Gemini-4-Argon/project/docs/DESIGN_NOTES.md	2026-10-27 16:07:50.619826290 -0700
+@@ -29,7 +29,7 @@
+ 
+ | addition | parts | why |
+ |---|---|---|
+-| offset null | RV1, 50 ohm between the emitters, wiper to the tail | a discrete pair has millivolts of offset; a trimmer whose ends are the two emitter resistors (25 ohm each at centre) is the textbook null and costs one part.  Its wiper is the tail, so grit under the wiper cannot open the tail: the resistance only rises |
++| offset null | RV1, 50 ohm between the emitters, wiper to the tail | a discrete pair has millivolts of offset; a trimmer whose ends are the two emitter resistors (25 ohm each at centre) is the textbook null and costs one part.  Its wiper feeds the high-impedance tail sink, so wiper contact resistance (CRV) is absorbed in series with the tail without unbalancing the pair |
+ | series 1 k with the Miller capacitor | R14 | the book's bare 100 pF puts a right-half-plane zero at 1 / (2 pi C / gm): the follower is unstable with it.  1 k in series moves the zero to the left half plane.  SW2 pole 2 shorts it so the book's version can be shown ringing |
+ | three 2-way DIP switches | SW1 TAIL, SW2 COMPENSATION, SW3 FEEDBACK | the book's variants (resistor tail or current sink; compensation or not; x11, follower or your own) without jumpers to lose |
+ | input protection | R1, R2 1 k 1206; D1, D2 1N4148W anti-parallel between the bases | a real op-amp's input clamps.  A 2N3904's base-emitter junction breaks down at 6 V reverse; a student with a 10 V generator on one input and the other grounded would otherwise degrade Q1 or Q2.  The 1206 resistors take 50 mW each with one input at a rail and the other grounded, 0.21 W each with the two inputs at opposite rails |
+diff -ru '--exclude=.git' '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=hardware' '--exclude=out' '--exclude=build' '--exclude=datasheets' '--exclude=datasheets_not_in_git' '--exclude=design_reviews' '--exclude=images' '--exclude=history' '--exclude=MANUFACTURING.md' '--exclude=results.json' '--exclude=jlc_cache.json' '--exclude=easyeda_cache.json' ./docs/HANDBOOK.md design_reviews/2026-10-27_Gemini-4-Argon/project/docs/HANDBOOK.md
+--- ./docs/HANDBOOK.md	2026-10-25 00:39:50.688608000 -0700
++++ design_reviews/2026-10-27_Gemini-4-Argon/project/docs/HANDBOOK.md	2026-10-27 16:07:52.463878246 -0700
+@@ -18,11 +18,11 @@
+ | INPUT PROTECTION | R1, R2, D1, D2 | 1 k in series with each input; two diodes between the bases hold the difference under 0.7 V |
+ | DIFFERENCE AMPLIFIER x11 | Q1, Q2, R3, RV1 | the book's diff pair; R3 is the 1.5 k collector load; the output is Q2's collector, the node Q2 C |
+ | TAIL | Q6, R5, R6, R7, R4, SW1 | the 1.4 mA current sink, or the 10 k resistor |
+-| GAIN x30 | Q3, R8, R9 | PNP common-emitter stage, 330 ohm emitter, 12 k collector; its output is Q3 C |
+-| COMPENSATION | C1, R14, SW2 | the 100 pF Miller capacitor from C3 back to C2, with 1 k in series |
++| GAIN STAGE x30 | Q3, R8, R9 | PNP common-emitter stage, 330 ohm emitter, 12 k collector; its output is Q3 C |
++| OPTIONAL COMPENSATION | C1, R14, SW2 | the 100 pF Miller capacitor from Q3 C back to Q2 C, with 1 k in series |
+ | PUSH-PULL FOLLOWER | Q4, Q5, R15, R16 | the output followers, with 47 ohm in each emitter for the limit below |
+ | OUTPUT CURRENT LIMIT | Q7, Q8, D5, D6 | not in the book: a safety net, as in a real op-amp.  Q7 (Q8) turns on when more than about 0.65 V stands across R15 (R16) and steals the drive; the diodes keep the idle one out of the way.  It limits at about 22 mA into a dead short (15 mA through Q4 or Q5) and does nothing below that |
+-| FEEDBACK | R10, R11, SW3 | the book's 10 k / 1 k load and x11 divider; its tap is X, and the switch returns X or OUT to IN- |
++| OPTIONAL FEEDBACK | R10, R11, SW3 | the book's 10 k / 1 k load and x11 divider; its tap is X, and the switch returns X or OUT to IN- |
+ 
+ ## 2. Power
+ 
+@@ -66,7 +66,7 @@
+ | switch | 1 on | 2 on | both off |
+ |---|---|---|---|
+ | **TAIL** SW1 | Q6 current sink (normal) | 10 k tail resistor, the book's first version | no tail: the diff pair is dead, nothing works |
+-| **COMPENSATION** SW2 | 100 pF + 1 k from C3 to C2 (normal) | the bare 100 pF, no 1 k: the book's version | no compensation |
++| **COMPENSATION** SW2 | 100 pF + 1 k from Q3 C to Q2 C (normal) | the bare 100 pF, no 1 k: the book's version | no compensation |
+ | **FEEDBACK** SW3 | X to IN-: gain of 11, non-inverting | OUT to IN-: follower | open loop, or your own feedback on the terminals |
+ 
+ Both TAIL sliders on puts the resistor in parallel with the sink, which is
+@@ -148,12 +148,12 @@
+ 3. **The tail.**  Repeat the common-mode measurement with TAIL 2 (the 10 k
+    resistor).  The current sink buys a hundred times less common-mode gain for
+    the price of one transistor.
+-4. **The gain stage.**  Open loop, a millivolt or so in.  TP8 against TP6: about
+-   30, inverted again.  Note how quickly C3 hits a rail: the whole thing has a
++4. **The gain stage.**  Open loop (keep IN- grounded), a millivolt or so in.  TP8 against TP6: about
++   30, inverted again.  Note how quickly Q3 C (TP8) hits a rail: the whole thing has a
+    gain of a few hundred at rest.
+-5. **The push-pull and its crossover.**  Open loop, a 50 mV triangle in.  OUT
++5. **The push-pull and its crossover.**  Open loop (IN- grounded), a 5 to 50 mV triangle in.  OUT
+    against TP8: a dead band of about 1.2 V where neither Q4 nor Q5 conducts.  Now
+-   close the loop (FEEDBACK 2) with the same input: the dead band vanishes from OUT
++   un-ground IN- and close the loop (FEEDBACK 2) with a larger triangle: the dead band vanishes from OUT
+    and reappears as a step at TP8.  That is what feedback does.
+ 6. **The follower.**  FEEDBACK 2.  Gain, input and output swing into 1 k, slew rate
+    on a 10 V square wave, and the bandwidth.
+diff -ru '--exclude=.git' '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=hardware' '--exclude=out' '--exclude=build' '--exclude=datasheets' '--exclude=datasheets_not_in_git' '--exclude=design_reviews' '--exclude=images' '--exclude=history' '--exclude=MANUFACTURING.md' '--exclude=results.json' '--exclude=jlc_cache.json' '--exclude=easyeda_cache.json' ./README.md design_reviews/2026-10-27_Gemini-4-Argon/project/README.md
+--- ./README.md	2026-10-25 00:39:50.688925000 -0700
++++ design_reviews/2026-10-27_Gemini-4-Argon/project/README.md	2026-10-27 16:07:50.559865804 -0700
+@@ -77,7 +77,7 @@
+ ./make.py --clean      # delete everything it generates
+ ```
+ 
+-The build stops on any ERC or DRC violation, on any of the 102 circuit assertions
++The build stops on any ERC or DRC violation, on any of the 108 circuit assertions
+ that read the exported netlist back against the book's circuit, on a schematic text
+ overlap, on a fab-package problem (an order code whose JLCPCB description no longer
+ matches, a QR code that does not decode from the board file) and on any number in
+diff -ru '--exclude=.git' '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=hardware' '--exclude=out' '--exclude=build' '--exclude=datasheets' '--exclude=datasheets_not_in_git' '--exclude=design_reviews' '--exclude=images' '--exclude=history' '--exclude=MANUFACTURING.md' '--exclude=results.json' '--exclude=jlc_cache.json' '--exclude=easyeda_cache.json' ./scripts/check_circuit.py design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/check_circuit.py
+--- ./scripts/check_circuit.py	2026-10-25 00:39:50.687987000 -0700
++++ design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/check_circuit.py	2026-10-27 16:07:09.230595758 -0700
+@@ -138,13 +138,13 @@
+     check(N.net("C1", 2) == "Q3 C" and abs(farads(N.value["C1"]) - 100e-12) < 1e-13, "C1 = 100 pF to Q3 C (Q3's collector)")
+     check(N.net("SW2", 3) == "Q2 C" and N.net("SW2", 2) == N.net("C1", 1),
+           "SW2 pole 2 takes Q2 C straight to C1, bypassing R14: the book's bare 100 pF on its own")
+-    f_z = 1 / (2 * math.pi * 100e-12 * (1000 - 350))
++    f_z = 1 / (2 * math.pi * farads(N.value["C1"]) * (ohms(N.value["R14"]) - 350))
+     check(f_z > 1e6, f"with the 1k the Miller zero sits in the left half-plane at {f_z/1e6:.1f} MHz")
+ 
+     # --- push-pull --------------------------------------------------------------
+     check(N.net("Q4", 1) == "Q3 C" and N.net("Q5", 1) == "Q3 C", "Q4 and Q5's bases are driven by Q3 C")
+     check(N.net("Q4", 3) == "+15V" and N.net("Q5", 3) == "-15V", "Q4's collector to +15 V, Q5's to -15 V")
+-    # the output current limit (not in the book): 33 ohm in each emitter, sensed by Q7 / Q8
++    # the output current limit (not in the book): 47 ohm in each emitter, sensed by Q7 / Q8
+     check(N.between(N.net("Q4", 2), "OUT") == ["R15"] and ohms(N.value["R15"]) == 47, "R15 = 47 ohm from Q4's emitter to OUT")
+     check(N.between(N.net("Q5", 2), "OUT") == ["R16"] and ohms(N.value["R16"]) == 47, "R16 = 47 ohm from Q5's emitter to OUT")
+     check(N.net("Q7", 1) == N.net("Q4", 2) and N.net("Q7", 2) == "OUT", "Q7 senses R15 from OUT")
+@@ -155,7 +155,7 @@
+     check(0.012 < i_lim < 0.022, f"the output limits at about {i_lim*1e3:.0f} mA: enough for 13 V into 1k, a short survives")
+     check(N.between("OUT", "X") == ["R10"] and ohms(N.value["R10"]) == 10000, "R10 = 10k from OUT to X")
+     check(N.between("X", "GND") == ["R11"] and ohms(N.value["R11"]) == 1000, "R11 = 1k from X to ground")
+-    check(abs(11000 / 1000 - 11) < 1e-9, "X = OUT / 11: the book's x11 divider")
++    check(abs((ohms(N.value["R10"]) + ohms(N.value["R11"])) / ohms(N.value["R11"]) - 11) < 1e-9, "X = OUT / 11: the book's x11 divider")
+ 
+     # --- feedback: SW3 pole 1 = X, pole 2 = OUT, both to IN- ---------------------
+     check(N.net("SW3", 1) == "X" and N.net("SW3", 2) == "OUT", "SW3 pole 1 takes X, pole 2 takes OUT")
+@@ -172,12 +172,16 @@
+     # --- power entry -----------------------------------------------------------
+     check(N.net("D3", 2) == "+15V_IN" and N.net("D3", 1) == "+15V", "D3's anode on +15V_IN, cathode on the +15 V rail")
+     check(N.net("D4", 1) == "-15V_IN" and N.net("D4", 2) == "-15V", "D4's cathode on -15V_IN, anode on the -15 V rail")
+-    for c in ("C2", "C3"):
+-        check(N.net(c, 1) == "+15V" and N.net(c, 2) == "GND", f"{c} bypasses +15 V")
+-    for c in ("C4", "C5"):
+-        check(N.net(c, 2) == "-15V" and N.net(c, 1) == "GND", f"{c} bypasses -15 V")
+-    check(N.net("LED1", 1) == "GND" and N.between("+15V", N.net("LED1", 2)) == ["R12"], "LED1 from +15 V through R12 to ground")
+-    check(N.net("LED2", 2) == "GND" and N.between(N.net("LED2", 1), "-15V") == ["R13"], "LED2 from ground through R13 to -15 V")
++    for d in ("D1", "D2", "D5", "D6"):
++        check(N.value[d] == "1N4148W" and N.footprint[d].endswith("D_SOD-123"), f"{d} is a 1N4148W in SOD-123")
++    for d in ("D3", "D4"):
++        check(N.value[d] == "B5819W" and N.footprint[d].endswith("D_SOD-123"), f"{d} is a B5819W in SOD-123")
++    for c, val in (("C2", 10e-6), ("C3", 100e-9)):
++        check(N.net(c, 1) == "+15V" and N.net(c, 2) == "GND" and abs(farads(N.value[c]) - val) < val * 0.01, f"{c} ({N.value[c]}) bypasses +15 V")
++    for c, val in (("C4", 10e-6), ("C5", 100e-9)):
++        check(N.net(c, 2) == "-15V" and N.net(c, 1) == "GND" and abs(farads(N.value[c]) - val) < val * 0.01, f"{c} ({N.value[c]}) bypasses -15 V")
++    check(N.net("LED1", 1) == "GND" and N.between("+15V", N.net("LED1", 2)) == ["R12"] and ohms(N.value["R12"]) == 10000, "LED1 from +15 V through R12 = 10k to ground")
++    check(N.net("LED2", 2) == "GND" and N.between(N.net("LED2", 1), "-15V") == ["R13"] and ohms(N.value["R13"]) == 10000, "LED2 from ground through R13 = 10k to -15 V")
+     i_led = (14.6 - 2.5) / ohms(N.value["R12"])
+     check(0.5e-3 < i_led < 3e-3, f"the lamps run at {i_led*1e3:.1f} mA")
+     i_board = i_tail + 1.25e-3 + 2 * i_led + 0.3e-3
+diff -ru '--exclude=.git' '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=hardware' '--exclude=out' '--exclude=build' '--exclude=datasheets' '--exclude=datasheets_not_in_git' '--exclude=design_reviews' '--exclude=images' '--exclude=history' '--exclude=MANUFACTURING.md' '--exclude=results.json' '--exclude=jlc_cache.json' '--exclude=easyeda_cache.json' ./scripts/gen_docs.py design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/gen_docs.py
+--- ./scripts/gen_docs.py	2026-10-25 11:05:05.796648000 -0700
++++ design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/gen_docs.py	2026-10-27 16:07:09.160595300 -0700
+@@ -326,9 +326,12 @@
+             continue
+         P.append(f"[{how.upper():9s}] {', '.join(refs)}  ({code}, +{deg} deg)")
+         P.append(f"            {note}")
+-        look = next((l for l in PREVIEW_CHECKS if l[0].split(",")[0].strip() in refs), None)
+-        if look:
+-            P.append(f"            look for: {look[1]}; should be: {look[2]}")
++        for l in PREVIEW_CHECKS:
++            lrefs = [x.strip() for x in l[0].split(",")]
++            sub = [r for r in refs if r in lrefs or any(r.startswith("TP") and "-" in x for x in lrefs)]
++            if sub:
++                prefix = f"{', '.join(sub)}: " if len(sub) < len(refs) else ""
++                P.append(f"            {prefix}look for: {l[1]}; should be: {l[2]}")
+         P.append("")
+     P += ["Symmetric parts (every resistor and capacitor) cannot go in wrong.",
+           "The back of the board carries no parts: check it anyway, it should be empty.", ""]
+@@ -394,9 +397,10 @@
+ 
+ # What to look for in JLCPCB's preview, per orientation-sensitive part.
+ PREVIEW_CHECKS = [
+-    ("Q1, Q3, Q4, Q5, Q7, Q8", "SOT-23: the lone pad (collector) on the side the collector wire leaves",
++    ("Q1, Q3, Q4, Q5, Q7, Q8", "SOT-23: the lone pad (collector, pin 3) vs the pair (base and emitter)",
+      "lone pad at the TOP, the pair at the bottom"),
+-    ("Q2, Q6", "the same, the other way up", "lone pad at the BOTTOM, the pair at the top"),
++    ("Q2, Q6", "SOT-23: the lone pad (collector, pin 3) vs the pair (base and emitter)",
++     "lone pad at the BOTTOM, the pair at the top"),
+     ("SW1, SW2, SW3", "2-way DIP switch: pads on pads; the part's own ON marking",
+      "on the side of the silkscreen word ON (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it); electrically it cannot go in wrong"),
+     ("RV1", "3362P trimmer, keyed", "fits one way; screw on top"),
+diff -ru '--exclude=.git' '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=hardware' '--exclude=out' '--exclude=build' '--exclude=datasheets' '--exclude=datasheets_not_in_git' '--exclude=design_reviews' '--exclude=images' '--exclude=history' '--exclude=MANUFACTURING.md' '--exclude=results.json' '--exclude=jlc_cache.json' '--exclude=easyeda_cache.json' ./scripts/gen_sch.py design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/gen_sch.py
+--- ./scripts/gen_sch.py	2026-10-25 00:39:50.654721000 -0700
++++ design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/gen_sch.py	2026-10-27 16:07:53.350884041 -0700
+@@ -557,7 +557,7 @@
+           "Three stages, as the book's Fig. 5L.11 and 5N.32:",
+           "",
+           f"    difference    Q1 Q2, 1.5k collector load on the + side, tail from RV1 through SW1     x{R.get('gdiff1', 11):.0f}",
+-          f"    gain          Q3, PNP common emitter: 12k / (330 + re) = 30; the push-pull's dead zone takes a third of it     x{R.get('g2', 12):.0f}",
++          f"    gain          Q3, PNP common emitter: 12k / (330 + re) = 30; the push-pull's dead zone leaves a third of it    x{R.get('g2', 12):.0f}",
+           "    follower      Q4 Q5 push-pull, unbiased, so crossover distortion shows until feedback hides it     x1",
+           "",
+           f"Open-loop gain at DC about {R.get('a0', 140):.0f} (the book says 'approximately 1000' for its CA3096 version, before the",
+@@ -582,7 +582,7 @@
+           "junction sees its 6 V reverse breakdown when one",
+           "input is driven hard and the other is not.",
+           "A 1 M probe or a 50 ohm generator never notices",
+-          "the 1k; Ib (about 5 uA) drops 5 mV across it."],
++          "the 1k; Ib (about 2 uA) drops 2 mV across it."],
+          col[0], NOTE_Y)
+     note(["TAIL  (SW1)",
+           "1 ON: Q6, the 'simple sink' of Fig. 5L.10, 1.4 mA",
+@@ -603,7 +603,7 @@
+     note(["COMPENSATION  (SW2)",
+           "1 ON: 100 pF from Q3's collector to its base, Miller-",
+           "multiplied by the stage's gain of 30 into a 3 nF",
+-          "low-pass at C2.  The book's Fig. 5L.17.",
++          "low-pass at Q2 C.  The book's Fig. 5L.17.",
+           "2 ON: the bare 100 pF, no 1k: the book's version.",
+           "1 and 2 ON: the same as 2.",
+           "",
+@@ -626,7 +626,7 @@
+           "x11 divider in one: X = OUT / 11.",
+           "",
+           "OUTPUT",
+-          f"{R['swing'][0]:+.0f} to {R['swing'][1]:+.0f} V into the 11k; 10 mA max." if "swing" in R else "+/-13 V into the 11k; 10 mA max.",
++          f"{R['swing'][0]:+.0f} to {R['swing'][1]:+.0f} V into the 11k; 15 mA max." if "swing" in R else "+/-13 V into the 11k; 15 mA max.",
+           "Q7, Q8, D5, D6 and the 47 ohm resistors are not in the",
+           "book: they limit the output to about 20 mA, as a real",
+           "op-amp does: a short to ground is survived, to a rail for seconds."],
+diff -ru '--exclude=.git' '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=hardware' '--exclude=out' '--exclude=build' '--exclude=datasheets' '--exclude=datasheets_not_in_git' '--exclude=design_reviews' '--exclude=images' '--exclude=history' '--exclude=MANUFACTURING.md' '--exclude=results.json' '--exclude=jlc_cache.json' '--exclude=easyeda_cache.json' ./scripts/kienv.py design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/kienv.py
+--- ./scripts/kienv.py	2026-10-24 10:29:00.937432000 -0700
++++ design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/kienv.py	2026-10-27 15:35:40.431161498 -0700
+@@ -55,8 +55,23 @@
+     return ten + [p for p in out if p not in ten]
+ 
+ 
++def _find_plain_cli():
++    if os.environ.get("KICAD_APPIMAGE"):
++        return None
++    cli_path = shutil.which("kicad-cli")
++    if not cli_path:
++        return None
++    try:
++        r = subprocess.run([cli_path, "--version"], capture_output=True, text=True, timeout=10)
++        if r.returncode == 0 and r.stdout.strip().startswith("10."):
++            return cli_path
++    except Exception:
++        pass
++    return None
++
++
+ APPRUN = find_apprun()
+-PLAIN_CLI = shutil.which("kicad-cli")
++PLAIN_CLI = _find_plain_cli()
+ _SHARE = None
+ _TRIED = []
+ _MOUNT = None            # the --appimage-mount process, kept alive on purpose
+@@ -198,8 +213,9 @@
+                       f"in it -- is that your *personal* library directory?)")
+ 
+     cands = []
+-    if APPRUN:
+-        base = os.path.dirname(os.path.abspath(APPRUN))
++    run = runner()
++    if run:
++        base = os.path.dirname(os.path.abspath(run))
+         for up in range(0, 4):
+             root = os.path.abspath(os.path.join(base, *([".."] * up)))
+             cands += [os.path.join(root, "share", "kicad"),
+@@ -207,10 +223,11 @@
+     for v in ("KICAD10_SYMBOL_DIR", "KICAD9_SYMBOL_DIR", "KICAD_SYMBOL_DIR"):
+         if os.environ.get(v):
+             cands.append(os.path.dirname(os.environ[v]))
+-    cands += ["/usr/share/kicad", "/usr/local/share/kicad",
+-              os.path.expanduser("~/.local/share/kicad"),
+-              "/Applications/KiCad/KiCad.app/Contents/SharedSupport",
+-              "C:/Program Files/KiCad/10.0/share/kicad"]
++    if not run:
++        cands += ["/usr/share/kicad", "/usr/local/share/kicad",
++                  os.path.expanduser("~/.local/share/kicad"),
++                  "/Applications/KiCad/KiCad.app/Contents/SharedSupport",
++                  "C:/Program Files/KiCad/10.0/share/kicad"]
+     for c in cands:
+         _TRIED.append(c)
+         if _looks_right(c):
+diff -ru '--exclude=.git' '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=hardware' '--exclude=out' '--exclude=build' '--exclude=datasheets' '--exclude=datasheets_not_in_git' '--exclude=design_reviews' '--exclude=images' '--exclude=history' '--exclude=MANUFACTURING.md' '--exclude=results.json' '--exclude=jlc_cache.json' '--exclude=easyeda_cache.json' ./scripts/layout.py design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/layout.py
+--- ./scripts/layout.py	2026-10-25 11:07:58.557504000 -0700
++++ design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/layout.py	2026-10-27 16:10:39.465969446 -0700
+@@ -60,7 +60,7 @@
+     "SW1": (40.5, 61.0, 180),
+     "R4": (30.8, 70.0, 270),
+     "Q6": (38.0, 69.0, 270), "R7": (38.0, 80.0, 270),
+-    "R5": (46.3, 71.0, 90), "R6": (43.5, 78.0, 270),
++    "R5": (49.5, 71.0, 90), "R6": (43.5, 78.0, 270),
+     # the gain stage, its load straight above it as the book draws it, and
+     # its compensation
+     "Q3": (60.0, 30.0, 90), "R8": (60.0, 21.0, 270), "R9": (60.0, 72.0, 270),
+@@ -160,7 +160,7 @@
+     ("Net-(R4-Pad1)", [("SW1", "3"), (30.8, 59.73), ("R4", "1")], W_SIG),
+     ("Net-(Q6-C)", [("SW1", "4"), (36.1, 63.6), (38.0, 63.6), ("Q6", "3")], W_SIG),
+     ("Net-(Q6-B)", [("Q6", "1"), (43.5, 69.0), ("R6", "1")], W_SIG),
+-    ("Net-(Q6-B)", [(43.5, 69.0), (46.3, 69.0), ("R5", "2")], W_SIG),
++    ("Net-(Q6-B)", [(43.5, 69.0), (49.5, 69.0), ("R5", "2")], W_SIG),
+     ("Net-(Q6-E)", [("Q6", "2"), ("R7", "1")], W_SIG),
+     # the gain stage
+     ("/Q2 C", [("R3", "2"), ("Q2", "3")], W_SIG),
+@@ -229,7 +229,7 @@
+     (("C2", "2"), (24.0, 21.5)), (("C3", "2"), (27.5, 21.5)),
+     (("C4", "1"), (24.0, 76.5)), (("C5", "1"), (27.5, 76.5)),
+     (("LED1", "1"), (93.0, 26.5)), (("LED2", "2"), (83.85, 96.9)),
+-    (("R11", "2"), (83.5, 69.5)), (("R5", "1"), (46.3, 74.5)),
++    (("R11", "2"), (83.5, 69.5)), (("R5", "1"), (49.5, 74.5)),
+     (("TP100", "1"), (24.0, 72.0)), (("TP101", "1"), (12.0, 83.5)), (("TP102", "1"), (92.0, 71.6)),
+     (("TP103", "1"), (54.3, 71.5)),
+ ]
+@@ -275,7 +275,7 @@
+     (91.9, 65.0, "GND", 0.9, 0.15, "left", 0),
+     (91.4, 78.4, "+15V", 0.9, 0.15, "right", 0),
+     (89.8, 84.6, "GND", 0.9, 0.15, "right", 0),
+-    (91.4, 88.4, "-15V", 0.9, 0.15, "right", 0),
++    (91.5, 88.9, "-15V", 0.9, 0.15, "right", 0),
+     (93.5, 93.2, "POWER", 1.0, 0.2, "center", 0),
+     # rails
+     (24.0, 13.1, "+15 V", 1.2, 0.2, "left", 0),
+@@ -287,17 +287,17 @@
+     (21.4, 79.3, "C4 10uF", 0.8, 0.15, "right", 0),
+     (21.4, 80.7, "C5 100nF", 0.8, 0.15, "right", 0),
+     # the trimmer, the tail switch and its sink
+-    (36.5, 46.0, "OFFSET", 0.9, 0.15, "right", 0),
+-    (36.5, 47.4, "NULL", 0.9, 0.15, "right", 0),
+-    (36.5, 48.8, "RV1", 0.8, 0.15, "right", 0),
++    (36.5, 45.4, "OFFSET", 0.9, 0.15, "right", 0),
++    (36.5, 46.8, "NULL", 0.9, 0.15, "right", 0),
++    (36.5, 48.2, "RV1 50R", 0.8, 0.15, "right", 0),
+     (37.5, 56.6, "SW1", 0.8, 0.15, "center", 0),
+     (33.8, 61.6, "ON", 0.8, 0.15, "center", 0),
+     (46.6, 59.7, "2: 10k", 0.8, 0.15, "left", 0),
+     (43.8, 64.6, "1: current", 0.8, 0.15, "left", 0),
+     (43.8, 65.9, "source Q6", 0.8, 0.15, "left", 0),
+     (32.3, 75.9, "CURRENT SOURCE", 0.85, 0.15, "center", 90),
+-    (48.4, 70.3, "R5", 0.8, 0.15, "left", 0),
+-    (48.4, 71.7, "62k", 0.8, 0.15, "left", 0),
++    (47.8, 70.3, "R5", 0.8, 0.15, "right", 0),
++    (47.8, 71.7, "62k", 0.8, 0.15, "right", 0),
+     (31.3, 66.5, "R4", 0.8, 0.15, "left", 0),
+     (31.3, 67.8, "10k", 0.8, 0.15, "left", 0),
+     # the compensation switch, named and explained along the box's right side
+diff -ru '--exclude=.git' '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=hardware' '--exclude=out' '--exclude=build' '--exclude=datasheets' '--exclude=datasheets_not_in_git' '--exclude=design_reviews' '--exclude=images' '--exclude=history' '--exclude=MANUFACTURING.md' '--exclude=results.json' '--exclude=jlc_cache.json' '--exclude=easyeda_cache.json' ./scripts/parts.py design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/parts.py
+--- ./scripts/parts.py	2026-10-25 00:39:50.688129000 -0700
++++ design_reviews/2026-10-27_Gemini-4-Argon/project/scripts/parts.py	2026-10-27 16:06:05.250177707 -0700
+@@ -170,7 +170,7 @@
+     "C8598": (0, "predicted", "B5819W SOD-123: their pad 1 at -1.7 as KiCad's; cathode band end to be seen"),
+     "C81598": (0, "predicted", "1N4148W SOD-123F: as the Schottky"),
+     "C52754333": (0, "predicted", "3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here"),
+-    "C474881": (0, "predicted", "KF301-2P: pins along x at +/-2.5, as drawn here; wire entry side to be seen"),
+-    "C474882": (0, "predicted", "KF301-3P: pins along x at -5/0/+5, as drawn here"),
++    "C474881": (180, "predicted", "KF301-2P: pins along x at +/-2.5; EasyEDA draws wire entry at +y, ours at -y"),
++    "C474882": (180, "predicted", "KF301-3P: pins along x at -5/0/+5; EasyEDA draws wire entry at +y, ours at -y"),
+     "C5199800": (0, "predicted", "RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x"),
+ }

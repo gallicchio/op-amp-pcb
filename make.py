@@ -5,7 +5,7 @@
     ./make.py --stage sch  run one stage only (libs, sim, sch, pcb, out, docs)
     ./make.py --clean      delete everything the build generates
 """
-import argparse, os, shutil, subprocess, sys
+import argparse, os, re, shutil, subprocess, sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.join(ROOT, "scripts")
@@ -95,6 +95,12 @@ def stage_sch():
         raise Fail(f"ERC reported {n} violations -- see {os.path.relpath(rpt, ROOT)}")
     net = os.path.join(OUT, STEM + ".net")
     kienv.cli("sch", "export", "netlist", "--format", "kicadsexpr", "-o", net, sch)
+    # the committed netlist names its source relative to the project and carries no
+    # build time, so it is the same on every machine and every run
+    body = open(net).read()
+    body = re.sub(r'\(source "[^"]*"\)', f'(source "hardware/{STEM}.kicad_sch")', body, count=1)
+    body = re.sub(r'\(date "[^"]*"\)', '(date "")', body, count=1)
+    open(net, "w").write(body)
     out = sys_py("check_circuit.py", net)
     if "all circuit checks passed" not in out:
         raise Fail("the netlist does not implement the Lab 5L op-amp")

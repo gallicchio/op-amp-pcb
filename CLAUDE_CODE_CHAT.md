@@ -630,3 +630,76 @@ Rebuilt in place: ERC 0, 102 circuit assertions, DRC 0, 28 of 28 document claims
 ![OPTIONAL FEEDBACK](docs/history/2026-10-25-r7-feedback.png)
 ![board, response 9](docs/history/2026-10-25-r7-top.png)
 ![back, response 9](docs/history/2026-10-25-r7-silk-bottom.png)
+
+## Prompt 16
+
+> Two new reviews are in. Look at them and make any changes that should be made without
+> violating the spirit of this project.
+
+## Prompt 17
+
+> Did the KimiK3 LLM not write a review document or any info in the review folder?
+
+## Prompt 18
+
+> Does Kimi call itself Claude in this review? It should have been the latest one.
+
+## Prompt 19
+
+> Change the name of the directory to KimiK3.
+
+## Prompt 20
+
+> Keep going with incorporating any good findings into the actual schematic and PCB
+> design before I submit and call it revA.
+
+## Response 10
+
+2026-10-27 22:14 PDT.
+
+**Kimi K3's review** was the directory named `2026-10-27_Claude`: it signed itself
+"Claude (Copilot SDK session)" with no version, ran in the same window as Gemini's,
+and nothing else from Kimi exists on the machine.  Renamed to `2026-10-27_KimiK3`; its
+report's own text is left as written.  The two reviews are logged in
+`design_reviews/README.md` with what changed.
+
+Every finding was checked before it was applied:
+
+- **A cable on OUT made the follower oscillate** (Gemini).  True: my earlier check was
+  at 0 V, inside the push-pull's dead band.  At 5 V, 100 pF gave 200 mV of 13 MHz
+  ringing, and still did with transistors half as fast.  R15 and R16 are inside the
+  loop, so they isolate nothing.  **R17**, 47 ohm from the loop's OUT node to both
+  jacks with the feedback taken before it, cures every case from 100 pF to 1 nF, for
+  4.5 % less output into 1 k.  Q7 and Q8 moved apart 1.6 mm to fit it.
+- **The screw terminals would be fitted backwards** (Gemini).  True: the KEFA drawing's
+  3.60 is the pin length; the side view puts the pins 4.0 mm from the back, so the
+  wire face is the 3.7 mm side EasyEDA draws its openings on.  CPL +180, footprint body
+  flipped, the right-hand terminals 0.4 mm east to keep their labels clear.
+- **The 50 mA limit does not save R8** (both).  True: a clip on Q3 E draws 45 mA.
+  Instead of only rewording, **R8 is now a 1 W 2512** (one more Extended code) and
+  **R7 a 0.25 W 1206** (the input resistors' part, no new line), so a misplaced ground
+  clip on Q3 E, Q2 C, Q6 E or Q6 B burns nothing.
+- **PLACEMENT_CHECKS gave wrong lines** (Gemini).  True: it matched only each row's
+  first designator.  Every part now gets its own line.
+- **The simulation's rails** (Gemini).  True, and the B5819W drops 0.18 V at 4 mA by its
+  curve, not 0.35.  The sim now has the Schottkys, the bypass caps, R14 and R17; the
+  short-circuit current is measured open loop (16.9 mA; the old 21.8 included input
+  clamp current).  Every quoted number regenerated.
+- **Joint count** 18 → 27 THT (Kimi), **netlist path** (Kimi), **KiCad 9 on PATH**
+  (Gemini), **one parts total**, dead code, my stray scratch files in docs/history.
+- **Silkscreen**: R5 east so "Q6 B" is clear (Gemini's coordinates), RV1 50R, ground
+  stubs drawn in silk, the OUT jack says 15 mA, the back says +/-16 V, 17 mA and R17.
+- **Documents**: the ground-clip truth, +/-16 V (25 V bypass caps), both TAIL sliders,
+  grounding IN- in open loop, Q2 C / Q3 C names, the open-wiper failure, Ib 2 uA, gains.
+
+Not applied: C1 = 220 pF (leaves the book's value; R17 does the job), a diode across
+Q3's base-emitter, and the Extended-fee question on through-hole codes (unverified).
+
+Build: ERC 0, 118 circuit assertions, DRC 0, 28 of 28 document claims.
+
+![output with R17](docs/history/2026-10-27-r8-output-r17.png)
+![R8 as a 2512](docs/history/2026-10-27-r8-r8-2512.png)
+![tail, R5 moved, R7 1206](docs/history/2026-10-27-r8-tail-r5-r7.png)
+![board](docs/history/2026-10-27-r8-top.png)
+![back](docs/history/2026-10-27-r8-silk-bottom.png)
+![schematic](docs/history/2026-10-27-r8-schematic.png)

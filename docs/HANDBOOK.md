@@ -18,26 +18,34 @@ PNP arrows point in.  A dashed box names each stage.
 | INPUT PROTECTION | R1, R2, D1, D2 | 1 k in series with each input; two diodes between the bases hold the difference under 0.7 V |
 | DIFFERENCE AMPLIFIER x11 | Q1, Q2, R3, RV1 | the book's diff pair; R3 is the 1.5 k collector load; the output is Q2's collector, the node Q2 C |
 | TAIL | Q6, R5, R6, R7, R4, SW1 | the 1.4 mA current sink, or the 10 k resistor |
-| GAIN x30 | Q3, R8, R9 | PNP common-emitter stage, 330 ohm emitter, 12 k collector; its output is Q3 C |
-| COMPENSATION | C1, R14, SW2 | the 100 pF Miller capacitor from C3 back to C2, with 1 k in series |
+| GAIN STAGE x30 | Q3, R8, R9 | PNP common-emitter stage, 330 ohm emitter (the big 1 W resistor, see section 2), 12 k collector; its output is Q3 C |
+| OPTIONAL COMPENSATION | C1, R14, SW2 | the 100 pF Miller capacitor from Q3 C back to Q2 C, with 1 k in series |
 | PUSH-PULL FOLLOWER | Q4, Q5, R15, R16 | the output followers, with 47 ohm in each emitter for the limit below |
-| OUTPUT CURRENT LIMIT | Q7, Q8, D5, D6 | not in the book: a safety net, as in a real op-amp.  Q7 (Q8) turns on when more than about 0.65 V stands across R15 (R16) and steals the drive; the diodes keep the idle one out of the way.  It limits at about 22 mA into a dead short (15 mA through Q4 or Q5) and does nothing below that |
-| FEEDBACK | R10, R11, SW3 | the book's 10 k / 1 k load and x11 divider; its tap is X, and the switch returns X or OUT to IN- |
+| OUTPUT CURRENT LIMIT | Q7, Q8, D5, D6 | not in the book: a safety net, as in a real op-amp.  Q7 (Q8) turns on when more than about 0.65 V stands across R15 (R16) and steals the drive; the diodes keep the idle one out of the way.  It limits at about 17 mA into a dead short (15 mA through Q4 or Q5) and does nothing below that.  R17, 47 ohm between the loop's OUT node and the jacks, is in this box too: see section 3 |
+| OPTIONAL FEEDBACK | R10, R11, SW3 | the book's 10 k / 1 k load and x11 divider; its tap is X, and the switch returns X or OUT to IN- |
 
 ## 2. Power
 
 | | |
 |---|---|
-| supply | +15 V, GND, -15 V on the three-way terminal at the bottom right, marked POWER |
+| supply | +15 V, GND, -15 V on the three-way terminal at the bottom right, marked POWER; no more than +/-16 V |
 | current | about 4 mA a rail at rest, up to 20 mA driving a 1 k load to full swing |
 | protection | a Schottky in each rail: reversed leads do nothing (no LED), they do not kill it |
 | signs of life | both green LEDs on, one beside each rail |
 
 Set the bench supply's current limit to 50 mA, always, not only for a new board:
-the board never needs more than 30 mA a rail, and with the limit a scope's
-ground clip on the wrong loop (Q2 C or Q3 E to ground would otherwise put
-0.6 W into the 0805 R8) or a shorted output cannot burn anything.  The two
-10 uF bypass capacitors hold the rails if the leads are long.
+the board never needs more than 30 mA a rail, and the limit is what saves the
+Schottkys when a scope's ground clip lands on a rail loop.  It does not save
+anything from a clip on a signal loop, because those currents stay under it:
+Q3 E to ground puts the whole rail across R8, 0.66 W at 45 mA, and Q2 C to ground
+0.5 W.  That is why R8 is the big 2512 resistor above Q3, rated 1 W, and why R7
+under Q6 is a 0.25 W 1206 (Q6 E or Q6 B to ground puts 0.21 W in it).  Nothing
+burns; move the clip.  Q3 E to ground also drives Q3's base-emitter junction
+past its reverse rating, so make it a slip, not a habit.
+
+Stay within +/-16 V at the terminal.  The 10 uF bypass capacitors are 25 V parts,
+and swapping GND with one of the rails puts 30 V across one of them.  The two
+10 uF capacitors also hold the rails if the leads are long.
 
 ## 3. Inputs and output
 
@@ -45,18 +53,28 @@ ground clip on the wrong loop (Q2 C or Q3 E to ground would otherwise put
 |---|---|---|---|
 | IN- | J1, left, upper | J4 IN- / GND | +/-12 V |
 | IN+ | J2, left, lower | J5 IN+ / GND | +/-12 V |
-| OUT | J3, right | J7 OUT / GND | +/-12 V into 1 k, 15 mA |
+| OUT | J3, right | J7 OUT / GND | about +/-12 V into 1 k, 15 mA; 47 ohm out |
 
 The jack and the terminal of each input are the same node, so a generator can
 come in on the BNC while a feedback network goes on the screws.  Each input has
 1 k in series before the transistor base, so the 1N4148 clamp between the bases
 limits the current a wrong input can push to about 7 mA (15 mA, 0.2 W in each
 1 k, with the two inputs at opposite rails).  The output limits itself (about
-15 mA through Q4 or Q5, 22 mA into a dead short with the sense transistor's
-share), so a short to ground is survived for minutes, not an afternoon: 0.21 W
-in a SOT-23 whose stocked part is rated 0.2 W.  A short to a rail puts 0.43 W
-into Q4 or Q5, twice its rating: a slip, not a minute.  Loads of 1 k and up are
-the design.
+15 mA through Q4 or Q5, 17 mA into a dead short with Q3's share through the sense
+transistor), so a short to ground is survived for minutes, not an afternoon:
+0.2 W in a SOT-23 whose stocked part is rated 0.2 W.  A short to a rail puts
+0.4 W into Q4 or Q5, twice its rating: a slip, not a minute.  Loads of 1 k and up
+are the design.
+
+Both OUT jacks hang from the loop's own OUT node through R17, 47 ohm, which is
+not in the book.  The board's feedback (FEEDBACK 1 or 2) is taken before R17, so
+a metre of coax on the BNC (100 pF) stays outside the loop.  Without R17 the
+simulated follower oscillated at 13 MHz on the flat tops of a 5 V square wave
+into 100 pF, because R15 and R16 sit inside the loop.  The price is 4.5 % less
+output into a 1 k load with the board's own feedback, and nothing into a scope.
+In your own circuit (FEEDBACK off) your feedback comes from the OUT terminal,
+after R17, so a long cable on OUT is inside your loop: keep it short or probe
+OUT with a 10x probe.
 
 ## 4. The switches
 
@@ -66,11 +84,12 @@ the word ON beside the switch.
 | switch | 1 on | 2 on | both off |
 |---|---|---|---|
 | **TAIL** SW1 | Q6 current sink (normal) | 10 k tail resistor, the book's first version | no tail: the diff pair is dead, nothing works |
-| **COMPENSATION** SW2 | 100 pF + 1 k from C3 to C2 (normal) | the bare 100 pF, no 1 k: the book's version | no compensation |
-| **FEEDBACK** SW3 | X to IN-: gain of 11, non-inverting | OUT to IN-: follower | open loop, or your own feedback on the terminals |
+| **OPTIONAL COMPENSATION** SW2 | 100 pF + 1 k from Q3 C to Q2 C (normal) | the bare 100 pF, no 1 k: the book's version | no compensation |
+| **OPTIONAL FEEDBACK** SW3 | X to IN-: gain of 11, non-inverting | OUT to IN-: follower | open loop, or your own feedback on the terminals |
 
-Both TAIL sliders on puts the resistor in parallel with the sink, which is
-harmless.  Both COMPENSATION sliders on is the same as 2 alone.  Both FEEDBACK sliders
+Both TAIL sliders on puts the resistor in parallel with the sink: the tail
+doubles to 2.8 mA and the board still works, but the follower's offset moves to
+about +65 mV, beyond what RV1 can null.  Null with slider 2 off.  Both COMPENSATION sliders on is the same as 2 alone.  Both FEEDBACK sliders
 on shorts R10, which makes a follower with a 1 k load to ground.
 
 Usual, as the back of the board says: TAIL 1, COMPENSATION 1, FEEDBACK as needed.
@@ -80,7 +99,7 @@ Usual, as the back of the board says: TAIL 1, COMPENSATION 1, FEEDBACK as needed
 18 probe loops, one per named node, take a scope probe's hook or a mini-grabber.
 Four of them are ground, for the probe's clip, one per scope channel.  The voltages are what the
 simulation gives as a follower (FEEDBACK 2 on) with IN+ grounded, TAIL 1,
-COMPENSATION 1, +/-15 V in.  Expect a few hundred millivolts of spread from transistor
+COMPENSATION 1, +/-15 V in (the rails are 0.17 V lower, after the Schottkys).  Expect a few hundred millivolts of spread from transistor
 to transistor; a volt off is a fault.
 
 | loop | node | where | expect |
@@ -90,15 +109,15 @@ to transistor; a volt off is a fault.
 | TP13 | Q1 E | Q1's emitter | -0.6 V |
 | TP14 | Q2 E | Q2's emitter | -0.6 V |
 | TP3 | TAIL | the trimmer's wiper, Q6's collector | -0.7 V |
-| TP5 | Q6 B | the 62 k / 10 k divider | -13.0 V |
-| TP4 | Q6 E | across R7: 1.4 mA x 1 k | -13.6 V |
-| TP6 | Q2 C | Q2's collector, the diff amp's output | +13.9 V |
-| TP7 | Q3 E | Q3's emitter | +14.6 V |
+| TP5 | Q6 B | the 62 k / 10 k divider | -12.8 V |
+| TP4 | Q6 E | across R7: 1.4 mA x 1 k | -13.5 V |
+| TP6 | Q2 C | Q2's collector, the diff amp's output | +13.8 V |
+| TP7 | Q3 E | Q3's emitter | +14.4 V |
 | TP8 | Q3 C | Q3's collector, the push-pull's input | +0.5 V |
-| TP9 | OUT | the output, beside the jack | 0.0 V |
+| TP9 | OUT | the jacks' side of R17, beside the jack | 0.0 V |
 | TP10 | X | the 10 k / 1 k tap, in the FEEDBACK box | 0.0 V |
-| TP11 | +15V | the rail, after the Schottky | +14.6 V |
-| TP12 | -15V | the rail, after the Schottky | -14.6 V |
+| TP11 | +15V | the rail, after the Schottky | +14.8 V |
+| TP12 | -15V | the rail, after the Schottky | -14.8 V |
 | TP100 - TP103 | GND | for the clip, one per scope channel | 0 |
 
 The 0.6 V steps are the story of the board: Q1 and Q2's emitters sit a diode
@@ -116,19 +135,21 @@ with temperature: hold a finger on Q1 and watch it.
 
 ## 7. Bringing up a new board
 
-1. Look at it.  Eight transistors with their lone pad on the collector side (up
-   for Q1, Q3, Q4, Q5, Q7, Q8; down for Q2 and Q6), the diode bands where the silkscreen bars
-   are, the BNC barrels off the edges, the trimmer screw up.
+1. Look at it.  Eight transistors with their lone pad (pin 3, the collector) up
+   for Q1, Q3, Q4, Q5, Q7, Q8 and down for Q2 and Q6, the diode bands where the
+   silkscreen bars are, the BNC barrels and the screw terminals' wire openings
+   facing off the edges, the trimmer screw up.
 2. Set TAIL 1, COMPENSATION 1, FEEDBACK 2.  Nothing on the inputs.
 3. Power from a current-limited supply at 30 mA.  Both LEDs light; each rail
    draws about 4 mA.  A rail at more than 10 mA with nothing connected is a
    fault: power off and look for a transistor in backwards.
-4. Read TP11 and TP12: +/-14.6 V.
+4. Read TP11 and TP12: +/-14.8 V.
 5. Read the loops against the table above.  TAIL, Q2 C, Q3 E, Q3 C and Q6 E tell you
    which stage is wrong if one is.
 6. Null the offset.
-7. Put 1 V peak at 1 kHz into IN+ (BNC) and look at OUT: a clean copy.  Raise it to
-   10 V peak: still a copy.  A square wave: clean edges, no ringing.
+7. Put 1 V peak at 1 kHz into IN+ (BNC) and look at OUT on the BNC, through a
+   cable: a clean copy.  Raise it to 10 V peak: still a copy.  A square wave:
+   clean edges, no ringing.
 8. FEEDBACK 1: the same input at 0.5 V peak comes out 5 V peak.
 9. COMPENSATION 2 as a follower: the square wave's edges ring, which is the book's point.
    Back to COMPENSATION 1.
@@ -136,7 +157,10 @@ with temperature: hold a finger on Q1 and watch it.
 ## 8. Exercises, in the order of Lab 5L
 
 Each one is a switch setting and a pair of loops.  "Open loop" means both
-FEEDBACK sliders off.
+FEEDBACK sliders off, and then IN- must be grounded or driven: left open, its
+2 uA of bias current flows through D1 instead and sets 0.15 V of offset, which
+pins OUT at a rail whatever RV1 does.  Unground IN- again before you switch
+FEEDBACK on, or the switch shorts OUT to ground.
 
 1. **The operating point.**  Follower, IN+ grounded.  Measure every loop and
    account for every 0.6 V.  Work out the tail current from TP4 and R7, and check
@@ -149,12 +173,14 @@ FEEDBACK sliders off.
    resistor).  The current sink buys a hundred times less common-mode gain for
    the price of one transistor.
 4. **The gain stage.**  Open loop, a millivolt or so in.  TP8 against TP6: about
-   30, inverted again.  Note how quickly C3 hits a rail: the whole thing has a
-   gain of a few hundred at rest.
-5. **The push-pull and its crossover.**  Open loop, a 50 mV triangle in.  OUT
-   against TP8: a dead band of about 1.2 V where neither Q4 nor Q5 conducts.  Now
-   close the loop (FEEDBACK 2) with the same input: the dead band vanishes from OUT
-   and reappears as a step at TP8.  That is what feedback does.
+   30, inverted again.  Note how quickly Q3 C (TP8) hits a rail: the whole thing
+   has a gain of a few hundred at rest.
+5. **The push-pull and its crossover.**  Open loop, IN- grounded, a triangle of
+   5 to 10 mV peak in, RV1 trimmed so OUT swings about zero (50 mV clips TP8 at
+   both rails).  OUT against TP8: a dead band of about 1.2 V where neither Q4 nor
+   Q5 conducts.  Now unground IN- and close the loop (FEEDBACK 2) with a larger
+   input: the dead band vanishes from OUT and reappears as a step at TP8.  That
+   is what feedback does.
 6. **The follower.**  FEEDBACK 2.  Gain, input and output swing into 1 k, slew rate
    on a 10 V square wave, and the bandwidth.
 7. **The x11 amplifier.**  FEEDBACK 1.  Measure the gain to three figures: it is
@@ -179,8 +205,9 @@ real limits, and the limits are the lesson.
 |---|---|---|
 | input bias current | about 2 uA (a BJT pair at 0.7 mA a side) | 50 pA |
 | input offset | millivolts, nullable with RV1 | 0.8 mV |
-| open-loop gain | about 140 at rest, a few hundred once the output moves | 200,000 |
-| output current | +/-12 V into 1 k; limits at about 15 mA (22 mA into a dead short); a short to ground is survived | 25 mA, limited |
+| open-loop gain | about 130 at rest, a few hundred once the output moves | 200,000 |
+| output current | about +/-12 V into 1 k; 15 mA through Q4 or Q5 (17 mA into a dead short); a short to ground is survived | 25 mA, limited |
+| output resistance | 47 ohm (R17) outside your loop, nothing inside the board's | a fraction of an ohm |
 | slew rate | several V/us | 15 V/us |
 | inputs | anti-parallel diodes between the bases conduct above 0.7 V of difference, through the two 1 k | none |
 
@@ -197,7 +224,7 @@ real limits, and the limits are the lesson.
 | 7L.4 single-supply microphone amplifier | no | needs both rails |
 | 8L.1 comparator, 8L.1.3 Schmitt trigger, 8L.2 relaxation oscillator | yes | keep the hysteresis under a volt or so, or the input clamp loads the divider |
 | 8L.7 Wien bridge | yes at modest amplitude | 15 mA of output current is the ceiling |
-| 9L.3 capacitive loads, 9L.4 buffer in the loop | yes | 51 degrees of phase margin to lose; a probe on Q3 C costs 12 of them |
+| 9L.3 capacitive loads, 9L.4 buffer in the loop | yes | 54 degrees of phase margin to lose; a probe on Q3 C costs about 12 of them.  With your feedback from the OUT terminal, R17 and a capacitive load are inside your loop: the isolation resistor 9L.3 asks for is already there, and the lesson shows |
 
 Loads of 1 k and up are the design; a short is survived, not enjoyed.
 
@@ -210,6 +237,6 @@ Loads of 1 k and up are the design; a short is survived, not enjoyed.
 | OUT stuck at a rail, open loop | normal: the open-loop gain is hundreds |
 | OUT stuck at a rail as a follower | TAIL both off; a transistor in backwards; TP6 shows which stage |
 | OUT clips at a few volts into a low load | the current limit at work: raise the load to 1 k |
-| rings or oscillates as a follower | COMPENSATION 1 off; a long unterminated cable on OUT |
+| rings or oscillates as a follower | COMPENSATION 1 off; in your own circuit, a long cable on OUT inside your loop |
 | hum | the scope's ground clip is not on a GND loop |
-| a resistor smells hot | a ground clip on a signal loop: Q2 C or Q3 E to ground puts 0.6 W into R8, Q6 E or Q6 B to ground 0.2 W into R7.  The 50 mA supply limit is what saves R8; power off and move the clip |
+| a resistor is hot | a ground clip on a signal loop: Q3 E or Q2 C to ground puts 0.5 to 0.66 W into R8 (rated 1 W), Q6 E or Q6 B to ground 0.21 W into R7 (rated 0.25 W).  The 50 mA supply limit does not trip on these; move the clip |

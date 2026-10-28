@@ -6,10 +6,7 @@ from ngspice_lib import NgSpice
 import opamp_sim as S
 
 def core_rz(ccomp, rz, **kw):
-    L = S.core(ccomp=ccomp, **kw)
-    L = [l for l in L if not l.startswith("Ccomp")]
-    L += [f"Ccomp c3 cz {ccomp}", f"Rz cz c2 {rz}"]
-    return L
+    return S.core(ccomp=ccomp, rz=rz, **kw)
 
 def margins(ccomp, rz, pot=0.5):
     lines = core_rz(ccomp, rz, pot=pot) + ["Vin inp 0 dc 0 ac 1", "Lfb out inm 1e9", "Cin inm 0 1e9"]

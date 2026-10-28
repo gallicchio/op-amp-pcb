@@ -112,6 +112,8 @@ def main(path):
     check(N.between("GND", b6) == ["R5"] and ohms(N.value["R5"]) == 62000, "R5 = 62k from Q6's base to ground")
     check(N.between(b6, "-15V") == ["R6"] and ohms(N.value["R6"]) == 10000, "R6 = 10k from Q6's base to -15 V")
     check(N.between(N.net("Q6", 2), "-15V") == ["R7"] and ohms(N.value["R7"]) == 1000, "R7 = 1k in Q6's emitter")
+    check(N.footprint["R7"].endswith("R_1206_3216Metric"),
+          "R7 is a 0.25 W 1206: a ground clip on Q6 E puts 0.21 W in it")
     vb = -15.0 + 15.0 * 10000 / 72000            # the divider, unloaded
     i_tail = (vb - 0.65 + 15.0) / 1000.0
     check(1.2e-3 < i_tail < 1.6e-3, f"the sink's design current is {i_tail*1e3:.2f} mA (book: about 1.5 mA)")
@@ -120,6 +122,8 @@ def main(path):
 
     # --- the gain stage --------------------------------------------------------
     check(N.between("+15V", N.net("Q3", 2)) == ["R8"] and ohms(N.value["R8"]) == 330, "R8 = 330 in Q3's emitter to +15 V")
+    check(N.footprint["R8"].endswith("R_2512_6332Metric"),
+          "R8 is a 1 W 2512: a scope's ground clip on Q3 E puts 14.6 V across it, 0.65 W")
     check(N.between(N.net("Q3", 3), "-15V") == ["R9"] and ohms(N.value["R9"]) == 12000, "R9 = 12k from Q3's collector to -15 V")
     check(N.net("Q3", 3) == "Q3 C", "Q3's collector is the node Q3 C")
     # gains, as the sheet quotes them
@@ -138,13 +142,13 @@ def main(path):
     check(N.net("C1", 2) == "Q3 C" and abs(farads(N.value["C1"]) - 100e-12) < 1e-13, "C1 = 100 pF to Q3 C (Q3's collector)")
     check(N.net("SW2", 3) == "Q2 C" and N.net("SW2", 2) == N.net("C1", 1),
           "SW2 pole 2 takes Q2 C straight to C1, bypassing R14: the book's bare 100 pF on its own")
-    f_z = 1 / (2 * math.pi * 100e-12 * (1000 - 350))
+    f_z = 1 / (2 * math.pi * farads(N.value["C1"]) * (ohms(N.value["R14"]) - 350))
     check(f_z > 1e6, f"with the 1k the Miller zero sits in the left half-plane at {f_z/1e6:.1f} MHz")
 
     # --- push-pull --------------------------------------------------------------
     check(N.net("Q4", 1) == "Q3 C" and N.net("Q5", 1) == "Q3 C", "Q4 and Q5's bases are driven by Q3 C")
     check(N.net("Q4", 3) == "+15V" and N.net("Q5", 3) == "-15V", "Q4's collector to +15 V, Q5's to -15 V")
-    # the output current limit (not in the book): 33 ohm in each emitter, sensed by Q7 / Q8
+    # the output current limit (not in the book): 47 ohm in each emitter, sensed by Q7 / Q8
     check(N.between(N.net("Q4", 2), "OUT") == ["R15"] and ohms(N.value["R15"]) == 47, "R15 = 47 ohm from Q4's emitter to OUT")
     check(N.between(N.net("Q5", 2), "OUT") == ["R16"] and ohms(N.value["R16"]) == 47, "R16 = 47 ohm from Q5's emitter to OUT")
     check(N.net("Q7", 1) == N.net("Q4", 2) and N.net("Q7", 2) == "OUT", "Q7 senses R15 from OUT")
@@ -155,15 +159,22 @@ def main(path):
     check(0.012 < i_lim < 0.022, f"the output limits at about {i_lim*1e3:.0f} mA: enough for 13 V into 1k, a short survives")
     check(N.between("OUT", "X") == ["R10"] and ohms(N.value["R10"]) == 10000, "R10 = 10k from OUT to X")
     check(N.between("X", "GND") == ["R11"] and ohms(N.value["R11"]) == 1000, "R11 = 1k from X to ground")
-    check(abs(11000 / 1000 - 11) < 1e-9, "X = OUT / 11: the book's x11 divider")
+    g_fb = (ohms(N.value["R10"]) + ohms(N.value["R11"])) / ohms(N.value["R11"])
+    check(abs(g_fb - 11) < 1e-9, "X = OUT / 11: the book's x11 divider")
+    # R17 (not in the book): the jacks hang from OUT through 47 ohm, outside the loop,
+    # so a cable's capacitance cannot make the follower ring
+    check(N.between("OUT", "OUT JACKS") == ["R17"] and ohms(N.value["R17"]) == 47,
+          "R17 = 47 ohm from OUT (the loop's node) to OUT JACKS")
+    check(N.net("SW3", 2) == "OUT" and N.net("R10", 1) == "OUT",
+          "the feedback (SW3 pole 2, R10) is taken from OUT, before R17")
 
     # --- feedback: SW3 pole 1 = X, pole 2 = OUT, both to IN- ---------------------
     check(N.net("SW3", 1) == "X" and N.net("SW3", 2) == "OUT", "SW3 pole 1 takes X, pole 2 takes OUT")
     check(N.net("SW3", 3) == "IN-" and N.net("SW3", 4) == "IN-", "SW3's other pins both go to IN-")
 
     # --- connectors --------------------------------------------------------------
-    for j, pin, net in (("J1", 1, "IN-"), ("J2", 1, "IN+"), ("J3", 1, "OUT"), ("J4", 1, "IN-"),
-                        ("J5", 1, "IN+"), ("J7", 1, "OUT"), ("J6", 1, "+15V_IN"), ("J6", 3, "-15V_IN")):
+    for j, pin, net in (("J1", 1, "IN-"), ("J2", 1, "IN+"), ("J3", 1, "OUT JACKS"), ("J4", 1, "IN-"),
+                        ("J5", 1, "IN+"), ("J7", 1, "OUT JACKS"), ("J6", 1, "+15V_IN"), ("J6", 3, "-15V_IN")):
         check(N.net(j, pin) == net, f"{j} pin {pin} is {net}")
     for j in ("J1", "J2", "J3", "J4", "J5", "J7"):
         check(N.net(j, 2) == "GND", f"{j}'s other pin is ground")
@@ -174,6 +185,13 @@ def main(path):
     check(N.net("D4", 1) == "-15V_IN" and N.net("D4", 2) == "-15V", "D4's cathode on -15V_IN, anode on the -15 V rail")
     for c in ("C2", "C3"):
         check(N.net(c, 1) == "+15V" and N.net(c, 2) == "GND", f"{c} bypasses +15 V")
+    for c, val in (("C2", 10e-6), ("C3", 100e-9), ("C4", 10e-6), ("C5", 100e-9)):
+        check(abs(farads(N.value[c]) - val) < val * 0.01, f"{c} = {N.value[c]}")
+    for r in ("R12", "R13"):
+        check(ohms(N.value[r]) == 10000, f"{r} = 10k for its lamp")
+    for d, val in (("D1", "1N4148W"), ("D2", "1N4148W"), ("D5", "1N4148W"), ("D6", "1N4148W"),
+                   ("D3", "B5819W"), ("D4", "B5819W")):
+        check(N.value[d] == val, f"{d} is a {val}")
     for c in ("C4", "C5"):
         check(N.net(c, 2) == "-15V" and N.net(c, 1) == "GND", f"{c} bypasses -15 V")
     check(N.net("LED1", 1) == "GND" and N.between("+15V", N.net("LED1", 2)) == ["R12"], "LED1 from +15 V through R12 to ground")
@@ -185,7 +203,7 @@ def main(path):
 
     # --- probe loops on the nodes they claim ---------------------------------------
     for tp, net in (("TP1", "Q1 B"), ("TP2", "Q2 B"), ("TP3", "TAIL"), ("TP6", "Q2 C"), ("TP8", "Q3 C"),
-                    ("TP9", "OUT"), ("TP10", "X"), ("TP11", "+15V"), ("TP12", "-15V"),
+                    ("TP9", "OUT JACKS"), ("TP10", "X"), ("TP11", "+15V"), ("TP12", "-15V"),
                     ("TP100", "GND"), ("TP101", "GND"), ("TP102", "GND"), ("TP103", "GND")):
         check(N.net(tp, 1) == net, f"{tp} ({N.value[tp]}) is on {net}")
     check(N.net("TP4", 1) == N.net("Q6", 2), "TP4 is Q6's emitter")

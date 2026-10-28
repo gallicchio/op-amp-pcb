@@ -91,7 +91,7 @@ generators as well as their output.
 | `scripts/parts.py` | every part: value, footprint, LCSC code, stock, JLCPCB rotation |
 | `scripts/layout.py` | the board: placements, the silkscreen wires, texts, boxes, hops |
 | `scripts/gen_sch.py`, `scripts/gen_pcb.py` | the schematic and the board (copper follows the silk wires) |
-| `scripts/check_circuit.py` | the 98 netlist assertions |
+| `scripts/check_circuit.py` | the 118 netlist assertions |
 | `sim/opamp_sim.py` | the ngspice model as built |
 | `docs/images/opamp-top.png`, `opamp-silk-top.png`, `opamp-silk-bottom.png`, `schematic.png` | the board, the bare silkscreen, the back, the sheet |
 | `docs/history/2026-10-24-r4-*.png` | 600 dpi close-ups of each stage as reviewed |
@@ -105,22 +105,23 @@ documents is wrong." The board's own numbers, each of which the build checks:
 
 - ERC 0; DRC 0 at every severity with schematic parity, with KiCad's silkscreen rules
   on (0.8 mm minimum text, 0.15 mm silk clearance);
-- 98 circuit assertions pass against the exported netlist; the sheet has no text
+- 118 circuit assertions pass against the exported netlist; the sheet has no text
   overlaps; the fab package passes its checks (gerber layers and extent, drill files,
   BOM against CPL, each LCSC code's JLCPCB description against the value and package,
   stock, the QR code decodes, the keyed parts);
 - 28 numbers quoted in the documents match the build;
 - the simulation (`sim/results.json`, generic 2N3904 / 2N3906 models, 3 pF of stray on
-  the three high-impedance nodes): tail 1.39 mA, Q3 1.30 mA, rails +/-14.6 V after the
-  Schottkys, open-loop gain 138 at rest, stage gains 11.1 and 12.4, x11 amplifier gain
-  10.23, follower phase margin 50.8 degrees (-42.6 without the 1 k), x11 phase margin
-  120 degrees, unity-gain crossing 15 MHz, swing -14.3 to +13.4 V into the 11 k
-  divider, short-circuit output current 21.8 mA, follower offset -5.6 mV, null range
-  +/-33 mV;
-- 66 parts, all on the front: 58 SMT, 8 through-hole (three BNCs, four terminals, the
-  trimmer); 4 M3 holes; 32 vias; 8 hops (crossings on the back layer); 40 BOM lines, 7
-  JLCPCB Extended codes; parts $7.78 a board; 2 assembled $75.10, 10 assembled
-  $146.17.
+  the three high-impedance nodes, the rails fed through modelled B5819Ws from +/-15 V):
+  rails +/-14.83 V, tail 1.36 mA, Q3 1.28 mA, open-loop gain 126 at rest, stage gains
+  11.4 and 32 (11.1 through the resting push-pull), x11 amplifier gain 10.11, follower
+  phase margin 54 degrees (-39 without the 1 k), x11 phase margin 122 degrees,
+  unity-gain crossing 14 MHz, swing -14.1 to +13.2 V into the 11 k divider and
+  +/-11.7 V into 1 k at the jacks, short-circuit output current 16.9 mA (14.5 mA
+  through Q4 or Q5), follower offset -6.7 mV, null range +/-33 mV;
+- 67 parts, all on the front: 59 SMT, 8 through-hole (three BNCs, four terminals, the
+  trimmer); 4 M3 holes; 32 vias; 8 hops (crossings on the back layer); 40 BOM lines, 8
+  JLCPCB Extended codes; 114 SMT and 27 through-hole joints a board; parts $7.82 a
+  board; 2 assembled $78.72, 10 assembled $152.30.
 
 ## 3. What to attack
 
@@ -243,7 +244,7 @@ points that apply here, to be used as checks:
 |---|---|---|
 | `./make.py` | footprints, models, simulation, schematic, ERC, netlist, circuit checks, board, DRC, fab package, documents; stops at the first failure | `hardware/`, `out/`, `build/`, `docs/images/`, `docs/MANUFACTURING.md`, `sim/results.json` |
 | `./make.py --stage sch` (`libs`, `sim`, `sch`, `pcb`, `out`, `docs`) | one stage | the same, for that stage |
-| `python3 scripts/check_circuit.py out/opamp.net` | the 98 netlist assertions | nothing |
+| `python3 scripts/check_circuit.py out/opamp.net` | the 118 netlist assertions | nothing |
 | `python3 scripts/check_schematic.py hardware/opamp.kicad_sch` | text overlaps on the sheet | nothing |
 | `python3 scripts/check_outputs.py` | the fab package (gerbers, BOM, CPL, QR, keying, stock, JLCPCB descriptions) | `scripts/jlc_cache.json` |
 | `python3 sim/opamp_sim.py` | the simulation, printed (`--json` also writes `sim/results.json`); edit a copy to ask new questions, `core()` is the circuit | nothing without `--json` |
@@ -259,6 +260,16 @@ build uses the committed `sim/results.json` and says so.
 
 ## 6. Already known or decided
 
+- Round 1 (2026-10-24 to 2026-10-27: the author, Gemini-4-Argon and Kimi K3) is
+  closed and applied; `design_reviews/README.md` lists what each found and what changed.
+  In short: R17 (47 ohm) now feeds both OUT jacks from the loop's node, outside the
+  feedback, because 100 pF of coax made the follower oscillate once its output left the
+  dead band; R8 is a 1 W 2512 and R7 a 1206, so a scope's ground clip on Q3 E, Q2 C,
+  Q6 E or Q6 B burns nothing; the KF301 terminals are turned 180 degrees in the CPL
+  (their wire openings were facing inward); PLACEMENT_CHECKS gives every part its own
+  line; the simulation includes the Schottkys, R14 and R17; the "Q6 B" label is clear;
+  ground stubs are drawn in silk; +/-16 V is the stated supply limit.  Verify those
+  rather than re-find them.
 - The author reviewed first (`design_reviews/2026-10-24_Claude-Fable-5.1/REPORT.md`,
   with its simulations and patch) and, at Jason's word, applied its patch before this
   round opened: the COMPENSATION switch's pole 2 now bypasses the 1 k so position 2
@@ -266,9 +277,9 @@ build uses the committed `sim/results.json` and says so.
   ground is survived and a short to a rail is not, with the stocked SOT-23's 0.2 W
   rating; the 50 mA supply limit is the rule; the switches carry ON marks; the input
   terminals' ground symbols point down; the stale counts and numbers are corrected.
-  Verify those rather than re-find them. Still open from that review: the "Q6 B" label
-  sitting over R5's ground symbol (no clean place for it without re-planning the Q6
-  area), the "Remove Mark" fee, and the fee constants in the cost model.
+  Verify those rather than re-find them. Still open: the "Remove Mark" fee, and the
+  fee constants in the cost model (Gemini thinks the $3 Extended fee is not charged on
+  the four through-hole codes; unverified, so the estimate keeps it).
 - Every CPL rotation except the BNCs' and the LEDs' is predicted, not read; the BNC's
   +90 was read on a built board with the same footprint. `PLACEMENT_CHECKS.txt` is the
   list for the preview.
@@ -280,7 +291,7 @@ build uses the committed `sim/results.json` and says so.
   of the board and its QR code carry, may not resolve until it is.
 - The rev B list (`docs/DESIGN_NOTES.md` section 6) stands as the author's own
   critique; it is fair game, in both directions.
-- The simulation's unity-gain crossing (15 MHz) is the models talking; the author
+- The simulation's unity-gain crossing (14 MHz) is the models talking; the author
   expects a few MHz on the real board and a little less margin.
 - The push-pull box's title lost its "x1" for lack of width; the FEEDBACK legend still
   says it.

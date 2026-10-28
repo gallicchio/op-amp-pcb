@@ -55,8 +55,23 @@ def find_appimages():
     return ten + [p for p in out if p not in ten]
 
 
+def _find_plain_cli():
+    if os.environ.get("KICAD_APPIMAGE"):
+        return None
+    cli_path = shutil.which("kicad-cli")
+    if not cli_path:
+        return None
+    try:
+        r = subprocess.run([cli_path, "--version"], capture_output=True, text=True, timeout=10)
+        if r.returncode == 0 and r.stdout.strip().startswith("10."):
+            return cli_path
+    except Exception:
+        pass
+    return None
+
+
 APPRUN = find_apprun()
-PLAIN_CLI = shutil.which("kicad-cli")
+PLAIN_CLI = _find_plain_cli()
 _SHARE = None
 _TRIED = []
 _MOUNT = None            # the --appimage-mount process, kept alive on purpose
@@ -198,8 +213,9 @@ def share_dir():
                       f"in it -- is that your *personal* library directory?)")
 
     cands = []
-    if APPRUN:
-        base = os.path.dirname(os.path.abspath(APPRUN))
+    run = runner()
+    if run:
+        base = os.path.dirname(os.path.abspath(run))
         for up in range(0, 4):
             root = os.path.abspath(os.path.join(base, *([".."] * up)))
             cands += [os.path.join(root, "share", "kicad"),
@@ -207,10 +223,11 @@ def share_dir():
     for v in ("KICAD10_SYMBOL_DIR", "KICAD9_SYMBOL_DIR", "KICAD_SYMBOL_DIR"):
         if os.environ.get(v):
             cands.append(os.path.dirname(os.environ[v]))
-    cands += ["/usr/share/kicad", "/usr/local/share/kicad",
-              os.path.expanduser("~/.local/share/kicad"),
-              "/Applications/KiCad/KiCad.app/Contents/SharedSupport",
-              "C:/Program Files/KiCad/10.0/share/kicad"]
+    if not run:
+        cands += ["/usr/share/kicad", "/usr/local/share/kicad",
+                  os.path.expanduser("~/.local/share/kicad"),
+                  "/Applications/KiCad/KiCad.app/Contents/SharedSupport",
+                  "C:/Program Files/KiCad/10.0/share/kicad"]
     for c in cands:
         _TRIED.append(c)
         if _looks_right(c):

@@ -41,8 +41,12 @@ PARTS = {
                    symbol="Device:R_US"),
     "C_0805": dict(footprint="Capacitor_SMD:C_0805_2012Metric", process="SMT",
                    symbol="Device:C"),
-    # the two input resistors are 1206: a rail shorted to an input puts 0.2 W in them
+    # 1206, 0.25 W: the two input resistors (a rail shorted to an input puts 0.2 W in
+    # them) and R7 (a scope's ground clip on Q6 E or Q6 B puts 0.2 W in it)
     "R_1206": dict(footprint="Resistor_SMD:R_1206_3216Metric", process="SMT",
+                   symbol="Device:R_US"),
+    # 2512, 1 W: R8, which a scope's ground clip on Q3 E or Q2 C puts 0.5-0.65 W into
+    "R_2512": dict(footprint="Resistor_SMD:R_2512_6332Metric", process="SMT",
                    symbol="Device:R_US"),
     # ---- the offset-null trimmer between the two emitters -------------------
     "POT": dict(
@@ -131,13 +135,15 @@ PASSIVES = {
     "1k":    dict(lcsc="C17513", mpn="0805W8F1001T5E", jlc_type="basic",
                   price=0.0035, stock=43103445),
     "1k_1206": dict(lcsc="C4410", mpn="1206W4F1001T5E", jlc_type="basic",
-                    price=0.0085, stock=1945919, note="1206, 0.25 W: the input series resistors"),
+                    price=0.0085, stock=1945919, note="1206, 0.25 W: the input series resistors and R7"),
     "1.5k":  dict(lcsc="C4310", mpn="0805W8F1501T5E", jlc_type="basic",
                   price=0.0028, stock=1272825),
     "47R":   dict(lcsc="C17714", mpn="0805W8F470JT5E", jlc_type="basic",
-                  price=0.0029, stock=667379, note="the output current limit's sense resistors: about 20 mA"),
-    "330R":  dict(lcsc="C17630", mpn="0805W8F3300T5E", jlc_type="basic",
-                  price=0.0044, stock=1939287),
+                  price=0.0029, stock=601045,
+                  note="the output current limit's sense resistors, and R17, which keeps a cable on the OUT jacks outside the loop"),
+    "330R_2512": dict(lcsc="C2934068", mpn="FRC2512F3300TS", jlc_type="extended",
+                      price=0.0348, stock=38811,
+                      note="2512, 1 W: survives a scope ground clip on Q3 E (0.65 W) for good"),
     "10k":   dict(lcsc="C17414", mpn="0805W8F1002T5E", jlc_type="basic",
                   price=0.0034, stock=54300842),
     "12k":   dict(lcsc="C17444", mpn="0805W8F1202T5E", jlc_type="basic",
@@ -170,7 +176,9 @@ JLC_ROTATION = {
     "C8598": (0, "predicted", "B5819W SOD-123: their pad 1 at -1.7 as KiCad's; cathode band end to be seen"),
     "C81598": (0, "predicted", "1N4148W SOD-123F: as the Schottky"),
     "C52754333": (0, "predicted", "3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here"),
-    "C474881": (0, "predicted", "KF301-2P: pins along x at +/-2.5, as drawn here; wire entry side to be seen"),
-    "C474882": (0, "predicted", "KF301-3P: pins along x at -5/0/+5, as drawn here"),
+    "C474881": (180, "predicted", "KF301-2P: EasyEDA draws the wire openings on +y, 3.7 mm from the pins; "
+                                   "ours face -y (the board edge); the pin row is symmetric, so +180 only turns the body"),
+    "C474882": (180, "predicted", "KF301-3P: wire-entry arrows on +y in EasyEDA, as the 2P"),
+    "C2934068": (0, "predicted", "R2512: a resistor; their pads along x as KiCad's, either way round"),
     "C5199800": (0, "predicted", "RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x"),
 }

@@ -13,29 +13,38 @@ MODELS = [
     ".model Q3904 NPN(IS=1E-14 VAF=100 Bf=300 IKF=0.4 XTB=1.5 BR=4 CJC=4E-12 CJE=8E-12 RB=20 RC=0.1 RE=0.1 TR=250E-9 TF=350E-12 ITF=1 VTF=2 XTF=3)",
     ".model Q3906 PNP(IS=1E-14 VAF=100 Bf=200 IKF=0.4 XTB=1.5 BR=4 CJC=4.5E-12 CJE=10E-12 RB=20 RC=0.1 RE=0.1 TR=250E-9 TF=350E-12 ITF=1 VTF=2 XTF=3)",
     ".model D4148 D(IS=2.52e-9 RS=0.568 N=1.752 CJO=4e-12 M=0.4 TT=20e-9 BV=75)",
+    # B5819W, fitted to its datasheet's 25 C forward curve: 0.27 V at 0.1 A, 0.55 V at
+    # 1 A; at the board's 4 mA it drops 0.18 V, so the rails sit near +/-14.8 V
+    ".model DB5819 D(IS=7.5e-6 N=1.1 RS=0.2 CJO=150e-12 M=0.4 BV=40)",
 ]
 
 
-def core(tail="cs", pot=0.5, ccomp="100p", bf_n=300, bf_p=200, stray="3p", vsup=15):
-    """The op-amp proper: nodes inm inp out, rails vp vn, ground 0."""
+def core(tail="cs", pot=0.5, ccomp="100p", rz=1000, bf_n=300, bf_p=200, stray="3p", vsup=15):
+    """The board's op-amp: nodes inm inp out (the loop's node) and oj (the jacks,
+    through R17), rails vp vn after D3 / D4 from a +/-vsup bench supply, ground 0.
+    COMPENSATION 1 by default: ccomp in series with rz from Q3 C to Q2 C; rz=0 is
+    the bare capacitor (position 2), ccomp="0" none at all."""
     P = 50.0
     ra, rb = max(P * pot, 0.01), max(P * (1 - pot), 0.01)
-    L = [f"VP vp 0 {vsup}", f"VN vn 0 {-vsup}",
+    L = [f"VPS vps 0 {vsup}", f"VNS vns 0 {-vsup}", "D3 vps vp DB5819", "D4 vn vns DB5819",
+         "C2 vp 0 10u", "C3 vp 0 100n", "C4 vn 0 10u", "C5 vn 0 100n",
          "R1 inm b1 1k", "R2 inp b2 1k", "D1 b1 b2 D4148", "D2 b2 b1 D4148",
          "Q1 vp b1 e1 Q3904", "Q2 c2 b2 e2 Q3904",
          f"RV1a e1 tail {ra}", f"RV1b e2 tail {rb}",
          "R3 vp c2 1.5k",
          "Q6 tail b6 e6 Q3904", "R5 0 b6 62k", "R6 b6 vn 10k", "R7 e6 vn 1k",
          "Q3 c3 c2 e3 Q3906", "R8 vp e3 330", "R9 c3 vn 12k",
-         f"Ccomp c3 c2 {ccomp}",
+         f"Ccomp c3 cz {ccomp}", f"Rz cz c2 {max(float(rz), 1e-3)}",
          # the output current limit (not in the book): 47 ohm in each emitter, sensed by
          # Q7 / Q8, which steal the drive above 0.65 V / 47 ohm = 14 mA, 20 mA into a short.  D5 / D6 keep the
          # idle sense transistor's base-collector junction from conducting while the
          # other half of the class-B pair is on (its base sits a Vbe below OUT).
          "Q4 vp c3 e4 Q3904", "R15 e4 out 47", "Q7 c7 e4 out Q3904", "D5 c3 c7 D4148",
          "Q5 vn c3 e5 Q3906", "R16 out e5 47", "Q8 c8 e5 out Q3906", "D6 c8 c3 D4148",
-         "R10 out x 10k", "R11 x 0 1k",
+         "R10 out x 10k", "R11 x 0 1k", "R17 out oj 47",
          f"Cs2 c2 0 {stray}", f"Cs3 c3 0 {stray}", f"Cso out 0 {stray}"]
+    if str(ccomp) in ("0", "None"):
+        L = [l for l in L if not l.startswith(("Ccomp", "Rz"))]
     if tail == "r":
         L = [l for l in L if not l.startswith(("Q6", "R5", "R6", "R7"))] + ["R4 tail vn 10k"]
     return L
@@ -54,8 +63,10 @@ def op_point():
     ng = run(core() + ["Vin inp 0 0", "Rfb out inm 1m"], ["op"])
     for n in ("c2", "e3", "c3", "out", "tail", "e6", "b6", "x"):
         print(f"  v({n:4s}) = {ng.vec('v('+n+')')[0]:+8.4f} V")
-    ir7 = (ng.vec("v(e6)")[0] + 15) / 1000
-    print(f"  tail current (R7) = {ir7*1e3:.3f} mA;  Q3 Ie = {(15-ng.vec('v(e3)')[0])/330*1e3:.3f} mA")
+    vp, vn = ng.vec("v(vp)")[0], ng.vec("v(vn)")[0]
+    ir7 = (ng.vec("v(e6)")[0] - vn) / 1000
+    print(f"  rails {vp:+.3f} / {vn:+.3f} V after D3 / D4")
+    print(f"  tail current (R7) = {ir7*1e3:.3f} mA;  Q3 Ie = {(vp-ng.vec('v(e3)')[0])/330*1e3:.3f} mA")
     print(f"  input offset as a follower (OUT with IN+ = 0): {ng.vec('v(out)')[0]*1e3:+.2f} mV")
     print("=== operating point, open loop, IN+ = IN- = 0 (where does OUT sit?) ===")
     ng = run(core() + ["Vin inp 0 0", "Vm inm 0 0"], ["op"])
@@ -72,7 +83,13 @@ def open_loop(tail="cs", pot=0.5, ccomp="100p"):
     vo = ng.vec("v(out)")
     f = [abs(x) for x in f]
     gain = [abs(v) for v in vo]
-    ph = [math.degrees(math.atan2(v.imag, v.real)) for v in vo]
+    ph, prev = [], None
+    for v in vo:
+        p_ = math.degrees(math.atan2(v.imag, v.real))
+        if prev is not None:
+            while p_ - prev > 180: p_ -= 360
+            while p_ - prev < -180: p_ += 360
+        ph.append(p_); prev = p_
     a0 = gain[0]
     # unity-gain crossing and phase there
     fu, pu = None, None
@@ -163,10 +180,12 @@ def results_json(path):
     out = {"date": __import__("datetime").date.today().isoformat()}
     ng = run(core() + ["Vin inp 0 0", "Rfb out inm 1m"], ["op"])
     out["op"] = {n: round(ng.vec("v(" + n + ")")[0], 3) for n in ("c2", "e3", "c3", "out", "tail", "e6", "b6", "x")}
-    out["i_tail_ma"] = round((ng.vec("v(e6)")[0] + 15) / 1000 * 1e3, 3)
-    out["i_q3_ma"] = round((15 - ng.vec("v(e3)")[0]) / 330 * 1e3, 3)
+    vp, vn = ng.vec("v(vp)")[0], ng.vec("v(vn)")[0]
+    out["i_tail_ma"] = round((ng.vec("v(e6)")[0] - vn) / 1000 * 1e3, 3)
+    out["i_q3_ma"] = round((vp - ng.vec("v(e3)")[0]) / 330 * 1e3, 3)
     out["vos_follower_mv"] = round(ng.vec("v(out)")[0] * 1e3, 2)
-    out["vrail"] = 14.6
+    out["vrail"] = round((vp - vn) / 2, 2)
+    out["vschottky"] = round(15 - vp, 3)
     a0, m = CS.margins("100p", 1000)
     out["a0"] = round(a0, 1)
     out["pm_x1"] = round(m["x1"][1], 1)
@@ -193,12 +212,22 @@ def results_json(path):
         ng = run(core(pot=pot) + ["Vin inp 0 0", "Rfb out inm 1m"], ["op"])
         offs.append(ng.vec("v(out)")[0] * 1e3)
     out["null_mv"] = round((offs[1] - offs[0]) / 2, 1)
-    # short-circuit current: follower asked for +10 V and -10 V into a short
-    isc = []
-    for vin in (10, -10):
-        ng = run(core() + [f"Vin inp 0 {vin}", "Rfb out inm 1m", "Rshort out 0 0.01"], ["op"])
-        isc.append(round(abs(ng.vec("v(out)")[0] / 0.01) * 1e3, 1))
+    # swing at the jacks into 1k (R17 in series), the follower driven to the rails
+    sw = []
+    for vin in (14, -14):
+        ng = run(core() + [f"Vin inp 0 {vin}", "Rfb out inm 1m", "Rl oj 0 1k"], ["op"])
+        sw.append(round(ng.vec("v(oj)")[0], 2))
+    out["swing_1k"] = sw
+    # short-circuit current at the jacks, open loop and driven hard both ways: no
+    # input current can reach the short this way (a follower's would, through the clamp)
+    isc, iq4 = [], []
+    for vin in (0.2, -0.2):
+        ng = run(core() + [f"Vin inp 0 {vin}", "Vm inm 0 0", "Rshort oj 0 0.01"], ["op"])
+        isc.append(round(abs(ng.vec("v(oj)")[0] / 0.01) * 1e3, 1))
+        iq4.append(round(abs(ng.vec("v(e4)")[0] - ng.vec("v(out)")[0] if vin > 0
+                             else ng.vec("v(out)")[0] - ng.vec("v(e5)")[0]) / 47 * 1e3, 1))
     out["isc_ma"] = max(isc)
+    out["isc_q45_ma"] = max(iq4)
     # common-mode gain of stage 1
     for tail, key in (("r", "gcm_r"), ("cs", "gcm_cs")):
         ng = run(core(tail=tail) + ["Vin inp 0 dc 0 ac 1", "Vm inm inp 0"], ["ac dec 10 10 1meg"])
@@ -207,7 +236,9 @@ def results_json(path):
         out[key] = round(vv[i], 4)
     ng = run(core() + ["Vin inp 0 dc 0 ac 1", "Lfb out inm 1e9", "Cin inm 0 1e9"], ["ac dec 10 10 1meg"])
     f = [abs(x) for x in ng.vec("frequency")]; vv = [abs(x) for x in ng.vec("v(c2)")]
-    out["gdiff1"] = round(vv[min(range(len(f)), key=lambda k: abs(f[k] - 100))], 2)
+    i100 = min(range(len(f)), key=lambda k: abs(f[k] - 100))
+    out["gdiff1"] = round(vv[i100], 2)
+    out["g2_stage"] = round(abs(ng.vec("v(c3)")[i100]) / abs(ng.vec("v(c2)")[i100]), 1)
     out["g2"] = round(a0 / out["gdiff1"], 1)
     json.dump(out, open(path, "w"), indent=1, sort_keys=True)
     return out

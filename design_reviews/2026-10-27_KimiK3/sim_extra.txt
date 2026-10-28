@@ -1,0 +1,54 @@
+== probe loading: 10x probe = 15 pF || 10 Meg on TP8 (c3) and TP6 (c2) ==
+  no probe (baseline)                Rz=1k  : x1 fu= 14.96 MHz PM=  +50.8 | x11 f= 0.42 MHz PM= +120.0
+  no probe (baseline)                Rz=bare: x1 fu=  8.91 MHz PM=  -42.6 | x11 f= 0.42 MHz PM= +105.8
+  15pF on TP8 (Q3 C)                 Rz=1k  : x1 fu= 11.89 MHz PM=  +39.2 | x11 f= 0.40 MHz PM= +118.6
+  15pF on TP8 (Q3 C)                 Rz=bare: x1 fu=  7.94 MHz PM=  -45.5 | x11 f= 0.40 MHz PM= +105.5
+  15pF on TP6 (Q2 C)                 Rz=1k  : x1 fu= 13.34 MHz PM=  +35.1 | x11 f= 0.42 MHz PM= +118.9
+  15pF on TP6 (Q2 C)                 Rz=bare: x1 fu=  7.94 MHz PM=  -45.9 | x11 f= 0.42 MHz PM= +104.8
+  15pF on both                       Rz=1k  : x1 fu= 10.59 MHz PM=  +25.0 | x11 f= 0.40 MHz PM= +117.5
+  15pF on both                       Rz=bare: x1 fu=  7.50 MHz PM=  -50.9 | x11 f= 0.40 MHz PM= +104.5
+
+== capacitive load on OUT, follower, Rz=1k (1 m coax ~ 100 pF, and 10 nF) ==
+  follower, 100p on OUT: overshoot   6.4 %, late p-p    0.00 mV, late zero-xings 3
+  follower, 1n on OUT: overshoot  12.9 %, late p-p    0.00 mV, late zero-xings 1
+  follower, 10n on OUT: overshoot  18.1 %, late p-p    0.00 mV, late zero-xings 3
+
+== both FEEDBACK sliders on: R10 shorted -> follower with 1k load ==
+  op: OUT = -3.04 mV, X = -3.04 mV, tail OK, i(out divider through R11) = -0.003 mA
+  both on (R10 shorted): x1 fu=8.41 MHz PM=+104.7
+
+== slew rate: follower, 10 V step ==
+  follower 10V step: slew up (20-80%) = 4.66 V/us
+  follower 10V step: slew down (80-20%) = -5.27 V/us
+  (tail-limited ceiling I/C = 1.39 mA / 100 pF = 14 V/us at the Miller node)
+
+== x11, 2 V peak sine in: slew, crossover at TP8 ==
+  OUT swing -14.29 .. +13.41 V, max |dV/dt| = 0.36 V/us
+  open loop rest: c3 = -1.612 V, out = -1.018 V
+    Iinj  -50 uA into Q3 C: c3 =   -2.204 V, out =   -1.595 V
+    Iinj  -20 uA into Q3 C: c3 =   -1.849 V, out =   -1.248 V
+    Iinj  -10 uA into Q3 C: c3 =   -1.731 V, out =   -1.133 V
+    Iinj   -5 uA into Q3 C: c3 =   -1.671 V, out =   -1.075 V
+    Iinj   +0 uA into Q3 C: c3 =   -1.612 V, out =   -1.018 V
+    Iinj   +5 uA into Q3 C: c3 =   -1.553 V, out =   -0.960 V
+    Iinj  +10 uA into Q3 C: c3 =   -1.494 V, out =   -0.903 V
+    Iinj  +20 uA into Q3 C: c3 =   -1.376 V, out =   -0.789 V
+    Iinj  +50 uA into Q3 C: c3 =   -1.021 V, out =   -0.450 V
+
+== short circuit: OUT to gnd, to +15, to -15; dissipation in Q4 / Q5 ==
+  OUT shorted to gnd , Vin +10 V: Ishort   +17.2 mA, I(Q4e)   +14.5 mA P(Q4)~  208 mW, I(Q5e)    -0.0 mA P(Q5)~    0 mW
+  OUT shorted to gnd , Vin -10 V: Ishort   -15.1 mA, I(Q4e)    -0.0 mA P(Q4)~    0 mW, I(Q5e)   +14.0 mA P(Q5)~  201 mW
+  OUT shorted to +15V, Vin +10 V: Ishort +1499981.9 mA, I(Q4e)    -0.0 mA P(Q4)~    0 mW, I(Q5e)   +14.4 mA P(Q5)~  423 mW
+  OUT shorted to +15V, Vin -10 V: Ishort +1499981.9 mA, I(Q4e)    -0.0 mA P(Q4)~    0 mW, I(Q5e)   +14.4 mA P(Q5)~  423 mW
+  OUT shorted to -15V, Vin +10 V: Ishort -1499979.9 mA, I(Q4e)   +14.7 mA P(Q4)~  431 mW, I(Q5e)    -0.0 mA P(Q5)~    0 mW
+  OUT shorted to -15V, Vin -10 V: Ishort -1499980.0 mA, I(Q4e)   +14.7 mA P(Q4)~  431 mW, I(Q5e)    -0.0 mA P(Q5)~    0 mW
+
+== limiter quiet in normal use: leakage/capacitance effect on swing ==
+  x11 2 V peak with limiter in place: swing -14.29 .. +13.41 V (results.json: -14.28 .. +13.41)
+  same with Q7/Q8/D5/D6 removed:          swing -14.29 .. +13.41 V
+
+== TAIL both on: resistor parallel to sink ==
+  tail current = 2.82 mA (sink 1.39 + R4 share); c2 = +13.91 V (13.9 V normal), out = +64.61 mV
+
+== wiper open at one end: tail broken ==
+  wiper open (emitters joined by 50R track only): out = -13.47 V c2 = +15.00 V (output stuck at a rail: pair has no tail current)

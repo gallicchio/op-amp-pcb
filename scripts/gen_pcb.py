@@ -186,7 +186,14 @@ class Board:
         for ref, fp in self.fps.items():
             for pad in fp.Pads():
                 b = pad.GetBoundingBox()
-                self.pads[(ref, pad.GetNumber())] = dict(
+                key = (ref, pad.GetNumber())
+                n = 1
+                while key in self.pads:
+                    # several pads can share a number (the BNC's four ground
+                    # posts are all "2"): keep them all so the joint count is right
+                    n += 1
+                    key = (ref, f"{pad.GetNumber()}#{n}")
+                self.pads[key] = dict(
                     x=tomm(pad.GetPosition().x), y=tomm(pad.GetPosition().y),
                     x0=tomm(b.GetLeft()), y0=tomm(b.GetTop()), x1=tomm(b.GetRight()), y1=tomm(b.GetBottom()),
                     through=pad.GetAttribute() in (pcbnew.PAD_ATTRIB_PTH, pcbnew.PAD_ATTRIB_NPTH),
@@ -422,8 +429,7 @@ class Board:
         hopset |= {(round(b[0], 3), round(b[1], 3), round(a[0], 3), round(a[1], 3)) for (_, a, b) in self.hops}
         ends = {}
         for (net, a, b, layer) in self.segments:
-            if net == "GND":
-                continue
+            # ground stubs are drawn too: a schematic's ground symbol hangs on a wire
             key = (round(a[0], 3), round(a[1], 3), round(b[0], 3), round(b[1], 3))
             if key in hopset:
                 # a hop: a semicircle over the wire it crosses, at the middle

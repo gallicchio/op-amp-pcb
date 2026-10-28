@@ -77,7 +77,7 @@ def build():
               date=parts.BOARD_DATE, rev=parts.REV,
               company="Circuit: Hayes & Horowitz, Learning the Art of Electronics (2016), Lab 5L  |  Board: Jason Gallicchio and Claude",
               comments=["2N3904 / 2N3906 (MMBT, SOT-23): the transistors of Chapter 4",
-                        f"difference x{R.get('gdiff1', 11):.0f}, gain x{R.get('g2', 12):.0f}, follower x1: A = {R.get('a0', 140):.0f} open loop (crossover included)",
+                        f"difference x{R.get('gdiff1', 11):.0f}, gain stage x{R.get('g2_stage', 34):.0f}, follower x1 (a third at rest, in its dead zone): A = {R.get('a0', 140):.0f} open loop",
                         "Open source, CERN-OHL-P-2.0 -- " + parts.PROJECT_URL])
     pwr_n = [0]
 
@@ -277,7 +277,7 @@ def build():
             ref_justify="left", val_justify="left")
     q6b, q6c, q6e = s.pin("Q6", 1, "1"), s.pin("Q6", 1, "3"), s.pin("Q6", 1, "2")
     s.wire(w4, (q6c[0], w4[1]), (q6c[0], w3[1] + 2.54), q6c)
-    res("R7", "1k", q6c[0], g(84))
+    res("R7", "1k", q6c[0], g(84), lcsc="1k_1206", footprint=fp("R_1206"))
     s.wire(q6e, (q6c[0], g(84) - 3.81))
     s.wire((q6c[0], g(84) + 3.81), (q6c[0], VM_Y))
     s.junction(q6c[0], VM_Y)
@@ -304,7 +304,7 @@ def build():
     s.wire((q2c[0], C2_Y), q3b)
     label("Q2 C", g(81), C2_Y)
     testpoint(g(86), C2_Y, "Q2 C", rot=0)
-    res("R8", "330R", q3e[0], g(36))
+    res("R8", "330R", q3e[0], g(36), lcsc="330R_2512", footprint=fp("R_2512"))
     s.wire((q3e[0], VP_Y), (q3e[0], g(36) - 3.81))
     s.junction(q3e[0], VP_Y)
     s.wire((q3e[0], g(36) + 3.81), q3e)
@@ -414,7 +414,6 @@ def build():
     s.wire((OUT_X0, X_Y), (OUT_X0, g(69.5) - 3.81))
     s.wire((OUT_X0, g(69.5) + 3.81), (OUT_X0, g(74)))
     gnd(OUT_X0, g(74))
-    testpoint(OUT_X0, g(58), "OUT", rot=270, dx=3.4, dy=0.5)
 
     # --- feedback selector: x11 from X (pole 1), x1 from OUT (pole 2) --------
     # Drawn mirrored top-to-bottom so pole 1 (X, gain 11) is the lower pair of
@@ -441,7 +440,13 @@ def build():
     label("IN+", g(28), IN_P_Y)
 
     # --- OUT jack and terminal ------------------------------------------------
-    s.wire((OUT_X1, OUT_Y), (g(145), OUT_Y))
+    # R17 (not in the book) keeps a cable's capacitance on the jacks outside the
+    # loop: the feedback is taken before it, so 100 pF of coax cannot make the
+    # follower ring.  The jacks' net is OUT JACKS; OUT is the loop's own node.
+    res("R17", "47R", g(134), OUT_Y, rot=90)
+    s.wire((OUT_X1, OUT_Y), (g(134) - 3.81, OUT_Y))
+    s.wire((g(134) + 3.81, OUT_Y), (g(145), OUT_Y))
+    label("OUT JACKS", g(138), OUT_Y)
     s.place("Connector:Conn_Coaxial", "J3", "BNC", g(147), OUT_Y,
             footprint=fp("BNC"), fields=part_fields("BNC"),
             ref_off=(4.0, -2.6), val_off=(4.0, 0.4), ref_justify="left", val_justify="left")
@@ -454,6 +459,7 @@ def build():
     j7a, j7b = s.pin("J7", 1, "1"), s.pin("J7", 1, "2")
     s.wire((g(137), OUT_Y), (g(137), j7a[1]), j7a)
     s.junction(g(137), OUT_Y)
+    testpoint(g(137), g(52), "OUT", rot=90, dx=-3.4, dy=0.5, justify="right")
     s.wire(j7b, (g(143), j7b[1]), (g(143), g(52)))
     gnd(g(143), g(52))
 
@@ -557,7 +563,7 @@ def build():
           "Three stages, as the book's Fig. 5L.11 and 5N.32:",
           "",
           f"    difference    Q1 Q2, 1.5k collector load on the + side, tail from RV1 through SW1     x{R.get('gdiff1', 11):.0f}",
-          f"    gain          Q3, PNP common emitter: 12k / (330 + re) = 30; the push-pull's dead zone takes a third of it     x{R.get('g2', 12):.0f}",
+          f"    gain          Q3, PNP common emitter: 12k / (330 + re) = {R.get('g2_stage', 34):.0f}; the resting push-pull's dead zone leaves a third of it     x{R.get('g2', 12):.0f}",
           "    follower      Q4 Q5 push-pull, unbiased, so crossover distortion shows until feedback hides it     x1",
           "",
           f"Open-loop gain at DC about {R.get('a0', 140):.0f} (the book says 'approximately 1000' for its CA3096 version, before the",
@@ -582,7 +588,7 @@ def build():
           "junction sees its 6 V reverse breakdown when one",
           "input is driven hard and the other is not.",
           "A 1 M probe or a 50 ohm generator never notices",
-          "the 1k; Ib (about 5 uA) drops 5 mV across it."],
+          "the 1k; Ib (about 2 uA) drops 2 mV across it."],
          col[0], NOTE_Y)
     note(["TAIL  (SW1)",
           "1 ON: Q6, the 'simple sink' of Fig. 5L.10, 1.4 mA",
@@ -603,7 +609,7 @@ def build():
     note(["COMPENSATION  (SW2)",
           "1 ON: 100 pF from Q3's collector to its base, Miller-",
           "multiplied by the stage's gain of 30 into a 3 nF",
-          "low-pass at C2.  The book's Fig. 5L.17.",
+          "low-pass at Q2 C.  The book's Fig. 5L.17.",
           "2 ON: the bare 100 pF, no 1k: the book's version.",
           "1 and 2 ON: the same as 2.",
           "",
@@ -626,16 +632,19 @@ def build():
           "x11 divider in one: X = OUT / 11.",
           "",
           "OUTPUT",
-          f"{R['swing'][0]:+.0f} to {R['swing'][1]:+.0f} V into the 11k; 10 mA max." if "swing" in R else "+/-13 V into the 11k; 10 mA max.",
-          "Q7, Q8, D5, D6 and the 47 ohm resistors are not in the",
-          "book: they limit the output to about 20 mA, as a real",
-          "op-amp does: a short to ground is survived, to a rail for seconds."],
+          f"{R['swing'][0]:+.0f} to {R['swing'][1]:+.0f} V into the 11k; about +/-12 V, 15 mA into 1k.",
+          "Q7, Q8, D5, D6 and R15, R16 are not in the book: they",
+          f"limit the output to about {R.get('isc_ma', 17):.0f} mA, as a real op-amp does:",
+          "a short to ground is survived, to a rail for seconds.",
+          "R17 (not in the book either) feeds the jacks from OUT:",
+          "the feedback is taken before it, so a cable's 100 pF",
+          "stays outside the loop instead of making it ring."],
          col[3], NOTE_Y)
     note(["POWER",
-          "+15 V, GND, -15 V from a bench supply, 20 mA.",
+          "+15 V, GND, -15 V from a bench supply, 20 mA; +/-16 V max.",
           "Series Schottkys: a supply connected backwards",
           "does nothing instead of forward-biasing every",
-          "transistor.  The rails run 0.35 V below the",
+          f"transistor.  The rails run {R.get('vschottky', 0.17):.2f} V below the",
           f"terminals: +/-{R.get('vrail', 14.6):.1f} V on the board.  Everything",
           "in the book's circuit is referred to those rails,",
           "and nothing in it minds.  A green LED per rail",

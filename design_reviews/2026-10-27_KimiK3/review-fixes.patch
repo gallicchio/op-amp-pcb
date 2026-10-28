@@ -1,0 +1,100 @@
+--- a/scripts/check_circuit.py	2026-10-25 00:39:50.687987000 -0700
++++ b/scripts/check_circuit.py	2026-10-27 16:15:13.924762778 -0700
+@@ -144,7 +144,7 @@
+     # --- push-pull --------------------------------------------------------------
+     check(N.net("Q4", 1) == "Q3 C" and N.net("Q5", 1) == "Q3 C", "Q4 and Q5's bases are driven by Q3 C")
+     check(N.net("Q4", 3) == "+15V" and N.net("Q5", 3) == "-15V", "Q4's collector to +15 V, Q5's to -15 V")
+-    # the output current limit (not in the book): 33 ohm in each emitter, sensed by Q7 / Q8
++    # the output current limit (not in the book): 47 ohm in each emitter, sensed by Q7 / Q8
+     check(N.between(N.net("Q4", 2), "OUT") == ["R15"] and ohms(N.value["R15"]) == 47, "R15 = 47 ohm from Q4's emitter to OUT")
+     check(N.between(N.net("Q5", 2), "OUT") == ["R16"] and ohms(N.value["R16"]) == 47, "R16 = 47 ohm from Q5's emitter to OUT")
+     check(N.net("Q7", 1) == N.net("Q4", 2) and N.net("Q7", 2) == "OUT", "Q7 senses R15 from OUT")
+--- a/scripts/gen_pcb.py	2026-10-25 11:05:05.796422000 -0700
++++ b/scripts/gen_pcb.py	2026-10-27 16:19:34.981467416 -0700
+@@ -186,7 +186,14 @@
+         for ref, fp in self.fps.items():
+             for pad in fp.Pads():
+                 b = pad.GetBoundingBox()
+-                self.pads[(ref, pad.GetNumber())] = dict(
++                key = (ref, pad.GetNumber())
++                n = 1
++                while key in self.pads:
++                    # several pads can share a number (the BNC's four ground
++                    # posts are all "2"): keep them all so the joint count is right
++                    n += 1
++                    key = (ref, f"{pad.GetNumber()}#{n}")
++                self.pads[key] = dict(
+                     x=tomm(pad.GetPosition().x), y=tomm(pad.GetPosition().y),
+                     x0=tomm(b.GetLeft()), y0=tomm(b.GetTop()), x1=tomm(b.GetRight()), y1=tomm(b.GetBottom()),
+                     through=pad.GetAttribute() in (pcbnew.PAD_ATTRIB_PTH, pcbnew.PAD_ATTRIB_NPTH),
+--- a/scripts/gen_sch.py	2026-10-25 00:39:50.654721000 -0700
++++ b/scripts/gen_sch.py	2026-10-27 16:15:54.545028192 -0700
+@@ -77,7 +77,7 @@
+               date=parts.BOARD_DATE, rev=parts.REV,
+               company="Circuit: Hayes & Horowitz, Learning the Art of Electronics (2016), Lab 5L  |  Board: Jason Gallicchio and Claude",
+               comments=["2N3904 / 2N3906 (MMBT, SOT-23): the transistors of Chapter 4",
+-                        f"difference x{R.get('gdiff1', 11):.0f}, gain x{R.get('g2', 12):.0f}, follower x1: A = {R.get('a0', 140):.0f} open loop (crossover included)",
++                        f"difference x{R.get('gdiff1', 11):.0f}, gain x30, follower x1: A = {R.get('a0', 140):.0f} open loop at rest (the push-pull's dead zone takes stage 2 down to x{R.get('g2', 12):.0f})",
+                         "Open source, CERN-OHL-P-2.0 -- " + parts.PROJECT_URL])
+     pwr_n = [0]
+ 
+--- a/docs/HANDBOOK.md	2026-10-25 00:39:50.688608000 -0700
++++ b/docs/HANDBOOK.md	2026-10-27 16:15:15.009797898 -0700
+@@ -34,10 +34,14 @@
+ | signs of life | both green LEDs on, one beside each rail |
+ 
+ Set the bench supply's current limit to 50 mA, always, not only for a new board:
+-the board never needs more than 30 mA a rail, and with the limit a scope's
+-ground clip on the wrong loop (Q2 C or Q3 E to ground would otherwise put
+-0.6 W into the 0805 R8) or a shorted output cannot burn anything.  The two
+-10 uF bypass capacitors hold the rails if the leads are long.
++the board never needs more than 30 mA a rail, and with the limit a shorted
++output or a clip on a rail loop cannot burn anything.  One mistake the limit
++does NOT catch: a scope's ground clip on Q2 C or Q3 E puts 0.6 W into the 0805
++R8 (rated 0.125 W) while drawing under 50 mA, so the supply never limits and
++R8 slowly cooks -- you will smell it; power off and move the clip.  The two
++10 uF bypass capacitors hold the rails if the leads are long.  Stay within
+++/-16 V at the terminal: the 10 uF bypass capacitors are 25 V parts and Q3
++and Q6 are 40 V parts.
+ 
+ ## 3. Inputs and output
+ 
+@@ -69,8 +73,10 @@
+ | **COMPENSATION** SW2 | 100 pF + 1 k from C3 to C2 (normal) | the bare 100 pF, no 1 k: the book's version | no compensation |
+ | **FEEDBACK** SW3 | X to IN-: gain of 11, non-inverting | OUT to IN-: follower | open loop, or your own feedback on the terminals |
+ 
+-Both TAIL sliders on puts the resistor in parallel with the sink, which is
+-harmless.  Both COMPENSATION sliders on is the same as 2 alone.  Both FEEDBACK sliders
++Both TAIL sliders on puts the resistor in parallel with the sink, which does no
++damage but doubles the tail current to 2.8 mA; the offset then sits beyond
++RV1's reach, so null again with slider 2 off.  Both COMPENSATION sliders on is
++the same as 2 alone.  Both FEEDBACK sliders
+ on shorts R10, which makes a follower with a 1 k load to ground.
+ 
+ Usual, as the back of the board says: TAIL 1, COMPENSATION 1, FEEDBACK as needed.
+@@ -212,4 +218,4 @@
+ | OUT clips at a few volts into a low load | the current limit at work: raise the load to 1 k |
+ | rings or oscillates as a follower | COMPENSATION 1 off; a long unterminated cable on OUT |
+ | hum | the scope's ground clip is not on a GND loop |
+-| a resistor smells hot | a ground clip on a signal loop: Q2 C or Q3 E to ground puts 0.6 W into R8, Q6 E or Q6 B to ground 0.2 W into R7.  The 50 mA supply limit is what saves R8; power off and move the clip |
++| a resistor smells hot | a ground clip on a signal loop: Q2 C or Q3 E to ground puts 0.6 W into R8, Q6 E or Q6 B to ground 0.2 W into R7.  That short draws under 50 mA, so the supply limit does not catch it: power off and move the clip |
+--- a/docs/DESIGN_NOTES.md	2026-10-25 08:07:21.648627000 -0700
++++ b/docs/DESIGN_NOTES.md	2026-10-27 16:15:36.097907658 -0700
+@@ -29,7 +29,7 @@
+ 
+ | addition | parts | why |
+ |---|---|---|
+-| offset null | RV1, 50 ohm between the emitters, wiper to the tail | a discrete pair has millivolts of offset; a trimmer whose ends are the two emitter resistors (25 ohm each at centre) is the textbook null and costs one part.  Its wiper is the tail, so grit under the wiper cannot open the tail: the resistance only rises |
++| offset null | RV1, 50 ohm between the emitters, wiper to the tail | a discrete pair has millivolts of offset; a trimmer whose ends are the two emitter resistors (25 ohm each at centre) is the textbook null and costs one part.  Its wiper is the tail, so a dirty wiper only adds resistance in series with a current sink's collector, which changes nothing; a wiper that lifts clean off does kill the tail (OUT parks at the negative rail, no damage) -- the classic trimmer failure, and a dead-board symptom to know |
+ | series 1 k with the Miller capacitor | R14 | the book's bare 100 pF puts a right-half-plane zero at 1 / (2 pi C / gm): the follower is unstable with it.  1 k in series moves the zero to the left half plane.  SW2 pole 2 shorts it so the book's version can be shown ringing |
+ | three 2-way DIP switches | SW1 TAIL, SW2 COMPENSATION, SW3 FEEDBACK | the book's variants (resistor tail or current sink; compensation or not; x11, follower or your own) without jumpers to lose |
+ | input protection | R1, R2 1 k 1206; D1, D2 1N4148W anti-parallel between the bases | a real op-amp's input clamps.  A 2N3904's base-emitter junction breaks down at 6 V reverse; a student with a 10 V generator on one input and the other grounded would otherwise degrade Q1 or Q2.  The 1206 resistors take 50 mW each with one input at a rail and the other grounded, 0.21 W each with the two inputs at opposite rails |
+@@ -68,7 +68,7 @@
+ follower settles in about 0.6 us; the x11 amplifier has 120 degrees.  Without
+ the 1 k the follower's phase margin is -43 degrees, that is, it oscillates, and
+ the x11 amplifier keeps about 100 degrees.  That is the book's lesson, kept on a
+-switch.  The simulated unity-gain crossing is 14 MHz, which is the models
++switch.  The simulated unity-gain crossing is 15 MHz, which is the models
+ talking: on the real board with SOT-23 parts and a probe on Q3 C, expect a few
+ MHz and a little less margin.  The common-mode gain of the first stage goes
+ from 0.073 with the resistor to 0.0004 with the sink.

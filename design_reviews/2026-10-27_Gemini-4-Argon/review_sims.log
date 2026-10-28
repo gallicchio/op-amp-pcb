@@ -1,0 +1,53 @@
+=================================================================
+1. OPERATING POINT: SIMULATED (15.0V no D3/D4) vs ACTUAL BOARD (with B5819W D3/D4)
+=================================================================
+
+--- opamp_sim.py (15.0V ideal rails, no D3/D4) ---
+  TP11 (+15V) = +15.000 V (table: +14.6 V)
+  TP12 (-15V) = -15.000 V (table: -14.6 V)
+  TP6  (Q2 C) = +13.914 V (table: +13.9 V) | TP11 - TP6 = 1.086 V -> I(R3) = 0.724 mA
+  TP7  (Q3 E) = +14.573 V (table: +14.6 V) | TP11 - TP7 = 0.427 V -> I(R8) = 1.295 mA
+  TP8  (Q3 C) = +0.476 V (table: +0.5 V)
+  TP13 (Q1 E) = -0.648 V (table: -0.6 V)
+  TP14 (Q2 E) = -0.646 V (table: -0.6 V)
+  TP3  (TAIL) = -0.664 V (table: -0.7 V)
+  TP5  (Q6 B) = -12.952 V (table: -13.0 V)
+  TP4  (Q6 E) = -13.613 V (table: -13.6 V) | TP4 - TP12 = 1.387 V -> I(R7) = 1.387 mA
+  TP9  (OUT)  = -5.58 mV
+
+--- 14.6V ideal rails (matching vrail=14.6) ---
+  TP11 (+15V) = +14.600 V (table: +14.6 V)
+  TP12 (-15V) = -14.600 V (table: -14.6 V)
+  TP6  (Q2 C) = +13.526 V (table: +13.9 V) | TP11 - TP6 = 1.074 V -> I(R3) = 0.716 mA
+  TP7  (Q3 E) = +14.184 V (table: +14.6 V) | TP11 - TP7 = 0.416 V -> I(R8) = 1.261 mA
+  TP8  (Q3 C) = +0.465 V (table: +0.5 V)
+  TP13 (Q1 E) = -0.649 V (table: -0.6 V)
+  TP14 (Q2 E) = -0.646 V (table: -0.6 V)
+  TP3  (TAIL) = -0.664 V (table: -0.7 V)
+  TP5  (Q6 B) = -12.606 V (table: -13.0 V)
+  TP4  (Q6 E) = -13.266 V (table: -13.6 V) | TP4 - TP12 = 1.334 V -> I(R7) = 1.334 mA
+  TP9  (OUT)  = -8.19 mV
+
+--- 15.0V input with B5819W D3/D4 + LEDs ---
+  TP11 (+15V) = +14.804 V (table: +14.6 V)
+  TP12 (-15V) = -14.802 V (table: -14.6 V)
+  TP6  (Q2 C) = +13.723 V (table: +13.9 V) | TP11 - TP6 = 1.080 V -> I(R3) = 0.720 mA
+  TP7  (Q3 E) = +14.382 V (table: +14.6 V) | TP11 - TP7 = 0.422 V -> I(R8) = 1.278 mA
+  TP8  (Q3 C) = +0.471 V (table: +0.5 V)
+  TP13 (Q1 E) = -0.648 V (table: -0.6 V)
+  TP14 (Q2 E) = -0.646 V (table: -0.6 V)
+  TP3  (TAIL) = -0.664 V (table: -0.7 V)
+  TP5  (Q6 B) = -12.781 V (table: -13.0 V)
+  TP4  (Q6 E) = -13.442 V (table: -13.6 V) | TP4 - TP12 = 1.361 V -> I(R7) = 1.361 mA
+  TP9  (OUT)  = -6.85 mV
+
+=================================================================
+2. OFFSET NULL & POT EXTREMES / FAULTS
+=================================================================
+  pot=0.00: Vos=-37.51 mV | closed-loop G1=11.13, A0=143.8 | open-loop(Vin=0) G1=10.30
+  pot=0.25: Vos=-21.12 mV | closed-loop G1=11.13, A0=0.1 | open-loop(Vin=0) G1=10.95
+  pot=0.50: Vos= -5.58 mV | closed-loop G1=11.11, A0=138.2 | open-loop(Vin=0) G1=11.15
+  pot=0.75: Vos=+11.62 mV | closed-loop G1=11.11, A0=207.9 | open-loop(Vin=0) G1=10.89
+  pot=1.00: Vos=+28.83 mV | closed-loop G1=11.11, A0=245.7 | open-loop(Vin=0) G1=10.17
+  Wiper OPEN: v(c2)=+15.000V, v(c3)=-14.538V, v(out)=-13.471V
+  Ends SHORTED (pot=0.5): G1=17.92, A0=240.7

@@ -59,26 +59,28 @@ PLACE = {
     # sink sits under the switch
     "SW1": (40.5, 61.0, 180),
     "R4": (30.8, 70.0, 270),
-    "Q6": (38.0, 69.0, 270), "R7": (38.0, 80.0, 270),
-    "R5": (46.3, 71.0, 90), "R6": (43.5, 78.0, 270),
+    "Q6": (38.0, 69.0, 270), "R7": (38.0, 80.7, 270),
+    "R5": (49.5, 71.5, 90), "R6": (43.5, 78.0, 270),
     # the gain stage, its load straight above it as the book draws it, and
     # its compensation
-    "Q3": (60.0, 30.0, 90), "R8": (60.0, 21.0, 270), "R9": (60.0, 72.0, 270),
+    "Q3": (60.0, 30.0, 90), "R8": (60.0, 19.25, 270), "R9": (60.0, 72.0, 270),
     "SW2": (54.77, 44.5, 90), "R14": (53.5, 53.5, 270), "C1": (53.5, 58.5, 270),
     # the push-pull with its emitter sense resistors
     "Q4": (70.9, 33.0, 90), "Q5": (70.9, 53.0, 90),
     "R15": (70.9, 40.5, 270), "R16": (70.9, 45.5, 270),
-    # the output current limit: Q7 / D5 above the OUT line, Q8 / D6 below
-    "Q7": (82.1, 38.0, 90), "D5": (82.1, 31.0, 90),
-    "Q8": (82.1, 48.0, 90), "D6": (82.1, 55.0, 90),
+    # the output current limit: Q7 / D5 above the OUT line, Q8 / D6 below, and
+    # between them R17, which feeds the jacks from the loop's own OUT node
+    "Q7": (82.1, 37.2, 90), "D5": (82.1, 30.2, 90),
+    "Q8": (82.1, 48.8, 90), "D6": (82.1, 55.6, 90),
+    "R17": (85.0, OUT_Y, 0),
     # the feedback box: the divider hanging from OUT, its tap X, and the
     # selector with its inputs on the left and IN- leaving on the right
     "R10": (76.5, 62.8, 270), "R11": (83.5, 67.1, 270),
     "SW3": (80.4, 75.4, 0),
     # right edge: output and power
     "J3": (94.3, OUT_Y, 0),     # OUT BNC
-    "J7": (95.5, 58.0, 270),    # OUT / GND screw terminal
-    "J6": (95.5, 82.0, 270),    # +15 / GND / -15 screw terminal
+    "J7": (95.9, 58.0, 270),    # OUT / GND screw terminal
+    "J6": (95.9, 82.0, 270),    # +15 / GND / -15 screw terminal
     "D3": (88.5, 74.0, 270), "D4": (85.5, 87.0, 180),
     "C2": (24.0, 18.0, 270), "C3": (27.5, 18.0, 270),
     "C4": (24.0, 80.0, 270), "C5": (27.5, 80.0, 270),
@@ -93,11 +95,11 @@ PLACE = {
     "TP4": (38.0, 76.0, 90),    # Q6 E
     "TP5": (43.5, 74.0, 90),    # Q6 B
     "TP6": (45.6, 26.8, 90),    # Q2 C, between the 1.5k and Q2
-    "TP7": (61.0, 24.3, 0),     # Q3 E, between Q3 and the 330, the wire off its centre
+    "TP7": (61.0, 24.6, 0),     # Q3 E, between Q3 and the 330, the wire off its centre
     "TP8": (62.5, OUT_Y, 0),    # Q3 C
     "TP9": (93.3, 50.9, 0),     # OUT, beside the jack
     "TP10": (80.0, 65.1, 0),    # X, the divider's tap
-    "TP11": (62.6, VP_Y, 0),    # +15V
+    "TP11": (64.2, VP_Y, 90),    # +15V
     "TP12": (62.6, VM_Y, 0),    # -15V
     "TP13": (33.0, 42.0, 0),    # Q1 E
     "TP14": (46.8, 42.0, 0),    # Q2 E, the wire off its centre to clear the trimmer
@@ -160,7 +162,7 @@ WIRES = [
     ("Net-(R4-Pad1)", [("SW1", "3"), (30.8, 59.73), ("R4", "1")], W_SIG),
     ("Net-(Q6-C)", [("SW1", "4"), (36.1, 63.6), (38.0, 63.6), ("Q6", "3")], W_SIG),
     ("Net-(Q6-B)", [("Q6", "1"), (43.5, 69.0), ("R6", "1")], W_SIG),
-    ("Net-(Q6-B)", [(43.5, 69.0), (46.3, 69.0), ("R5", "2")], W_SIG),
+    ("Net-(Q6-B)", [(43.5, 69.0), (49.5, 69.0), ("R5", "2")], W_SIG),
     ("Net-(Q6-E)", [("Q6", "2"), ("R7", "1")], W_SIG),
     # the gain stage
     ("/Q2 C", [("R3", "2"), ("Q2", "3")], W_SIG),
@@ -180,14 +182,15 @@ WIRES = [
     ("Net-(C1-Pad1)", [("SW2", "2"), (56.04, 50.5), (58.3, 50.5), (58.3, 56.0), (53.5, 56.0)], W_SIG),
     # push-pull: emitters through the sense resistors to OUT; the sense
     # transistors' bases tap the emitter wires
-    ("Net-(Q4-E)", [("Q4", "2"), (70.9, 38.0), ("R15", "1")], W_SIG),
-    ("Net-(Q4-E)", [(70.9, 38.0), ("Q7", "1")], W_SIG),
+    ("Net-(Q4-E)", [("Q4", "2"), (70.9, 37.2), ("R15", "1")], W_SIG),
+    ("Net-(Q4-E)", [(70.9, 37.2), ("Q7", "1")], W_SIG),
     ("/OUT", [("R15", "2"), (70.9, OUT_Y)], W_SIG),
     ("/OUT", [("R16", "1"), (70.9, OUT_Y)], W_SIG),
-    ("Net-(Q5-E)", [("Q5", "2"), (70.9, 48.0), ("R16", "2")], W_SIG),
-    ("Net-(Q5-E)", [(70.9, 48.0), ("Q8", "1")], W_SIG),
-    ("/OUT", [(70.9, OUT_Y), ("J3", "1")], W_SIG),
-    ("/OUT", [("J7", "1"), (94.3, 54.0), (94.3, OUT_Y)], W_SIG),
+    ("Net-(Q5-E)", [("Q5", "2"), (70.9, 48.8), ("R16", "2")], W_SIG),
+    ("Net-(Q5-E)", [(70.9, 48.8), ("Q8", "1")], W_SIG),
+    ("/OUT", [(70.9, OUT_Y), ("R17", "1")], W_SIG),
+    ("/OUT JACKS", [("R17", "2"), ("J3", "1")], W_SIG),
+    ("/OUT JACKS", [("J7", "1"), (94.3, 54.0), (94.3, OUT_Y)], W_SIG),
     # the current limit: Q7 and Q8 sit on OUT; D5 / D6 return to the base bus
     # along the outside of the boxes
     ("/OUT", [("Q7", "2"), (82.1, OUT_Y)], W_SIG),
@@ -199,7 +202,7 @@ WIRES = [
                (QC_X, BUS_BOT)], W_SIG),
     # the feedback box: OUT comes down between the boxes to the divider and
     # to the switch's lower input; X goes straight down into the upper one
-    ("/OUT", [(OR_X, OUT_Y), (OR_X, 47.0), (OR_X, 49.0), (OR_X, 60.6), ("R10", "1")], W_SIG),
+    ("/OUT", [(OR_X, OUT_Y), (OR_X, 47.8), (OR_X, 49.8), (OR_X, 60.6), ("R10", "1")], W_SIG),
     ("/OUT", [(OR_X, 60.6), (74.0, 60.6), (74.0, 76.67), ("SW3", "2")], W_SIG),
     ("/X", [("R10", "2"), (OR_X, 65.1), (OR_X, 74.13), ("SW3", "1")], W_SIG),
     ("/X", [(OR_X, 65.1), (83.5, 65.1), ("R11", "1")], W_SIG),
@@ -217,7 +220,7 @@ HOPS = [
     ("+15V", (66.9, 25.3), (66.9, 22.5)),         # Q4's collector dives under D5's bus
     ("/Q3 C", (77.5, BUS_BOT), (75.5, BUS_BOT)),  # D6's bus dives under OUT's drop
     ("/Q3 C", (71.9, BUS_BOT), (69.9, BUS_BOT)),  # ...and under Q5's collector feed
-    ("/OUT", (OR_X, 47.0), (OR_X, 49.0)),         # OUT's drop dives under Q8's sense lead
+    ("/OUT", (OR_X, 47.8), (OR_X, 49.8)),         # OUT's drop dives under Q8's sense lead
 ]
 
 # Ground: a stub from the pad to a via (a point, or a path of points), the
@@ -229,7 +232,7 @@ GND_STUBS = [
     (("C2", "2"), (24.0, 21.5)), (("C3", "2"), (27.5, 21.5)),
     (("C4", "1"), (24.0, 76.5)), (("C5", "1"), (27.5, 76.5)),
     (("LED1", "1"), (93.0, 26.5)), (("LED2", "2"), (83.85, 96.9)),
-    (("R11", "2"), (83.5, 69.5)), (("R5", "1"), (46.3, 74.5)),
+    (("R11", "2"), (83.5, 69.5)), (("R5", "1"), (49.5, 74.5)),
     (("TP100", "1"), (24.0, 72.0)), (("TP101", "1"), (12.0, 83.5)), (("TP102", "1"), (92.0, 71.6)),
     (("TP103", "1"), (54.3, 71.5)),
 ]
@@ -248,7 +251,7 @@ Q_RADIUS = 4.0
 Q_CAPTION = {
     "Q1": (29.6, 30.8, "left"), "Q2": (43.4, 29.3, "right"), "Q3": (54.8, 33.6, "left"),
     "Q4": (67.0, 38.2, "left", 0.8), "Q5": (67.0, 48.0, "left", 0.8), "Q6": (41.3, 65.7, "left"),
-    "Q7": (84.4, 33.3, "left", 0.8), "Q8": (84.4, 52.9, "left", 0.8),
+    "Q7": (84.4, 33.0, "left", 0.8), "Q8": (84.4, 52.9, "left", 0.8),
 }
 
 # Free text: (x, y, text, size, thickness, justify, angle)
@@ -266,16 +269,16 @@ TEXTS = [
     (15.2, 26.0, "±12 V max", 0.9, 0.15, "left", 0),
     (15.2, 65.2, "±12 V max", 0.9, 0.15, "left", 0),
     (91.8, 33.0, "OUT", 1.6, 0.3, "left", 0),
-    (98.8, 36.4, "±13 V 20 mA", 0.8, 0.15, "right", 0),
+    (98.8, 36.4, "±12 V 15 mA", 0.8, 0.15, "right", 0),
     (11.0, 22.8, "IN-", 0.9, 0.15, "left", 0),
     (12.0, 17.6, "GND", 0.9, 0.15, "right", 0),
     (13.0, 73.3, "IN+", 0.9, 0.15, "left", 0),
     (12.0, 67.6, "GND", 0.9, 0.15, "right", 0),
-    (91.6, 54.3, "OUT", 0.9, 0.15, "right", 0),
+    (91.4, 54.3, "OUT", 0.9, 0.15, "right", 0),
     (91.9, 65.0, "GND", 0.9, 0.15, "left", 0),
     (91.4, 78.4, "+15V", 0.9, 0.15, "right", 0),
     (89.8, 84.6, "GND", 0.9, 0.15, "right", 0),
-    (91.4, 88.4, "-15V", 0.9, 0.15, "right", 0),
+    (91.5, 88.9, "-15V", 0.9, 0.15, "right", 0),
     (93.5, 93.2, "POWER", 1.0, 0.2, "center", 0),
     # rails
     (24.0, 13.1, "+15 V", 1.2, 0.2, "left", 0),
@@ -287,17 +290,17 @@ TEXTS = [
     (21.4, 79.3, "C4 10uF", 0.8, 0.15, "right", 0),
     (21.4, 80.7, "C5 100nF", 0.8, 0.15, "right", 0),
     # the trimmer, the tail switch and its sink
-    (36.5, 46.0, "OFFSET", 0.9, 0.15, "right", 0),
-    (36.5, 47.4, "NULL", 0.9, 0.15, "right", 0),
-    (36.5, 48.8, "RV1", 0.8, 0.15, "right", 0),
+    (36.5, 45.4, "OFFSET", 0.9, 0.15, "right", 0),
+    (36.5, 46.8, "NULL", 0.9, 0.15, "right", 0),
+    (36.5, 48.2, "RV1 50R", 0.8, 0.15, "right", 0),
     (37.5, 56.6, "SW1", 0.8, 0.15, "center", 0),
     (33.8, 61.6, "ON", 0.8, 0.15, "center", 0),
     (46.6, 59.7, "2: 10k", 0.8, 0.15, "left", 0),
     (43.8, 64.6, "1: current", 0.8, 0.15, "left", 0),
     (43.8, 65.9, "source Q6", 0.8, 0.15, "left", 0),
     (32.3, 75.9, "CURRENT SOURCE", 0.85, 0.15, "center", 90),
-    (48.4, 70.3, "R5", 0.8, 0.15, "left", 0),
-    (48.4, 71.7, "62k", 0.8, 0.15, "left", 0),
+    (47.8, 71.0, "R5", 0.8, 0.15, "right", 0),
+    (47.8, 72.4, "62k", 0.8, 0.15, "right", 0),
     (31.3, 66.5, "R4", 0.8, 0.15, "left", 0),
     (31.3, 67.8, "10k", 0.8, 0.15, "left", 0),
     # the compensation switch, named and explained along the box's right side
@@ -316,8 +319,8 @@ TEXTS = [
     (73.8, 81.1, "2: OUT to IN- (x1)", 0.8, 0.15, "left", 0),
     (73.8, 82.4, "off: bare op-amp", 0.8, 0.15, "left", 0),
     (48.0, 87.9, "Q1 Q2 Q4 Q6 Q7 = 2N3904 NPN       Q3 Q5 Q8 = 2N3906 PNP", 0.9, 0.15, "center", 0),
-    (83.5, 31.0, "D5", 0.8, 0.15, "left", 0),
-    (83.5, 55.0, "D6", 0.8, 0.15, "left", 0),
+    (83.5, 30.2, "D5", 0.8, 0.15, "left", 0),
+    (83.5, 55.6, "D6", 0.8, 0.15, "left", 0),
     (89.7, 76.0, "D3", 0.8, 0.15, "left", 0),
     # the clamp and the limiter's name, which says what it is
     (19.6, 44.0, "D1 D2", 0.8, 0.15, "right", 0),
@@ -336,10 +339,11 @@ FIELD_AT = {
     "R1": ((0, -2.2), (0, 2.1)), "R2": ((0, -2.2), (0, 2.1)),
     "R3": ((2.2, -0.7), (2.2, 0.7)),
     "R6": ((2.4, -0.7), (2.4, 0.7)), "R7": ((2.4, -0.7), (2.4, 0.7)),
-    "R8": ((1.1, -0.7), (1.1, 0.7)), "R9": ((2.4, -0.7), (2.4, 0.7)),
+    "R8": ((2.2, 0.6), (2.2, 1.9)), "R9": ((2.4, -0.7), (2.4, 0.7)),
     "R12": ((2.4, -0.7), (2.4, 0.7)), "R13": ((2.4, -0.7), (2.4, 0.7)),
     "R14": ((1.5, -0.7), (1.5, 0.7)), "C1": ((1.5, -0.7), (1.5, 0.7)),
     "R15": ((1.4, -0.7), (1.4, 0.7)), "R16": ((1.4, -0.7), (1.4, 0.7)),
+    "R17": ((0, -1.6), (0, 1.6)),
     "D4": ((-2.6, -1.6), (-2.6, -0.2)),
     "LED1": ((2.4, -0.7), (2.4, 0.7)), "LED2": ((2.4, -0.7), (2.4, 0.7)),
 }
@@ -366,7 +370,7 @@ BOXES = [
     (13.5, 29.0, 25.2, 63.5, [("INPUT", 15.0, 30.4), ("PROTECTION", 15.0, 32.0)]),
     (28.4, 18.5, 51.4, 50.5, [("DIFFERENCE", 34.8, 20.1), ("AMPLIFIER", 34.8, 21.9), ("x11", 34.8, 23.7)]),
     (29.6, 57.5, 51.8, 82.5, [("TAIL", 30.1, 58.6)]),
-    (54.3, 18.5, 64.8, 35.4, [("GAIN", 54.8, 19.7, 0.85), ("STAGE", 54.8, 21.1, 0.85), ("x30", 54.8, 22.5, 0.85)]),
+    (54.0, 18.5, 65.7, 35.4, [("GAIN", 54.25, 19.7, 0.8), ("STAGE", 54.25, 21.0, 0.8), ("x30", 54.25, 22.3, 0.8)]),
     (52.2, 36.6, 64.8, 63.0, []),
     (66.2, 24.5, 75.5, 57.8, [("PUSH-PULL", 67.5, 25.9, 0.8), ("FOLLOWER", 67.5, 27.2, 0.8)]),
     (77.5, 16.6, 86.7, 57.8, []),
@@ -390,7 +394,7 @@ BACK_TEXT = [
     "(Hayes & Horowitz, 2016), built from eight",
     "2N3904 / 2N3906 so you can probe every node.",
     "",
-    "POWER: +15 V, GND, -15 V into the terminal, 20 mA.",
+    "POWER: +15 V, GND, -15 V into the terminal (±16 V max), 20 mA.",
     "   Set the supply's current limit to 50 mA.",
     "   Both LEDs light if it is right.",
     "SWITCHES, usual positions:",
@@ -409,9 +413,9 @@ BACK_TEXT = [
     "   IN-, IN+, OUT and GND on the terminals are pins 2, 3, 6 of a '411.",
     "   Mind its 2 uA of input bias current",
     "      (10 M feedback for photodiode will not work; everything else should).",
-    "   Its output limits at 20 mA, like a real one (Q7, Q8: not in the book).",
+    "   Its output limits at 17 mA, like a real one (Q7, Q8: not in the book).",
     "OFFSET NULL: as a follower with IN+ grounded, turn RV1 until OUT reads 0 V.",
     "INPUTS: ±12 V.",
-    "OUT: ±12 V into 1k, 15 mA.",
+    "OUT: ±12 V into 1k, 15 mA, through R17's 47 ohm (outside the loop).",
     "   A short to ground is survived; a short to a rail, only for seconds.",
 ]

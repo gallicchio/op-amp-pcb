@@ -2,7 +2,7 @@
 
 One board, two layers, 100 x 100 mm, every part on the top side, a solid
 ground plane on the back.  It passes ERC, DRC with schematic parity, the
-102 circuit assertions and the fab-package checks with zero violations,
+118 circuit assertions and the fab-package checks with zero violations,
 and `./make.py` rebuilds and rechecks everything from scratch in about a minute.
 
 ## What to upload
@@ -60,11 +60,11 @@ ordering.  The values that come from the board are computed, not typed.
 
 ## Cost
 
-The board has **112 SMT joints** and **18 through-hole joints** on
-40 BOM lines; 7 distinct order codes are JLCPCB *Extended* parts
+The board has **114 SMT joints** and **27 through-hole joints** on
+40 BOM lines; 8 distinct order codes are JLCPCB *Extended* parts
 (the BNCs, the terminal blocks, the trimmer, the DIP switches, the test loops
 and the PNPs), each with a one-off $3.00 feeder fee.  Parts alone are
-**$7.78 per board**, of which the three BNC jacks are
+**$7.82 per board**, of which the three BNC jacks are
 $3.88 and the 18 test loops $1.74.
 
 **2 boards, fully assembled, through-hole parts included**
@@ -72,43 +72,43 @@ $3.88 and the 18 test loops $1.74.
 | line | cost |
 |---|---|
 | bare PCBs (5 made) | $2.00 |
-| parts ($7.78 x 2) | $15.56 |
-| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 224 SMT and 36 THT joints | $35.54 |
+| parts ($7.82 x 2) | $15.64 |
+| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 8 extended codes + 228 SMT and 54 THT joints | $39.09 |
 | shipping (DHL) | $22.00 |
-| **total** | **$75.10**  ($37.55 each) |
+| **total** | **$78.72**  ($39.36 each) |
 
 **5 boards, fully assembled, through-hole parts included**
 
 | line | cost |
 |---|---|
 | bare PCBs (5 made) | $2.00 |
-| parts ($7.78 x 5) | $38.89 |
-| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 560 SMT and 90 THT joints | $37.73 |
+| parts ($7.82 x 5) | $39.09 |
+| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 8 extended codes + 570 SMT and 135 THT joints | $42.10 |
 | shipping (DHL) | $22.00 |
-| **total** | **$100.63**  ($20.13 each) |
+| **total** | **$105.19**  ($21.04 each) |
 
 **10 boards, fully assembled, through-hole parts included**
 
 | line | cost |
 |---|---|
 | bare PCBs (10 made) | $5.00 |
-| parts ($7.78 x 10) | $77.79 |
-| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 1120 SMT and 180 THT joints | $41.38 |
+| parts ($7.82 x 10) | $78.18 |
+| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 8 extended codes + 1140 SMT and 270 THT joints | $47.12 |
 | shipping (DHL) | $22.00 |
-| **total** | **$146.17**  ($14.62 each) |
+| **total** | **$152.30**  ($15.23 each) |
 
 **20 boards, fully assembled, through-hole parts included**
 
 | line | cost |
 |---|---|
 | bare PCBs (20 made) | $9.00 |
-| parts ($7.78 x 20) | $155.58 |
-| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 7 extended codes + 2240 SMT and 360 THT joints | $48.69 |
+| parts ($7.82 x 20) | $156.36 |
+| assembly: setup $8.00 + stencil $1.50 + THT setup $3.58 + 8 extended codes + 2280 SMT and 540 THT joints | $57.16 |
 | shipping (DHL) | $22.00 |
-| **total** | **$235.27**  ($11.76 each) |
+| **total** | **$244.52**  ($12.23 each) |
 
 The fixed fees dominate a small order: a second board costs about
-$8.51 more than the first, so order one per bench, not one per class.
+$8.82 more than the first, so order one per bench, not one per class.
 
 ## Rotations JLCPCB needs
 
@@ -121,11 +121,12 @@ angles already applied, per LCSC code, from `scripts/parts.py`:
 |---|---|---|---|
 | SW1, SW2, SW3 | C54949 | 270 deg | predicted: DSIC02LSGET: JLCPCB draws the DSIC06 lying along x, KiCad standing; the Lorenz DSIC06 needed +270 (read) |
 | Q1, Q2, Q4, Q6, Q7 | C20526 | 180 deg | predicted: SOT-23: their pad 1 is at (+1.0,+0.95), KiCad's at (-0.94,-0.95); the SOT-23-5 on GPSDO needed +180 on 59 placements |
+| J4, J5, J7 | C474881 | 180 deg | predicted: KF301-2P: EasyEDA draws the wire openings on +y, 3.7 mm from the pins; ours face -y (the board edge); the pin row is symmetric, so +180 only turns the body |
+| J6 | C474882 | 180 deg | predicted: KF301-3P: wire-entry arrows on +y in EasyEDA, as the 2P |
 | Q3, Q5, Q8 | C53444 | 180 deg | predicted: SOT-23, same drawing as the NPN |
 | J1, J2, J3 | C41416668 | 90 deg | read: BNC-KYWE-295-W4-N: Lorenz board rev A/B preview, built and working |
 | LED1, LED2 | C2297 | 0 deg | read: KT-0805G on KiCad's LED_0805: GPiBridge rev A preview, cathode at pad 1 |
-| J4, J5, J7 | C474881 | 0 deg | predicted: KF301-2P: pins along x at +/-2.5, as drawn here; wire entry side to be seen |
-| J6 | C474882 | 0 deg | predicted: KF301-3P: pins along x at -5/0/+5, as drawn here |
+| R8 | C2934068 | 0 deg | predicted: R2512: a resistor; their pads along x as KiCad's, either way round |
 | TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9, TP10, TP11, TP12, TP13, TP14, TP100, TP101, TP102, TP103 | C5199800 | 0 deg | predicted: RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x |
 | RV1 | C52754333 | 0 deg | predicted: 3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here |
 | D1, D2, D5, D6 | C81598 | 0 deg | predicted: 1N4148W SOD-123F: as the Schottky |
@@ -141,7 +142,7 @@ in `out/opamp/PLACEMENT_CHECKS.txt`, the list to hold against the preview.
 
 | part | what to look for | should be |
 |---|---|---|
-| Q1, Q3, Q4, Q5, Q7, Q8 | SOT-23: the lone pad (collector) on the side the collector wire leaves | lone pad at the TOP, the pair at the bottom |
+| Q1, Q3, Q4, Q5, Q7, Q8 | SOT-23: the lone pad (pin 3, the collector) against the pair (base and emitter) | lone pad at the TOP, the pair at the bottom |
 | Q2, Q6 | the same, the other way up | lone pad at the BOTTOM, the pair at the top |
 | SW1, SW2, SW3 | 2-way DIP switch: pads on pads; the part's own ON marking | on the side of the silkscreen word ON (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it); electrically it cannot go in wrong |
 | RV1 | 3362P trimmer, keyed | fits one way; screw on top |
@@ -166,7 +167,7 @@ pin), which is why their correction is read, not predicted, and worth a glance.
 jacks, the four terminal blocks and the trimmer.  They are in the BOM and the
 CPL and JLCPCB fits them for a per-order fee plus pennies a joint; keep them
 selected when the form lists them.  If you would rather solder them yourself
-they are the 18 largest, easiest joints on the board.  Everything else is 0805,
+they are the 27 largest, easiest joints on the board.  Everything else is 0805,
 1206, SOD-123 or SOT-23 and is hand-workable with a fine iron.
 
 ## Parts, stock and alternates
@@ -191,14 +192,14 @@ upload shows it per line.
 | LED1,LED2 | GREEN | C2297 | basic | $0.0164 | 2,421,532 | green 0805 LED, one per rail, 1.2 mA through 10k: rails at a glance (JLCPCB rotation 0 on KiCad's LED_0805, read in GPiBridge's preview) |
 | Q1,Q2,Q4,Q6,Q7 | 2N3904 | C20526 | basic | $0.0116 | 2,045,310 | 2N3904 in SOT-23 (1 = B, 2 = E, 3 = C), the NPN of Lab 4L |
 | Q3,Q5,Q8 | 2N3906 | C53444 | extended | $0.0190 | 944,043 | 2N3906 in SOT-23 (1 = B, 2 = E, 3 = C), the PNP of Lab 4L; onsemi |
-| R1,R2 | 1k | C4410 | basic | $0.0085 | 1,945,919 | 1206, 0.25 W: the input series resistors |
+| R1,R2,R7 | 1k | C4410 | basic | $0.0085 | 1,945,919 | 1206, 0.25 W: the input series resistors and R7 |
 | R3 | 1.5k | C4310 | basic | $0.0028 | 1,272,825 |  |
 | R4,R6,R10,R12,R13 | 10k | C17414 | basic | $0.0034 | 54,300,842 |  |
 | R5 | 62k | C17783 | preferred | $0.0021 | 230,472 |  |
-| R7,R11,R14 | 1k | C17513 | basic | $0.0035 | 43,103,445 |  |
-| R8 | 330R | C17630 | basic | $0.0044 | 1,939,287 |  |
+| R8 | 330R | C2934068 | extended | $0.0348 | 38,811 | 2512, 1 W: survives a scope ground clip on Q3 E (0.65 W) for good |
 | R9 | 12k | C17444 | basic | $0.0028 | 694,664 |  |
-| R15,R16 | 47R | C17714 | basic | $0.0029 | 667,379 | the output current limit's sense resistors: about 20 mA |
+| R11,R14 | 1k | C17513 | basic | $0.0035 | 43,103,445 |  |
+| R15,R16,R17 | 47R | C17714 | basic | $0.0029 | 601,045 | the output current limit's sense resistors, and R17, which keeps a cable on the OUT jacks outside the loop |
 | RV1 | 50R | C52754333 | extended | $0.3370 | 520 | 50 ohm single-turn cermet trimmer, top adjust: OFFSET NULL. Its two ends are the diff pair's emitter resistors (25 ohm each at centre) and its wiper is the tail; turning it unbalances the pair by up to +/-33 mV referred to the input |
 | SW1 | TAIL | C54949 | extended | $0.3080 | 12,716 | 2-way SMD DIP switch, 2.54 mm pitch, raised sliders (KingTek DSIC, the same family as the Lorenz board's 6-way) |
 | SW2 | COMPENSATION | C54949 | extended | $0.3080 | 12,716 | 2-way SMD DIP switch, 2.54 mm pitch, raised sliders (KingTek DSIC, the same family as the Lorenz board's 6-way) |

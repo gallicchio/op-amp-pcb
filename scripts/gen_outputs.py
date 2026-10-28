@@ -191,7 +191,7 @@ def export_bom(stem):
         if not lcsc:
             unknown.append(f"{','.join(refs)} ({value})")
         qty = len(refs)
-        total += price * qty
+        total += round(price * qty, 3)      # the BOM's own Ext $ column, as the documents sum it
         lines.append({"Comment": value, "Designator": ",".join(refs),
                       "Footprint": fp.split(":")[-1], "LCSC Part #": lcsc,
                       "MPN": mpn, "Qty": qty, "Unit $": f"{price:.4f}",

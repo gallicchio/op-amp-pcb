@@ -1,0 +1,115 @@
+=================================================================
+1. EASYEDA LAND PATTERNS vs OUR FOOTPRINTS & JLC_ROTATION
+=================================================================
+
+Code C20526 (JLC_ROTATION: +180 deg, predicted): SOT-23: their pad 1 is at (+1.0,+0.95), KiCad's at (-0.94,-0.95); the SOT-23-5 on GPSDO needed +180 on 59 placements
+  EasyEDA package: SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR, silk extent: (-0.7261859999999806, -1.5262860000000038, 0.7261859999999806, 1.5262860000000038)
+    EasyEDA pad  1: ( +1.00,  +0.95) size=(1.00x0.65) drill=0.00 shape=RECT
+    EasyEDA pad  2: ( +1.00,  -0.95) size=(1.00x0.65) drill=0.00 shape=RECT
+    EasyEDA pad  3: ( -1.00,  +0.00) size=(1.00x0.65) drill=0.00 shape=RECT
+
+Code C2297 (JLC_ROTATION: +0 deg, read): KT-0805G on KiCad's LED_0805: GPiBridge rev A preview, cathode at pad 1
+  EasyEDA package: LED0805-R-RD, silk extent: (-2.2237699999999987, -1.0147300000000012, 1.9926299999999926, 1.0426700000000046)
+    EasyEDA pad  2: ( -1.05,  +0.00) size=(1.00x1.40) drill=0.00 shape=RECT
+    EasyEDA pad  1: ( +1.05,  +0.00) size=(1.00x1.40) drill=0.00 shape=RECT
+
+Code C41416668 (JLC_ROTATION: +90 deg, read): BNC-KYWE-295-W4-N: Lorenz board rev A/B preview, built and working
+  EasyEDA package: BNC-TH_BNC-KYWE-295-W4-N, silk extent: (-6.750049999999954, -4.999989999999986, 6.749796000000018, 24.50007799999997)
+    EasyEDA pad  5: ( -0.00,  +0.00) size=(1.80x1.80) drill=1.20 shape=ELLIPSE
+    EasyEDA pad  4: ( -4.00,  -4.00) size=(2.00x2.00) drill=1.40 shape=ELLIPSE
+    EasyEDA pad  3: ( -4.00,  +4.00) size=(2.00x2.00) drill=1.40 shape=ELLIPSE
+    EasyEDA pad  2: ( +4.00,  +4.00) size=(2.00x2.00) drill=1.40 shape=ELLIPSE
+    EasyEDA pad  1: ( +4.00,  -4.00) size=(2.00x2.00) drill=1.40 shape=ELLIPSE
+
+Code C474881 (JLC_ROTATION: +180 deg, predicted): KF301-2P: pins along x at +/-2.5; EasyEDA draws wire entry at +y, ours at -y
+  EasyEDA package: CONN-TH_P5.00_KF301-5.0-2P, silk extent: (-5.0001169999998964, -3.999992000000012, 5.708015000000079, 3.7007800000000417)
+    EasyEDA pad  1: ( -2.50,  +0.00) size=(2.20x2.20) drill=1.40 shape=ELLIPSE
+    EasyEDA pad  2: ( +2.50,  +0.00) size=(2.20x2.20) drill=1.40 shape=ELLIPSE
+
+Code C474882 (JLC_ROTATION: +180 deg, predicted): KF301-3P: pins along x at -5/0/+5; EasyEDA draws wire entry at +y, ours at -y
+  EasyEDA package: CONN-TH_3P-P5.00_KF301-5.0-3P, silk extent: (-7.500111999999947, -3.999992000000012, 7.899907999999965, 3.700018000000002)
+    EasyEDA pad  1: ( -5.00,  +0.00) size=(2.20x2.20) drill=1.40 shape=ELLIPSE
+    EasyEDA pad  2: ( +0.00,  +0.00) size=(2.20x2.20) drill=1.40 shape=ELLIPSE
+    EasyEDA pad  3: ( +5.00,  +0.00) size=(2.20x2.20) drill=1.40 shape=ELLIPSE
+
+Code C5199800 (JLC_ROTATION: +0 deg, predicted): RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x
+  EasyEDA package: TESTPOINT-SMD_L3.8-W2.0_RH-5019, silk extent: (-2.2999699999999583, -1.4000480000000435, 2.2999699999999583, 1.4000480000000435)
+    EasyEDA pad  1: ( +0.00,  +0.00) size=(4.00x2.20) drill=0.00 shape=RECT
+
+Code C52754333 (JLC_ROTATION: +0 deg, predicted): 3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here
+  EasyEDA package: RES-TH_3362P-1-101_C52754331, silk extent: (-1009.2899804000001, -748.5646954, 3.428847599999923, 260.669278)
+    EasyEDA pad  3: ( +2.50,  +1.25) size=(1.50x1.50) drill=0.80 shape=ELLIPSE
+    EasyEDA pad  2: ( -0.00,  -1.25) size=(1.50x1.50) drill=0.80 shape=ELLIPSE
+    EasyEDA pad  1: ( -2.50,  +1.25) size=(1.50x1.50) drill=0.80 shape=ELLIPSE
+
+Code C53444 (JLC_ROTATION: +180 deg, predicted): SOT-23, same drawing as the NPN
+  EasyEDA package: SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR, silk extent: (-0.7261859999999806, -1.5262860000000038, 0.7261859999999806, 1.5262860000000038)
+    EasyEDA pad  1: ( +1.00,  +0.95) size=(1.00x0.65) drill=0.00 shape=RECT
+    EasyEDA pad  2: ( +1.00,  -0.95) size=(1.00x0.65) drill=0.00 shape=RECT
+    EasyEDA pad  3: ( -1.00,  +0.00) size=(1.00x0.65) drill=0.00 shape=RECT
+
+Code C54949 (JLC_ROTATION: +270 deg, predicted): DSIC02LSGET: JLCPCB draws the DSIC06 lying along x, KiCad standing; the Lorenz DSIC06 needed +270 (read)
+  EasyEDA package: SW-SMD_4P-L6.0-W5.1-P2.54-LS9.3-BL, silk extent: (-2.5999439999999687, -3.000121000000064, 2.499868000000025, 2.999867000000012)
+    EasyEDA pad  1: ( -1.27,  +4.50) size=(1.10x2.20) drill=0.00 shape=RECT
+    EasyEDA pad  2: ( +1.27,  +4.50) size=(1.10x2.20) drill=0.00 shape=RECT
+    EasyEDA pad  3: ( +1.27,  -4.50) size=(1.10x2.20) drill=0.00 shape=RECT
+    EasyEDA pad  4: ( -1.27,  -4.50) size=(1.10x2.20) drill=0.00 shape=RECT
+
+Code C81598 (JLC_ROTATION: +0 deg, predicted): 1N4148W SOD-123F: as the Schottky
+  EasyEDA package: SOD-123F_L2.7-W1.6-LS3.8-RD, silk extent: (-1.6047466000000021, -1.0023094000000292, 1.3762989999999409, 1.0025125999999782)
+    EasyEDA pad  2: ( +1.73,  +0.00) size=(1.10x1.00) drill=0.00 shape=RECT
+    EasyEDA pad  1: ( -1.73,  +0.00) size=(1.10x1.00) drill=0.00 shape=RECT
+
+Code C8598 (JLC_ROTATION: +0 deg, predicted): B5819W SOD-123: their pad 1 at -1.7 as KiCad's; cathode band end to be seen
+  EasyEDA package: SOD-123_L2.7-W1.6-LS3.7-RD-1, silk extent: (-1.8063972000000041, -0.977010999999998, 1.346200000000003, 0.977010999999998)
+    EasyEDA pad  2: ( +1.70,  +0.00) size=(1.20x0.95) drill=0.00 shape=RECT
+    EasyEDA pad  1: ( -1.70,  +0.00) size=(1.20x0.95) drill=0.00 shape=RECT
+
+=================================================================
+2. CHECKING TRANSFORMED PAD POSITIONS UNDER CPL ROTATION
+=================================================================
+  OK D1    (C81598, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK D2    (C81598, JLC rot=-90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK D3    (C8598, JLC rot=-90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK D4    (C8598, JLC rot=180.0): all EasyEDA pads align within 0.35mm of board pads
+  OK D5    (C81598, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK D6    (C81598, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  MISMATCH on J1 (C41416668, JLC rot=270.0): [('2', (-4.0, -4.0), (-4.0, 4.0), 8.0), ('1', (0.0, 0.0), (4.0, 4.0), 5.66)]
+  MISMATCH on J2 (C41416668, JLC rot=270.0): [('2', (-4.0, -4.0), (-4.0, 4.0), 8.0), ('1', (0.0, 0.0), (4.0, 4.0), 5.66)]
+  MISMATCH on J3 (C41416668, JLC rot=90.0): [('2', (4.0, 4.0), (4.0, -4.0), 8.0), ('1', (0.0, 0.0), (-4.0, -4.0), 5.66)]
+  MISMATCH on J4 (C474881, JLC rot=270.0): [('1', (0.0, 2.5), (0.0, -2.5), 5.0), ('2', (0.0, -2.5), (-0.0, 2.5), 5.0)]
+  MISMATCH on J5 (C474881, JLC rot=270.0): [('1', (0.0, 2.5), (0.0, -2.5), 5.0), ('2', (0.0, -2.5), (-0.0, 2.5), 5.0)]
+  MISMATCH on J6 (C474882, JLC rot=90.0): [('1', (0.0, -5.0), (-0.0, 5.0), 10.0), ('3', (0.0, 5.0), (0.0, -5.0), 10.0)]
+  MISMATCH on J7 (C474881, JLC rot=90.0): [('1', (0.0, -2.5), (-0.0, 2.5), 5.0), ('2', (0.0, 2.5), (0.0, -2.5), 5.0)]
+  MISMATCH on LED1 (C2297, JLC rot=90.0): [('2', (0.0, -0.94), (0.0, 1.05), 1.99), ('1', (0.0, 0.94), (0.0, -1.05), 1.99)]
+  MISMATCH on LED2 (C2297, JLC rot=-90.0): [('2', (0.0, 0.94), (-0.0, -1.05), 1.99), ('1', (0.0, -0.94), (-0.0, 1.05), 1.99)]
+  OK Q1    (C20526, JLC rot=270.0): all EasyEDA pads align within 0.35mm of board pads
+  OK Q2    (C20526, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK Q3    (C53444, JLC rot=270.0): all EasyEDA pads align within 0.35mm of board pads
+  OK Q4    (C20526, JLC rot=270.0): all EasyEDA pads align within 0.35mm of board pads
+  OK Q5    (C53444, JLC rot=270.0): all EasyEDA pads align within 0.35mm of board pads
+  OK Q6    (C20526, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK Q7    (C20526, JLC rot=270.0): all EasyEDA pads align within 0.35mm of board pads
+  OK Q8    (C53444, JLC rot=270.0): all EasyEDA pads align within 0.35mm of board pads
+  OK RV1   (C52754333, JLC rot=180.0): all EasyEDA pads align within 0.35mm of board pads
+  OK SW1   (C54949, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK SW2   (C54949, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK SW3   (C54949, JLC rot=270.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP1   (C5199800, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP10  (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP100 (C5199800, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP101 (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP102 (C5199800, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP103 (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP11  (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP12  (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP13  (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP14  (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP2   (C5199800, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP3   (C5199800, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP4   (C5199800, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP5   (C5199800, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP6   (C5199800, JLC rot= 90.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP7   (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP8   (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads
+  OK TP9   (C5199800, JLC rot=  0.0): all EasyEDA pads align within 0.35mm of board pads

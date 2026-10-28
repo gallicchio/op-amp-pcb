@@ -195,40 +195,6 @@ def check_keying(stem, problems, notes):
 USB_TAB_TO_EDGE = 5.79
 
 
-def check_usb_setback(stem, height, problems, notes):
-    pcb = os.path.join(ROOT, "hardware", stem + ".kicad_pcb")
-    if not os.path.exists(pcb):
-        return
-    board = parse_file(pcb)
-    for fp in board.kids("footprint"):
-        ref = next((p.atom(1) for p in fp.kids("property")
-                    if p.atom(0) == "Reference"), "?")
-        if ref != "J1":
-            continue
-        at = fp.first("at")
-        oy = float(at.atom(1))
-        tabs = []
-        for pad in fp.kids("pad"):
-            if pad.atom(0) == "SH":
-                tabs.append(float(pad.first("at").atom(1)))
-        if not tabs:
-            problems.append(f"{stem}: J1 has no shell tabs to measure from")
-            return
-        edge = oy + min(tabs) + USB_TAB_TO_EDGE
-        if abs(edge - height) > 0.05:
-            problems.append(
-                f"{stem}: the USB-C wants the board edge {USB_TAB_TO_EDGE} mm "
-                f"in front of its upper shell tab, which is y = {edge:.2f}; "
-                f"the board ends at {height:.2f}, so the connector is "
-                f"{abs(edge - height):.2f} mm {'too far back' if edge < height else 'too far forward'}")
-        else:
-            notes.append(f"{stem}: the USB-C sits where its drawing asks -- "
-                         f"mating face {oy + 3.65 - height:.2f} mm past the "
-                         f"board edge, so a moulded plug body clears it")
-        return
-    problems.append(f"{stem}: no J1 on the board")
-
-
 def check_models(stem, problems, notes):
     """Every 3D model a footprint names must actually be on disk.
 
@@ -325,7 +291,7 @@ CODE_EXPECT = {
     "NPN": ["NPN", "SOT-23"], "PNP": ["PNP", "SOT-23"], "POT": ["50Ω"], "DIP2": ["DIP Switch", "2.54mm"],
     "BNC": ["BNC", "50Ω"], "TERM2": ["2P", "5mm"], "TERM3": ["3P", "5mm"], "TP": ["Test"],
     "DSCH": ["Schottky", "SOD-123"], "DSW": ["Switching", "SOD-123"], "LED": ["0805"],
-    "47R": ["47Ω", "0805"], "1k": ["1kΩ", "0805"], "1k_1206": ["1kΩ", "1206"], "1.5k": ["1.5kΩ", "0805"], "330R": ["330Ω", "0805"],
+    "47R": ["47Ω", "0805"], "1k": ["1kΩ", "0805"], "1k_1206": ["1kΩ", "1206"], "1.5k": ["1.5kΩ", "0805"], "330R_2512": ["330Ω", "2512"],
     "10k": ["10kΩ", "0805"], "12k": ["12kΩ", "0805"], "62k": ["62kΩ", "0805"],
     "100pF": ["100pF", "0805", "C0G"], "100nF": ["100nF", "0805"], "10uF": ["10uF", "0805"],
 }

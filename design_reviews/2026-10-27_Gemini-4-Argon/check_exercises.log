@@ -1,0 +1,32 @@
+=================================================================
+EXERCISE 2, 4, 5: OPEN-LOOP OPERATING POINT WITH IN+ = IN- = 0 V
+=================================================================
+  pot=0.40: V(TP6 / Q2 C)=+14.053 V | V(TP8 / Q3 C)= -4.167 V | V(OUT)= -3.529 V
+  pot=0.45: V(TP6 / Q2 C)=+14.014 V | V(TP8 / Q3 C)= -2.895 V | V(OUT)= -2.274 V
+  pot=0.47: V(TP6 / Q2 C)=+13.999 V | V(TP8 / Q3 C)= -2.383 V | V(OUT)= -1.771 V
+  pot=0.48: V(TP6 / Q2 C)=+13.991 V | V(TP8 / Q3 C)= -2.127 V | V(OUT)= -1.519 V
+  pot=0.50: V(TP6 / Q2 C)=+13.976 V | V(TP8 / Q3 C)= -1.612 V | V(OUT)= -1.018 V
+  pot=0.52: V(TP6 / Q2 C)=+13.960 V | V(TP8 / Q3 C)= -1.097 V | V(OUT)= -0.522 V
+  pot=0.55: V(TP6 / Q2 C)=+13.937 V | V(TP8 / Q3 C)= -0.321 V | V(OUT)= -0.000 V
+  pot=0.60: V(TP6 / Q2 C)=+13.899 V | V(TP8 / Q3 C)= +0.978 V | V(OUT)= +0.409 V
+
+--- What happens in Exercise 6 (Bring-up Step 6 -> Exercise 2/4/5)? ---
+In Bring-up Step 6 & Section 6, the student nulls the offset as a FOLLOWER (FEEDBACK 2) so V(OUT) = 0.000 V.
+  Pot nulled as follower at pot=0.579: V(OUT, follower) = -0.150 mV, V(c3) = +0.489 V
+  With THAT SAME pot=0.579 in OPEN LOOP (IN+=0, IN-=0): V(TP6/c2)=+13.915V, V(TP8/c3)=+0.433V, V(OUT)=+0.002V
+  Exercise 5 (50mV peak triangle, open loop) with Pot at midpoint (0.500):
+    TP6 (Q2 C): +13.502V .. +14.504V (p-p=1002.5mV)
+    TP8 (Q3 C): -14.892V .. +14.117V (p-p=29.01V)
+    TP9 (OUT) : -14.169V .. +13.400V (p-p=27.57V)
+  Exercise 5 (50mV peak triangle, open loop) with Pot nulled as follower (0.579):
+    TP6 (Q2 C): +13.491V .. +14.452V (p-p=960.7mV)
+    TP8 (Q3 C): -14.724V .. +14.110V (p-p=28.83V)
+    TP9 (OUT) : -14.002V .. +13.393V (p-p=27.40V)
+
+=================================================================
+EXERCISE 8: COMPENSATION (SW2 = 2 alone, and SW2 = both off, in x1 and x11)
+=================================================================
+  follower SW2=2 (bare 100pF)  : peak=+0.811V, min=+0.231V, late_pp= 579.6mV, ring_freq= 3.83MHz
+  follower SW2=off (no C1)     : peak=+1.501V, min=-0.660V, late_pp=2118.6mV, ring_freq=13.79MHz
+  x11      SW2=2 (bare 100pF)  : peak=+1.029V, min=+0.903V, late_pp=   0.0mV, ring_freq= 0.03MHz
+  x11      SW2=off (no C1)     : peak=+1.878V, min=+0.235V, late_pp=1643.0mV, ring_freq= 8.11MHz

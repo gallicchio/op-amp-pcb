@@ -205,11 +205,14 @@ def kf301(npins):
     """KEFA KF301-5.0-xP screw terminal block, 5.0 mm pitch (LCSC C474881/2).
 
     KF301-5.0 drawing (datasheets/): pins O1.0 on 5.00 mm centres, holes 1.2
-    recommended; body 7.6 mm deep and 10.0 mm tall, pins 3.6 mm from the
-    vertical back face, so the sloped wire-entry face is 4.0 mm the other way.
-    JLCPCB's land pattern (easyeda) uses 2.2 mm pads on 1.4 mm holes at the
-    same centres, and draws the body from y = -4.0 to +3.7: the wires enter
-    from -y at rotation 0.  Pads here follow JLCPCB's; pad 1 is square.
+    recommended; body 7.6 mm deep and 10.0 mm tall; the side view puts the pins
+    4.0 mm from the back face, so the wire-entry face is 3.6 mm from them (the
+    3.60 in the front view is the pins' length, not a depth).  JLCPCB's land
+    pattern (easyeda) uses 2.2 mm pads on 1.4 mm holes at the same centres and
+    draws the body from y = -4.0 to +3.7 with the wire openings on +y.  Here the
+    wires enter from -y (3.7 mm from the pins) and the back is at +4.0, so the
+    CPL turns JLCPCB's drawing by 180 (parts.JLC_ROTATION).  Pads follow
+    JLCPCB's; pad 1 is square.
     """
     name = f"TerminalBlock_KF301_1x{npins:02d}_P5.00mm"
     f = fp_header(name,
@@ -222,7 +225,7 @@ def kf301(npins):
         f.add(tht_pad(str(i + 1), x, 0, 1.4, 2.2, f"{name}/p{i+1}",
                       shape="rect" if i == 0 else "circle"))
     w = npins * PITCH + 0.4
-    x0, x1, yf, yb = -w / 2, w / 2, -4.0, 3.6
+    x0, x1, yf, yb = -w / 2, w / 2, -3.7, 4.0
     rect_lines(f, x0, yf, x1, yb, "F.Fab", FAB_W, f"{name}/fab")
     rect_lines(f, x0 - 0.1, yf - 0.1, x1 + 0.1, yb + 0.1, "F.SilkS", SILK_W, f"{name}/silk")
     # the wire openings, drawn on the entry side so the picture says which way the wires go

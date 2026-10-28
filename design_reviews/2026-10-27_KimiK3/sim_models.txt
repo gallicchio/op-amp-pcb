@@ -1,0 +1,8 @@
+  as shipped (Bf 300/200, Cjc 4/4.5p, TF 350p)        : A0=  138  x1 fu= 14.96 MHz  PM= +50.8
+  Bf=100/100 (near datasheet floor)                   : A0=  195  x1 fu= 14.13 MHz  PM= +55.7
+  Bf=70/80 (datasheet min at 1 mA)                    : A0=  194  x1 fu= 13.34 MHz  PM= +60.0
+  slow: fT ~150 MHz, caps +50%                        : A0=  138  x1 fu= 11.22 MHz  PM= +47.2
+  stray 10 pF instead of 3 pF                         : A0=  138  x1 fu= 10.00 MHz  PM= +43.2
+  TAIL 2 (10k resistor), follower: A0=  168  fu= 14.96 MHz  PM= +47.8
+  COMPENSATION both off: x1 f= 28.18 MHz  PM= -39.2
+  COMPENSATION both off: x11 f=  8.91 MHz  PM= +17.8

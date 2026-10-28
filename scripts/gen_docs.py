@@ -326,9 +326,11 @@ def main():
             continue
         P.append(f"[{how.upper():9s}] {', '.join(refs)}  ({code}, +{deg} deg)")
         P.append(f"            {note}")
-        look = next((l for l in PREVIEW_CHECKS if l[0].split(",")[0].strip() in refs), None)
-        if look:
-            P.append(f"            look for: {look[1]}; should be: {look[2]}")
+        # every row naming any of these parts: one code can sit several ways round
+        for row in PREVIEW_CHECKS:
+            mine = [r for r in preview_refs(row[0]) if r in refs]
+            if mine:
+                P.append(f"            {', '.join(mine)}: look for {row[1]}; should be: {row[2]}")
         P.append("")
     P += ["Symmetric parts (every resistor and capacitor) cannot go in wrong.",
           "The back of the board carries no parts: check it anyway, it should be empty.", ""]
@@ -392,9 +394,21 @@ def main():
     return 1 if bad else 0
 
 
+def preview_refs(text):
+    """'Q1, Q3' -> ['Q1', 'Q3']; 'TP1-TP14' -> ['TP1', ..., 'TP14']."""
+    out = []
+    for item in (t.strip() for t in text.split(",")):
+        m = re.fullmatch(r"([A-Z]+)(\d+)-\1?(\d+)", item)
+        if m:
+            out += [f"{m.group(1)}{i}" for i in range(int(m.group(2)), int(m.group(3)) + 1)]
+        elif item:
+            out.append(item)
+    return out
+
+
 # What to look for in JLCPCB's preview, per orientation-sensitive part.
 PREVIEW_CHECKS = [
-    ("Q1, Q3, Q4, Q5, Q7, Q8", "SOT-23: the lone pad (collector) on the side the collector wire leaves",
+    ("Q1, Q3, Q4, Q5, Q7, Q8", "SOT-23: the lone pad (pin 3, the collector) against the pair (base and emitter)",
      "lone pad at the TOP, the pair at the bottom"),
     ("Q2, Q6", "the same, the other way up", "lone pad at the BOTTOM, the pair at the top"),
     ("SW1, SW2, SW3", "2-way DIP switch: pads on pads; the part's own ON marking",
