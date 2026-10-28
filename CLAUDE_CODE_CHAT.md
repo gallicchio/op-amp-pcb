@@ -703,3 +703,14 @@ Build: ERC 0, 118 circuit assertions, DRC 0, 28 of 28 document claims.
 ![board](docs/history/2026-10-27-r8-top.png)
 ![back](docs/history/2026-10-27-r8-silk-bottom.png)
 ![schematic](docs/history/2026-10-27-r8-schematic.png)
+
+## Prompt 21
+
+> Confirmed that the last reviewer to write a review was Kimi K3.
+
+## Response 11
+
+Thanks.  The reviews README now says Kimi K3 is confirmed rather than "by Jason's
+account".  The report inside `2026-10-27_KimiK3/` still calls itself "Claude (Copilot
+SDK session)"; it stays as written, since each reviewer writes only in its own
+directory.  Nothing in the design depended on the attribution.
