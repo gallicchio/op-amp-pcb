@@ -65,6 +65,55 @@ def sim_results():
         return {}
 
 
+class Spread:
+    """The sheet, with the stages pulled apart: every x the drawing code gives is
+    moved right by the sum of the gaps whose break lies to its left.  A symbol's
+    pins move with the symbol, so pin() answers in the drawing code's own
+    (unspread) coordinates, and a wire that crosses a break simply grows."""
+
+    def __init__(self, sheet, breaks):
+        self.s, self.breaks, self.origin = sheet, breaks, {}
+
+    def sx(self, x):
+        return round(x + sum(d for b, d in self.breaks if x > b), 4)
+
+    def __getattr__(self, name):
+        return getattr(self.s, name)
+
+    def place(self, lib_id, ref, value, x, y, *a, **k):
+        self.origin[ref] = x
+        return self.s.place(lib_id, ref, value, self.sx(x), y, *a, **k)
+
+    def pin(self, ref, unit, number):
+        px, py = self.s.pin(ref, unit, number)
+        x0 = self.origin[ref]
+        shift = self.sx(x0) - x0
+        x = round(px - shift, 4)
+        assert abs(self.sx(x) - x - shift) < 1e-6, f"a break runs through {ref}"
+        return (x, py)
+
+    def wire(self, *points):
+        self.s.wire(*[(self.sx(x), y) for x, y in points])
+
+    def junction(self, x, y):
+        self.s.junction(self.sx(x), y)
+
+    def no_connect(self, x, y):
+        self.s.no_connect(self.sx(x), y)
+
+    def text(self, txt, x, y, *a, **k):
+        self.s.text(txt, self.sx(x), y, *a, **k)
+
+    def label(self, txt, x, y, *a, **k):
+        self.s.label(txt, self.sx(x), y, *a, **k)
+
+
+# Where the stages are pulled apart, in grid units: (break, gap).  Each break runs
+# down an empty column of the drawing: inputs | pair and tail | gain stage and its
+# compensation | push-pull | R17, the feedback, the jacks and the power.
+BREAKS = [(g(48), g(4)), (g(92), g(4)), (g(109), g(4)), (g(118.5), g(4))]
+
+
 def build():
     R = sim_results()
     op = R.get("op", {})
@@ -72,13 +121,14 @@ def build():
     def v(node, fmt="{:+.1f} V"):
         return fmt.format(op[node]) if node in op else "?"
 
-    s = Sheet(kienv.share_dir(), paper="A2",
+    sheet = Sheet(kienv.share_dir(), paper="A2",
               title=f"{parts.BOARD_NAME}: the Lab 5L op-amp of Learning the Art of Electronics",
               date=parts.BOARD_DATE, rev=parts.REV,
               company="Circuit: Hayes & Horowitz, Learning the Art of Electronics (2016), Lab 5L  |  Board: Jason Gallicchio and Claude",
               comments=["2N3904 / 2N3906 (MMBT, SOT-23): the transistors of Chapter 4",
                         f"difference x{R.get('gdiff1', 11):.0f}, gain stage x{R.get('g2_stage', 34):.0f}, follower x1 (a third at rest, in its dead zone): A = {R.get('a0', 140):.0f} open loop",
                         "Open source, CERN-OHL-P-2.0 -- " + parts.PROJECT_URL])
+    s = Spread(sheet, BREAKS)
     pwr_n = [0]
 
     def pwr_ref():
@@ -341,9 +391,9 @@ def build():
     s.wire(c2_, (c2_[0], g(57)), (CX, g(57)))
 
     # ======================================================= push-pull =======
-    # Q4 / Q5 with the book's bare emitters joined at OUT, plus the output
-    # current limit a real op-amp has: 47 ohm in each emitter, sensed by Q7 / Q8,
-    # which steal the drive above 0.65 V / 47 ohm = 14 mA.  Not in the book.
+    # Q4 / Q5 with the book's bare emitters joined, and R17 (not in the book) from
+    # there to OUT.  The feedback is taken after R17, so the loop hides its drop; a
+    # short at the jacks finds 330 ohm in the way and Q4 / Q5 stay cool.
     Q4_X, Q4_Y, Q5_Y = g(116), g(46), g(66)
     s.place(sym("NPN"), "Q4", "2N3904", Q4_X, Q4_Y, footprint=fp("NPN"),
             fields=part_fields("NPN"), ref_off=(-7.6, -3.4), val_off=(-7.6, -0.6),
@@ -363,44 +413,14 @@ def build():
     s.wire(q5c, (q5c[0], VM_Y))
     s.junction(q5c[0], VM_Y)
     OX = q4e[0]
-    res("R15", "47R", OX, g(52), side="left")
-    res("R16", "47R", OX, g(60), side="left")
-    s.wire(q4e, (OX, g(52) - 3.81))
-    s.wire((OX, g(52) + 3.81), (OX, g(60) - 3.81))
-    s.wire((OX, g(60) + 3.81), q5e)
+    s.wire(q4e, (OX, OUT_Y), q5e)
     s.junction(OX, OUT_Y)
-    # the limiter: Q7 senses R15 (base on Q4's emitter), Q8 senses R16
-    Q7_X = g(121)
-    s.place(sym("NPN"), "Q7", "2N3904", Q7_X, g(49), footprint=fp("NPN"),
-            fields=part_fields("NPN"), ref_off=(3.6, -3.4), val_off=(3.6, -0.6),
-            ref_justify="left", val_justify="left")
-    s.place(sym("PNP"), "Q8", "2N3906", Q7_X, g(63), mirror="x", footprint=fp("PNP"),
-            fields=part_fields("PNP"), ref_off=(3.6, 0.6), val_off=(3.6, 3.4),
-            ref_justify="left", val_justify="left")
-    q7b, q7c, q7e = s.pin("Q7", 1, "1"), s.pin("Q7", 1, "3"), s.pin("Q7", 1, "2")
-    q8b, q8e, q8c = s.pin("Q8", 1, "1"), s.pin("Q8", 1, "2"), s.pin("Q8", 1, "3")
-    s.wire((OX, q7b[1]), q7b)
-    s.junction(OX, q7b[1])
-    s.wire((OX, q8b[1]), q8b)
-    s.junction(OX, q8b[1])
-    LX = q7e[0]
-    s.wire(q7e, (LX, OUT_Y), q8e)
-    s.junction(LX, OUT_Y)
-    # D5 / D6 block the idle sense transistor's base-collector junction, which
-    # the other half's Vbe would otherwise forward-bias (anodes toward Q3 C)
-    s.place("Device:D", "D5", "1N4148W", LX, g(44), rot=90,
-            footprint=fp("DSW"), fields=part_fields("DSW"),
-            ref_off=(2.4, -1.4), val_off=(2.4, 1.4), ref_justify="left", val_justify="left")
-    s.place("Device:D", "D6", "1N4148W", LX, g(68), rot=90,
-            footprint=fp("DSW"), fields=part_fields("DSW"),
-            ref_off=(2.4, -1.4), val_off=(2.4, 1.4), ref_justify="left", val_justify="left")
-    s.wire(q7c, (LX, g(44) + 3.81))
-    s.wire((LX, g(44) - 3.81), (LX, g(40)), (BB_X, g(40)), q4b)   # crosses Q4's collector wire: no dot
-    s.wire(q8c, (LX, g(68) - 3.81))
-    s.wire((LX, g(68) + 3.81), (LX, g(72)), (BB_X, g(72)), q5b)
+    R17_X = g(121)
+    res("R17", "330R", R17_X, OUT_Y, rot=90, lcsc="330R_2512", footprint=fp("R_2512"))
+    s.wire((OX, OUT_Y), (R17_X - 3.81, OUT_Y))
     OUT_X0 = g(126)
-    s.wire((OX, OUT_Y), (OUT_X0, OUT_Y))
-    label("OUT", LX + 2.54, OUT_Y + 0.0)
+    s.wire((R17_X + 3.81, OUT_Y), (OUT_X0, OUT_Y))
+    label("OUT", g(123.5), OUT_Y)
 
     # --- the 10k / 1k that load the output and make the x11 feedback ---------
     s.junction(OUT_X0, OUT_Y)
@@ -440,13 +460,7 @@ def build():
     label("IN+", g(28), IN_P_Y)
 
     # --- OUT jack and terminal ------------------------------------------------
-    # R17 (not in the book) keeps a cable's capacitance on the jacks outside the
-    # loop: the feedback is taken before it, so 100 pF of coax cannot make the
-    # follower ring.  The jacks' net is OUT JACKS; OUT is the loop's own node.
-    res("R17", "47R", g(134), OUT_Y, rot=90)
-    s.wire((OUT_X1, OUT_Y), (g(134) - 3.81, OUT_Y))
-    s.wire((g(134) + 3.81, OUT_Y), (g(145), OUT_Y))
-    label("OUT JACKS", g(138), OUT_Y)
+    s.wire((OUT_X1, OUT_Y), (g(145), OUT_Y))
     s.place("Connector:Conn_Coaxial", "J3", "BNC", g(147), OUT_Y,
             footprint=fp("BNC"), fields=part_fields("BNC"),
             ref_off=(4.0, -2.6), val_off=(4.0, 0.4), ref_justify="left", val_justify="left")
@@ -559,7 +573,7 @@ def build():
     note([f"{parts.BOARD_NAME.upper()}",
           "",
           "The op-amp of Lab 5L (Learning the Art of Electronics, Hayes & Horowitz, 2016), built from the NPN and",
-          "PNP of Chapter 4 as eight SOT-23 transistors, on a board whose silkscreen is this drawing.",
+          "PNP of Chapter 4 as six SOT-23 transistors, on a board whose silkscreen is this drawing.",
           "Three stages, as the book's Fig. 5L.11 and 5N.32:",
           "",
           f"    difference    Q1 Q2, 1.5k collector load on the + side, tail from RV1 through SW1     x{R.get('gdiff1', 11):.0f}",
@@ -631,14 +645,15 @@ def build():
           "Q1's base.  The 10k + 1k are the book's load and its",
           "x11 divider in one: X = OUT / 11.",
           "",
-          "OUTPUT",
-          f"{R['swing'][0]:+.0f} to {R['swing'][1]:+.0f} V into the 11k; about +/-12 V, 15 mA into 1k.",
-          "Q7, Q8, D5, D6 and R15, R16 are not in the book: they",
-          f"limit the output to about {R.get('isc_ma', 17):.0f} mA, as a real op-amp does:",
-          "a short to ground is survived, to a rail for seconds.",
-          "R17 (not in the book either) feeds the jacks from OUT:",
-          "the feedback is taken before it, so a cable's 100 pF",
-          "stays outside the loop instead of making it ring."],
+          "OUTPUT  (R17: not in the book)",
+          f"{R['swing'][0]:+.0f} to {R['swing'][1]:+.0f} V into the 11k; +/-{min(abs(x) for x in R['swing_1k']):.0f} V into 1k.",
+          "The book's bare push-pull reaches OUT through R17's",
+          "330 ohm, inside the loop, which hides its drop.  It is",
+          f"the only protection: a short at the jacks draws {R.get('isc_ma', 40):.0f} mA",
+          f"and Q4 / Q5 dissipate at most {R.get('pq_short_mw', 130)} mW (rated 200).",
+          "Without it a short would put 1 W into Q5.  It also",
+          "keeps a cable's capacitance on OUT from making the",
+          "follower ring."],
          col[3], NOTE_Y)
     note(["POWER",
           "+15 V, GND, -15 V from a bench supply, 20 mA; +/-16 V max.",

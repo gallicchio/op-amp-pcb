@@ -33,8 +33,7 @@ symbol's transistor.
 | series 1 k with the Miller capacitor | R14 | the book's bare 100 pF puts a right-half-plane zero at 1 / (2 pi C / gm): the follower is unstable with it.  1 k in series moves the zero to the left half plane.  SW2 pole 2 shorts it so the book's version can be shown ringing |
 | three 2-way DIP switches | SW1 TAIL, SW2 COMPENSATION, SW3 FEEDBACK | the book's variants (resistor tail or current sink; compensation or not; x11, follower or your own) without jumpers to lose |
 | input protection | R1, R2 1 k 1206; D1, D2 1N4148W anti-parallel between the bases | a real op-amp's input clamps.  A 2N3904's base-emitter junction breaks down at 6 V reverse; a student with a 10 V generator on one input and the other grounded would otherwise degrade Q1 or Q2.  The 1206 resistors take 50 mW each with one input at a rail and the other grounded, 0.21 W each with the two inputs at opposite rails |
-| output resistor | R17, 47 ohm from OUT to both jacks | the board's feedback is taken before it, so a cable's capacitance on the jacks stays outside the loop.  R15 and R16 are inside the loop and do not isolate anything: once the output leaves the crossover dead band, 100 pF on OUT made the simulated follower oscillate at 13 MHz (Gemini's round-1 review found it; the earlier check had been made at 0 V, inside the dead band).  With R17 it is clean from 100 pF to 1 nF and at any level, for 4.5 % less output into 1 k |
-| output current limit | R15, R16 47 ohm in the emitters; Q7, Q8 sensing them; D5, D6 | a 741's scheme: when 0.65 V stands across a sense resistor the sense transistor steals the push-pull's drive.  Students will short OUT in Lab 6; the '411 shrugs, a bare Q4 would die.  The diodes are not in the 741: with the book's class-B pair the idle sense transistor's base-collector junction is forward-biased by the other half's Vbe and, without a diode, injects current into the drive node and halves the negative swing (found in simulation).  Drawn in its own box, labelled as the safety net it is |
+| output protection | R17, 330 ohm 2512, from the push-pull's joined emitters to OUT, inside the loop | students will short OUT in Lab 6; the '411 shrugs, and the book's bare push-pull would put more than 1 W into Q5.  One resistor does it: into a short at the jacks the current is about 46 mA and Q4 or Q5 dissipate at most 127 mW (rated 200 mW); R17 takes 0.7 W of its 1 W.  The feedback is taken at OUT, after R17, so the loop hides the drop: the gain, the offset and the output resistance are what the loop makes them, and the only cost is swing into heavy loads (+/-10 V into 1 k instead of +/-12 V).  330 ohm is the smallest value with margin: 270 puts 167 mW in Q4/Q5 at 25 C, 220 puts 220 mW.  It is also the isolation resistor between the push-pull and a cable: 100 pF to 2.2 nF on the jacks leaves the follower clean at any level.  It replaced, before rev A was ordered, a 741-style limiter (two sense transistors, two sense resistors, two diodes): the same protection for one part instead of six, and an output stage that is exactly the book's.  No probe loop sits between the push-pull and R17, so no ground clip can short it |
 | reverse-supply protection | D3, D4 B5819W in series with each rail | a reversed bench supply forward-biases every junction on the board; the 0.17 V drop at 4 mA costs nothing here |
 | resistors that survive a misplaced clip | R8 1 W 2512, R7 0.25 W 1206 | a scope's ground clip on Q3 E puts the whole rail across R8, 0.66 W at 45 mA, under any sensible supply limit; on Q2 C 0.5 W.  On Q6 E or Q6 B, 0.21 W in R7.  An 0805 would cook; these are inside their ratings.  The 2512 is the board's one Extended part added for safety, and a student who asks why that resistor is so big has asked the right question |
 | rail LEDs | LED1, LED2 through 10 k | rails at a glance, 1.2 mA each |
@@ -52,11 +51,9 @@ notes, the handbook and this file.
 
 **Operating point** (follower, IN+ grounded): rails at +/-14.8 V, tail current
 of 1.36 mA through Q6, 1.28 mA in Q3, Q2 C at +13.8 V, Q3 C at +0.5 V, OUT at
--0.007 V.  The output current into a dead short is about 17 mA, 14.5 mA of it
-through Q4 or Q5 (measured open loop, so no input current reaches the short
-through the clamp, as it did in an earlier version of this simulation); into
-the 11 k divider it never limits.  Into 1 k at the jacks, through R17, OUT swings
-+/-11.7 V.  The follower's own offset with everything nominal is -6.7 mV, from
+-0.007 V.  The output current into a dead short is about 46 mA, set by R17,
+with at most 127 mW in Q4 or Q5 (the worst case over every output level the loop
+might be asking for).  Into 1 k OUT swings +/-10.1 V.  The follower's own offset with everything nominal is -6.7 mV, from
 Q1's collector sitting at the rail while Q2's sits 1 V below it (Early effect);
 the null range of about +/-33 mV covers it and the pair's real mismatch several
 times over.
@@ -72,32 +69,31 @@ amplifier really has a gain of 10.1: the finite-gain error the book has
 students compute.
 
 **Stability.** With the 100 pF and the 1 k the follower has a phase margin of
-about 54 degrees as a follower, no overshoot on a 0.5 V step, and the
-follower settles in about 0.6 us; the x11 amplifier has 122 degrees.  Without
-the 1 k the follower's phase margin is -39 degrees, that is, it oscillates, and
-the x11 amplifier keeps about 109 degrees.  That is the book's lesson, kept on a
+about 55 degrees as a follower, no overshoot on a 0.5 V step, and the
+follower settles in about 0.5 us; the x11 amplifier has 119 degrees.  Without
+the 1 k the follower's phase margin is -38 degrees, that is, it oscillates, and
+the x11 amplifier keeps about 107 degrees.  That is the book's lesson, kept on a
 switch.  The simulated unity-gain crossing is 14 MHz, which is the models
 talking: on the real board with SOT-23 parts and a probe on Q3 C, expect a few
 MHz and a little less margin.  These small-signal margins are taken at 0 V, in
 the dead band; with the output a few volts off zero the follower's margin is
-nearer 40 degrees, which is why a cable on OUT needed R17 (section 2).  The
+nearer 40 degrees, which is why a cable on OUT needs R17 (section 2).  The
 common-mode gain of the first stage goes from 0.076 with the resistor to 0.0004
 with the sink.
 
-**Swing.** As the x11 amplifier with 2 V peak in, OUT swings from -14.1 V to
-+13.2 V into the 11 k divider: each side loses the Schottky, the positive side a
+**Swing.** As the x11 amplifier with 2 V peak in, OUT swings from -13.8 V to
++12.9 V into the 11 k divider: each side loses the Schottky, the positive side a
 Vbe more.
 
 ## 4. The board
 
 100 x 100 mm, two layers, every part on the front, a solid ground plane on the
-back with 32 vias stitching the ground stubs and the hops into it.  114 SMT and 27
+back with 24 vias stitching the ground stubs and the hops into it.  100 SMT and 27
 through-hole joints.  The silkscreen wires *are* the copper: `gen_pcb.py` routes
 each track along the drawn wire, so the picture on the board is the netlist and
-not a decoration.  Eight crossings are hops: the crossing track dives to the
+not a decoration.  Four crossings are hops: the crossing track dives to the
 back layer between two vias and the silkscreen draws a small arc over it, as
-the book draws a jump.  Four of the eight came with the current limit, whose
-diode returns and sense leads have to cross the output's own wires.
+the book draws a jump.
 
 Choices worth knowing:
 
@@ -110,8 +106,9 @@ Choices worth knowing:
   and there is nothing on this board that needs it.
 * **Rails as lines.** +15 V along the top, -15 V along the bottom, 0.8 mm wide,
   exactly where the book draws them.
-* **0805 passives, 1206 at the inputs and for R7, a 2512 for R8**, big enough to
-  probe and to replace, and the two big ones sized for a misplaced ground clip.
+* **0805 passives, 1206 at the inputs and for R7, 2512 for R8 and R17**, big enough to
+  probe and to replace; R7 and R8 sized for a misplaced ground clip, R17 for a
+  shorted output.
 * **Loops, not pins**: the RH-5019 surface-mount wire loop is one pad, costs a
   tenth of a dollar, and takes the hook every scope probe has.  A 2.54 mm pin
   header would take the hook too but is through-hole and lies down with it.
@@ -125,11 +122,11 @@ Choices worth knowing:
 In the order of how likely each is to make the board dead on arrival, and what
 is there to catch it.
 
-1. **The eight SOT-23s fitted a half turn round.**  JLCPCB's drawing of the SOT-23
+1. **The six SOT-23s fitted a half turn round.**  JLCPCB's drawing of the SOT-23
    has its pin 1 where KiCad has pin 3, so the upload CPL turns them by 180
    degrees.  This is predicted from their land pattern, not yet read in a preview
    of these two codes.  `PLACEMENT_CHECKS.txt` says what to look at; the lone pad
-   (pin 3, the collector) must be up on Q1, Q3, Q4, Q5, Q7, Q8 and down on Q2, Q6.  Wrong, and every stage is dead: the bring-up
+   (pin 3, the collector) must be up on Q1, Q3, Q4, Q5 and down on Q2, Q6.  Wrong, and every stage is dead: the bring-up
    step "each rail draws about 4 mA" catches it in a second.
 2. **A DIP switch turned.**  Also predicted (from the 6-way of the same family,
    which was read).  Electrically symmetric: any orientation with the pads on the
@@ -139,15 +136,14 @@ is there to catch it.
    (the pin row is symmetric, so only the body turns).  Predicted from their land
    pattern and the vendor drawing; wrong, and the wires go in from the middle of
    the board.  `PLACEMENT_CHECKS.txt` says which edge each one faces.
-4. **Less phase margin than the models say.**  The 54 degrees as a follower is
+4. **Less phase margin than the models say.**  The 55 degrees as a follower is
    the simulation's at 0 V; the real board has less, and a 10x probe (15 pF) on
    Q3 C or Q2 C takes it down by 12 to 16 degrees, both probes by about 25.
-   Cable capacitance on the OUT jacks is kept outside the loop by R17.
-5. **A shorted output held for minutes.**  The limit holds Q4 or Q5 at about
-   14.5 mA (17 mA reaches the short, the rest from Q3 through the sense
-   transistor): to ground that is 0.2 W in a SOT-23 whose stocked part (C20526)
-   is rated 0.2 W at 625 K/W, so minutes; to either rail it is 0.4 W, twice the
-   rating: it survives a student's slip, not a minute.
+   Cable capacitance on the OUT jacks is isolated from the push-pull by R17.
+5. **A shorted output to a rail without a supply limit.**  To ground, R17 holds
+   the current to 46 mA and Q4 or Q5 to 127 mW (C20526 is rated 200 mW at 625 K/W),
+   indefinitely.  To a rail the current would be 90 mA and R17 would take 2.7 W;
+   the handbook's 50 mA supply limit holds it to about 0.8 W.
 6. **The BNC's rotation**, +90 degrees, was read on a built board of the same
    jack on the same footprint, so it is the least likely of the connectors to be
    wrong; the trimmer's is predicted, but its keyed hole pattern leaves the

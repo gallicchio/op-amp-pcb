@@ -8,12 +8,12 @@ Look at each predicted part in the preview; if one is turned, do NOT nudge it
 in their viewer (the fix is lost on the next upload): change its entry in
 scripts/parts.py JLC_ROTATION and rebuild.
 
-[PREDICTED] Q1, Q2, Q4, Q6, Q7  (C20526, +180 deg)
+[PREDICTED] Q1, Q2, Q4, Q6  (C20526, +180 deg)
             SOT-23: their pad 1 is at (+1.0,+0.95), KiCad's at (-0.94,-0.95); the SOT-23-5 on GPSDO needed +180 on 59 placements
-            Q1, Q4, Q7: look for SOT-23: the lone pad (pin 3, the collector) against the pair (base and emitter); should be: lone pad at the TOP, the pair at the bottom
+            Q1, Q4: look for SOT-23: the lone pad (pin 3, the collector) against the pair (base and emitter); should be: lone pad at the TOP, the pair at the bottom
             Q2, Q6: look for the same, the other way up; should be: lone pad at the BOTTOM, the pair at the top
 
-[PREDICTED] R8  (C2934068, +0 deg)
+[PREDICTED] R8, R17  (C2934068, +0 deg)
             R2512: a resistor; their pads along x as KiCad's, either way round
 
 [PREDICTED] J4, J5, J7  (C474881, +180 deg)
@@ -33,18 +33,17 @@ scripts/parts.py JLC_ROTATION and rebuild.
             3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here
             RV1: look for 3362P trimmer, keyed; should be: fits one way; screw on top
 
-[PREDICTED] Q3, Q5, Q8  (C53444, +180 deg)
+[PREDICTED] Q3, Q5  (C53444, +180 deg)
             SOT-23, same drawing as the NPN
-            Q3, Q5, Q8: look for SOT-23: the lone pad (pin 3, the collector) against the pair (base and emitter); should be: lone pad at the TOP, the pair at the bottom
+            Q3, Q5: look for SOT-23: the lone pad (pin 3, the collector) against the pair (base and emitter); should be: lone pad at the TOP, the pair at the bottom
 
 [PREDICTED] SW1, SW2, SW3  (C54949, +270 deg)
             DSIC02LSGET: JLCPCB draws the DSIC06 lying along x, KiCad standing; the Lorenz DSIC06 needed +270 (read)
             SW1, SW2, SW3: look for 2-way DIP switch: pads on pads; the part's own ON marking; should be: on the side of the silkscreen word ON (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it); electrically it cannot go in wrong
 
-[PREDICTED] D1, D2, D5, D6  (C81598, +0 deg)
+[PREDICTED] D1, D2  (C81598, +0 deg)
             1N4148W SOD-123F: as the Schottky
             D1, D2: look for SOD-123 cathode band; should be: at the end the silkscreen bar marks (they are anti-parallel: one up, one down)
-            D5, D6: look for SOD-123 cathode band; should be: D5 cathode DOWN toward Q7; D6 cathode DOWN toward the bus
 
 [PREDICTED] D3, D4  (C8598, +0 deg)
             B5819W SOD-123: their pad 1 at -1.7 as KiCad's; cathode band end to be seen

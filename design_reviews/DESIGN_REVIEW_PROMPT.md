@@ -65,7 +65,7 @@ the project open in KiCad. So:
 
 ## 1. What it is
 
-The op-amp of Lab 5L, built from eight 2N3904 / 2N3906 transistors in SOT-23 on a
+The op-amp of Lab 5L, built from six 2N3904 / 2N3906 transistors in SOT-23 on a
 100 x 100 mm two-layer board whose **silkscreen is the schematic**: the white wires are
 the copper, each transistor sits at the centre of its own drawn symbol, dashed boxes
 name the stages as the book names them, and 18 wire loops take a scope probe. Three
@@ -91,7 +91,7 @@ generators as well as their output.
 | `scripts/parts.py` | every part: value, footprint, LCSC code, stock, JLCPCB rotation |
 | `scripts/layout.py` | the board: placements, the silkscreen wires, texts, boxes, hops |
 | `scripts/gen_sch.py`, `scripts/gen_pcb.py` | the schematic and the board (copper follows the silk wires) |
-| `scripts/check_circuit.py` | the 118 netlist assertions |
+| `scripts/check_circuit.py` | the 110 netlist assertions |
 | `sim/opamp_sim.py` | the ngspice model as built |
 | `docs/images/opamp-top.png`, `opamp-silk-top.png`, `opamp-silk-bottom.png`, `schematic.png` | the board, the bare silkscreen, the back, the sheet |
 | `docs/history/2026-10-24-r4-*.png` | 600 dpi close-ups of each stage as reviewed |
@@ -105,23 +105,24 @@ documents is wrong." The board's own numbers, each of which the build checks:
 
 - ERC 0; DRC 0 at every severity with schematic parity, with KiCad's silkscreen rules
   on (0.8 mm minimum text, 0.15 mm silk clearance);
-- 118 circuit assertions pass against the exported netlist; the sheet has no text
+- 110 circuit assertions pass against the exported netlist; the sheet has no text
   overlaps; the fab package passes its checks (gerber layers and extent, drill files,
   BOM against CPL, each LCSC code's JLCPCB description against the value and package,
   stock, the QR code decodes, the keyed parts);
-- 28 numbers quoted in the documents match the build;
+- 30 numbers quoted in the documents match the build;
 - the simulation (`sim/results.json`, generic 2N3904 / 2N3906 models, 3 pF of stray on
   the three high-impedance nodes, the rails fed through modelled B5819Ws from +/-15 V):
   rails +/-14.83 V, tail 1.36 mA, Q3 1.28 mA, open-loop gain 126 at rest, stage gains
-  11.4 and 32 (11.1 through the resting push-pull), x11 amplifier gain 10.11, follower
-  phase margin 54 degrees (-39 without the 1 k), x11 phase margin 122 degrees,
-  unity-gain crossing 14 MHz, swing -14.1 to +13.2 V into the 11 k divider and
-  +/-11.7 V into 1 k at the jacks, short-circuit output current 16.9 mA (14.5 mA
-  through Q4 or Q5), follower offset -6.7 mV, null range +/-33 mV;
-- 67 parts, all on the front: 59 SMT, 8 through-hole (three BNCs, four terminals, the
-  trimmer); 4 M3 holes; 32 vias; 8 hops (crossings on the back layer); 40 BOM lines, 8
-  JLCPCB Extended codes; 114 SMT and 27 through-hole joints a board; parts $7.82 a
-  board; 2 assembled $78.72, 10 assembled $152.30.
+  11.4 and 32 (11.0 through the resting push-pull), x11 amplifier gain 10.1, follower
+  phase margin 55 degrees (-38 without the 1 k), x11 phase margin 119 degrees,
+  unity-gain crossing 14 MHz, swing -13.8 to +12.9 V into the 11 k divider and
+  +/-10.1 V into 1 k, short-circuit output current 46 mA through R17 with at most
+  127 mW in Q4 or Q5, no ringing with 100 pF to 2.2 nF on OUT, follower offset
+  -6.7 mV, null range +/-33 mV;
+- 61 parts, all on the front: 53 SMT, 8 through-hole (three BNCs, four terminals, the
+  trimmer); 4 M3 holes; 24 vias; 4 hops (crossings on the back layer); 39 BOM lines, 8
+  JLCPCB Extended codes; 100 SMT and 27 through-hole joints a board; parts $7.79 a
+  board; 2 assembled $78.62, 10 assembled $151.76.
 
 ## 3. What to attack
 
@@ -150,12 +151,12 @@ useful form.
    - R14, the 1 k in series with the 100 pF: the right-half-plane zero argument, with
      the 330 ohm emitter degeneration, and whether the switch positions do what the
      HANDBOOK says;
-   - the output current limit, R15 / R16 47 ohm, Q7 / Q8, D5 / D6: the limit's value
-     (0.65 V / 47 ohm against the simulated 21.8 mA), both polarities, OUT shorted to
-     ground, to +15 V and to -15 V (the power in Q4 or Q5 in a SOT-23 on these pads,
-     for how long), whether D5 / D6 and Q7 / Q8 disturb normal operation (leakage and
-     capacitance on Q3 C), and whether the HANDBOOK's "a short to ground or to a rail
-     is survived" is true;
+   - the output protection, R17 330 ohm 2512 from the push-pull's emitters to OUT,
+     inside the loop: OUT shorted to ground, to +15 V and to -15 V (the power in Q4 or
+     Q5 in a SOT-23 on these pads, and in R17), whether 330 ohm is the right value
+     (the sweep in `docs/DESIGN_NOTES.md` section 2), what it costs in swing and loop
+     gain, its effect on stability with a cable on OUT, and whether the HANDBOOK's
+     claims about shorts are true;
    - D3 / D4 B5819W in the rails: polarity, drop, what a reversed or a single supply
      does, what +30 V on one terminal does;
    - the LEDs and bypass capacitors.
@@ -166,9 +167,9 @@ useful form.
    - a 10x scope probe (10 to 15 pF) on TP8 (Q3 C) or TP6 (Q2 C), as the exercises in
      HANDBOOK section 8 require: does the follower still have margin, with and without
      the 1 k?
-   - a metre of coax on OUT (about 100 pF) with FEEDBACK 2: does the follower ring?
-     Note that R15 / R16 now stand between the emitters and OUT, so judge whether the
-     rev B item "47 ohm in series with OUT" is still needed;
+   - a metre of coax on OUT (about 100 pF) with FEEDBACK 2, and with a student's own
+     follower wired from the OUT terminal: does it ring at any output level (the
+     simulation says no, from 100 pF to 2.2 nF, with R17 inside the loop)?
    - both FEEDBACK sliders on (R10 shorted);
    - the x11 amplifier with 2 V peak in, the slew rate, the crossover dead band at
      TP8.
@@ -194,9 +195,9 @@ useful form.
 6. **The JLCPCB package** (`out/opamp/`, `scripts/parts.py JLC_ROTATION`,
    `out/opamp/PLACEMENT_CHECKS.txt`, `docs/MANUFACTURING.md`). The CPL rotations
    marked *predicted* were derived from JLCPCB's land patterns and never seen in a
-   preview: SOT-23 +180 (eight transistors), the DSIC02 switches +270, the KF301
+   preview: SOT-23 +180 (six transistors), the DSIC02 switches +270, the KF301
    terminals and the 3362P at 0, the SOD-123 diodes at 0 (`python3 scripts/easyeda.py
-   C20526` in your copy fetches their drawing). Check the polarised parts: D1-D6 and
+   C20526` in your copy fetches their drawing). Check the polarised parts: D1-D4 and
    the LEDs. Does the DSIC02 switch connect pins 1-4 and 2-3 across the body, as the
    footprint and `Switch:SW_DIP_x02` assume? Does JLCPCB's Economic PCBA assemble the
    eight through-hole parts, or does the order need Standard PCBA, and what does the
@@ -244,7 +245,7 @@ points that apply here, to be used as checks:
 |---|---|---|
 | `./make.py` | footprints, models, simulation, schematic, ERC, netlist, circuit checks, board, DRC, fab package, documents; stops at the first failure | `hardware/`, `out/`, `build/`, `docs/images/`, `docs/MANUFACTURING.md`, `sim/results.json` |
 | `./make.py --stage sch` (`libs`, `sim`, `sch`, `pcb`, `out`, `docs`) | one stage | the same, for that stage |
-| `python3 scripts/check_circuit.py out/opamp.net` | the 118 netlist assertions | nothing |
+| `python3 scripts/check_circuit.py out/opamp.net` | the 110 netlist assertions | nothing |
 | `python3 scripts/check_schematic.py hardware/opamp.kicad_sch` | text overlaps on the sheet | nothing |
 | `python3 scripts/check_outputs.py` | the fab package (gerbers, BOM, CPL, QR, keying, stock, JLCPCB descriptions) | `scripts/jlc_cache.json` |
 | `python3 sim/opamp_sim.py` | the simulation, printed (`--json` also writes `sim/results.json`); edit a copy to ask new questions, `core()` is the circuit | nothing without `--json` |
@@ -262,12 +263,15 @@ build uses the committed `sim/results.json` and says so.
 
 - Round 1 (2026-10-24 to 2026-10-27: the author, Gemini-4-Argon and Kimi K3) is
   closed and applied; `design_reviews/README.md` lists what each found and what changed.
-  In short: R17 (47 ohm) now feeds both OUT jacks from the loop's node, outside the
-  feedback, because 100 pF of coax made the follower oscillate once its output left the
-  dead band; R8 is a 1 W 2512 and R7 a 1206, so a scope's ground clip on Q3 E, Q2 C,
+  In short: 100 pF of coax made the follower oscillate once its output left the dead
+  band, which R17 now cures; R8 is a 1 W 2512 and R7 a 1206, so a scope's ground clip on Q3 E, Q2 C,
   Q6 E or Q6 B burns nothing; the KF301 terminals are turned 180 degrees in the CPL
   (their wire openings were facing inward); PLACEMENT_CHECKS gives every part its own
-  line; the simulation includes the Schottkys, R14 and R17; the "Q6 B" label is clear;
+  line; the simulation includes the Schottkys, R14 and R17.
+  After round 1, at Jason's word, the 741-style output limiter (Q7, Q8, R15, R16, D5,
+  D6) was replaced by R17 alone, 330 ohm inside the loop, so the output stage is the
+  book's bare push-pull; the feedback is taken at the jacks; the layout was spread out.
+  Also: the "Q6 B" label is clear;
   ground stubs are drawn in silk; +/-16 V is the stated supply limit.  Verify those
   rather than re-find them.
 - The author reviewed first (`design_reviews/2026-10-24_Claude-Fable-5.1/REPORT.md`,

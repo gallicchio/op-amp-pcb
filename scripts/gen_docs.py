@@ -283,7 +283,7 @@ def main():
     a("")
     a("The bring-up order, the expected voltage at every loop and the student")
     a("exercises are in [HANDBOOK.md](HANDBOOK.md).  In one line: power it from a")
-    a("current-limited supply at 30 mA, both green LEDs light, and as a follower")
+    a("supply limited to 50 mA, both green LEDs light, and as a follower")
     a("(FEEDBACK 2 on) with IN+ grounded OUT sits within a few tens of millivolts")
     a("of zero and the trimmer nulls it.")
     a("")
@@ -360,6 +360,8 @@ def main():
         ("docs/HANDBOOK.md", r"\| TP5 \| Q6 B \|[^|]*\| ([-+0-9.]+) V", v(op["b6"])),
         ("docs/HANDBOOK.md", r"\| TP4 \| Q6 E \|[^|]*\| ([-+0-9.]+) V", v(op["e6"])),
         ("docs/HANDBOOK.md", r"limits at about (\d+) mA", f"{R['isc_ma']:.0f}"),
+        ("docs/HANDBOOK.md", r"Q4 or Q5 dissipate at most ([0-9.]+) W", f"{R['pq_short_mw'] / 1000:.2f}"),
+        ("docs/HANDBOOK.md", r"swing: about \+/-(\d+) V into 1 k", f"{min(abs(x) for x in R['swing_1k']):.0f}"),
         ("docs/DESIGN_NOTES.md", r"into a dead short is about (\d+) mA", f"{R['isc_ma']:.0f}"),
         ("docs/HANDBOOK.md", r"\| TP11 \| \+15V \|[^|]*\| ([-+0-9.]+) V", v(R["vrail"])),
         ("docs/HANDBOOK.md", r"\| TP12 \| -15V \|[^|]*\| ([-+0-9.]+) V", v(-R["vrail"])),
@@ -408,7 +410,7 @@ def preview_refs(text):
 
 # What to look for in JLCPCB's preview, per orientation-sensitive part.
 PREVIEW_CHECKS = [
-    ("Q1, Q3, Q4, Q5, Q7, Q8", "SOT-23: the lone pad (pin 3, the collector) against the pair (base and emitter)",
+    ("Q1, Q3, Q4, Q5", "SOT-23: the lone pad (pin 3, the collector) against the pair (base and emitter)",
      "lone pad at the TOP, the pair at the bottom"),
     ("Q2, Q6", "the same, the other way up", "lone pad at the BOTTOM, the pair at the top"),
     ("SW1, SW2, SW3", "2-way DIP switch: pads on pads; the part's own ON marking",
@@ -420,7 +422,6 @@ PREVIEW_CHECKS = [
     ("J6, J7", "screw terminal wire openings", "facing the RIGHT edge"),
     ("D1, D2", "SOD-123 cathode band", "at the end the silkscreen bar marks (they are anti-parallel: one up, one down)"),
     ("D3, D4", "SOD-123 cathode band", "D3 toward the +15 V rail (top); D4 toward the terminal (right)"),
-    ("D5, D6", "SOD-123 cathode band", "D5 cathode DOWN toward Q7; D6 cathode DOWN toward the bus"),
     ("LED1, LED2", "0805 LED cathode mark", "LED1 cathode DOWN toward its ground via, anode up toward R12; "
      "LED2 (beside POWER) cathode UP toward R13, anode down to its ground via"),
     ("TP1-TP14, TP100-TP103", "test loops", "the loop lying along the pad's long side; not polarised"),

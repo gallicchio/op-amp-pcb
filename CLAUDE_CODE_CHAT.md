@@ -749,3 +749,51 @@ A short at the jacks then gives 42 mA, 0.13 W in Q4/Q5 (rated 200 mW), stable wi
 0-2.2 nF on the jacks, swing into 1 k +/-10.3 V.  Also found in rev A: a student's
 follower wired from J7 with 100 pF on the jacks rings 80 mV p-p at negative levels.
 Asked Jason before changing anything.
+
+## Prompt 24
+
+> Make the change. Spread out the schematic and especially the placement of components and silkscreen to give everything a bit more breathing room.
+
+## Prompt 25 (mid-turn)
+
+> keep going, but is that resistor value the lowest one that can do the protection (with the least "disruption" to the ideal action of the circuit)?
+
+## Response 14
+
+Done: the 741-style limiter (Q7, Q8, R15, R16, D5, D6) is gone; the output stage is
+the book's bare push-pull with its emitters joined, and R17, 330 ohm 2512 (R8's part),
+carries them to OUT.  The feedback (SW3, R10, the OUT terminal and both jacks) is
+taken at OUT, after R17, so the loop hides its drop.
+
+On the value, a sweep with a short at the jacks and the loop driving as hard as it can:
+
+| R17 | short | worst Q4/Q5 (200 mW) | R17 (1 W) | into 1 k |
+|---|---|---|---|---|
+| 150 | 93 mA | 359 mW | 1.29 W | +/-11.5 V |
+| 220 | 66 mA | 220 mW | 0.95 W | +/-10.9 V |
+| 270 | 55 mA | 167 mW | 0.81 W | +/-10.6 V |
+| 330 | 46 mA | 127 mW | 0.70 W | +/-10.2 V |
+
+270 ohm is the lowest that fits at room temperature, with almost no margin once the
+SOT-23 derates; 330 ohm keeps 36 % and reuses R8's code.  Inside the loop R17 costs no
+gain or output resistance, only swing into heavy loads, so the difference between 270
+and 330 is 0.4 V into 1 k.  Kept 330.
+
+Simulation (regenerated): follower margin 55 degrees, x11 gain 10.1, swing into 1 k
++/-10.1 V, a short 46 mA with 127 mW in Q4/Q5, no ringing with 100 pF to 2.2 nF on
+OUT at any level (rev A's student-wired follower rang with 100 pF).
+
+The schematic is spread by four column breaks between the stages (a Spread wrapper in
+gen_sch.py moves every x right of a break, so pins and wires stay joined).  On the
+board: the difference amplifier and tail moved 1 mm right, the gain stage 2 mm, the
+push-pull 3 mm; R17 stands where the limiter was; OUT runs from R17's foot east to the
+jacks (under the +15 feed and the feedback return) and down into a re-laid feedback
+box, whose title now runs up its right side.  Four hops instead of eight, 24 vias,
+61 parts, 100 SMT joints, $7.79 a board, 2 assembled $78.62, 10 $151.76.
+
+Build: ERC 0, 110 circuit assertions, DRC 0, 30 of 30 document claims.
+
+![board](docs/history/2026-10-28-r9-top.png)
+![output corner](docs/history/2026-10-28-r9-output-r17.png)
+![back](docs/history/2026-10-28-r9-silk-bottom.png)
+![schematic](docs/history/2026-10-28-r9-schematic.png)

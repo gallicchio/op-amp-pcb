@@ -20,8 +20,8 @@ MODELS = [
 
 
 def core(tail="cs", pot=0.5, ccomp="100p", rz=1000, bf_n=300, bf_p=200, stray="3p", vsup=15):
-    """The board's op-amp: nodes inm inp out (the loop's node) and oj (the jacks,
-    through R17), rails vp vn after D3 / D4 from a +/-vsup bench supply, ground 0.
+    """The board's op-amp: nodes inm inp out (the jacks, where the feedback is taken)
+    and pp (the push-pull's emitters, which reach OUT through R17), rails vp vn after D3 / D4 from a +/-vsup bench supply, ground 0.
     COMPENSATION 1 by default: ccomp in series with rz from Q3 C to Q2 C; rz=0 is
     the bare capacitor (position 2), ccomp="0" none at all."""
     P = 50.0
@@ -35,14 +35,11 @@ def core(tail="cs", pot=0.5, ccomp="100p", rz=1000, bf_n=300, bf_p=200, stray="3
          "Q6 tail b6 e6 Q3904", "R5 0 b6 62k", "R6 b6 vn 10k", "R7 e6 vn 1k",
          "Q3 c3 c2 e3 Q3906", "R8 vp e3 330", "R9 c3 vn 12k",
          f"Ccomp c3 cz {ccomp}", f"Rz cz c2 {max(float(rz), 1e-3)}",
-         # the output current limit (not in the book): 47 ohm in each emitter, sensed by
-         # Q7 / Q8, which steal the drive above 0.65 V / 47 ohm = 14 mA, 20 mA into a short.  D5 / D6 keep the
-         # idle sense transistor's base-collector junction from conducting while the
-         # other half of the class-B pair is on (its base sits a Vbe below OUT).
-         "Q4 vp c3 e4 Q3904", "R15 e4 out 47", "Q7 c7 e4 out Q3904", "D5 c3 c7 D4148",
-         "Q5 vn c3 e5 Q3906", "R16 out e5 47", "Q8 c8 e5 out Q3906", "D6 c8 c3 D4148",
-         "R10 out x 10k", "R11 x 0 1k", "R17 out oj 47",
-         f"Cs2 c2 0 {stray}", f"Cs3 c3 0 {stray}", f"Cso out 0 {stray}"]
+         # the book's bare push-pull; R17 (not in the book) inside the loop is the output's
+         # only protection: a short at the jacks draws about 40 mA and Q4 / Q5 stay cool
+         "Q4 vp c3 pp Q3904", "Q5 vn c3 pp Q3906", "R17 pp out 330",
+         "R10 out x 10k", "R11 x 0 1k",
+         f"Cs2 c2 0 {stray}", f"Cs3 c3 0 {stray}", f"Cso pp 0 {stray}"]
     if str(ccomp) in ("0", "None"):
         L = [l for l in L if not l.startswith(("Ccomp", "Rz"))]
     if tail == "r":
@@ -212,22 +209,41 @@ def results_json(path):
         ng = run(core(pot=pot) + ["Vin inp 0 0", "Rfb out inm 1m"], ["op"])
         offs.append(ng.vec("v(out)")[0] * 1e3)
     out["null_mv"] = round((offs[1] - offs[0]) / 2, 1)
-    # swing at the jacks into 1k (R17 in series), the follower driven to the rails
+    # swing at the jacks into 1k, the follower driven to the rails
     sw = []
     for vin in (14, -14):
-        ng = run(core() + [f"Vin inp 0 {vin}", "Rfb out inm 1m", "Rl oj 0 1k"], ["op"])
-        sw.append(round(ng.vec("v(oj)")[0], 2))
+        ng = run(core() + [f"Vin inp 0 {vin}", "Rfb out inm 1m", "Rl out 0 1k"], ["op"])
+        sw.append(round(ng.vec("v(out)")[0], 2))
     out["swing_1k"] = sw
-    # short-circuit current at the jacks, open loop and driven hard both ways: no
-    # input current can reach the short this way (a follower's would, through the clamp)
-    isc, iq4 = [], []
+    # a short at the jacks, open loop and driven hard both ways (no input current can
+    # reach the short this way; a follower's would, through the clamp): the current,
+    # and the most Q4 or Q5 ever dissipates, found by sweeping a follower's target
+    isc = []
     for vin in (0.2, -0.2):
-        ng = run(core() + [f"Vin inp 0 {vin}", "Vm inm 0 0", "Rshort oj 0 0.01"], ["op"])
-        isc.append(round(abs(ng.vec("v(oj)")[0] / 0.01) * 1e3, 1))
-        iq4.append(round(abs(ng.vec("v(e4)")[0] - ng.vec("v(out)")[0] if vin > 0
-                             else ng.vec("v(out)")[0] - ng.vec("v(e5)")[0]) / 47 * 1e3, 1))
+        ng = run(core() + [f"Vin inp 0 {vin}", "Vm inm 0 0", "Rshort out 0 0.01"], ["op"])
+        isc.append(round(abs(ng.vec("v(out)")[0] / 0.01) * 1e3, 1))
     out["isc_ma"] = max(isc)
-    out["isc_q45_ma"] = max(iq4)
+    pq = [0.0]
+    for k in range(1, 57):
+        for sgn in (1, -1):
+            ng = run(core() + [f"Vin inp 0 {sgn * k / 4}", "Rfb out inm 1m", "Rshort out 0 0.01"], ["op"])
+            vp, vn, vpp = (ng.vec(f"v({n})")[0] for n in ("vp", "vn", "pp"))
+            i = ng.vec("v(out)")[0] / 0.01
+            pq.append(abs(i) * ((vp - vpp) if i > 0 else (vpp - vn)))
+            isc.append(round(abs(i) * 1e3, 1))
+    out["isc_ma"] = max(isc)
+    out["pq_short_mw"] = round(max(pq) * 1e3)
+    # a cable on the jacks: the follower stepped 4 -> 6 V, -6 -> -4 V and across 0 with
+    # 100 pF (a metre of coax) up to 2.2 nF; the worst ringing left 30 us after the edge
+    worst = 0.0
+    for c in ("100p", "470p", "1n", "2.2n"):
+        for lo, hi in ((4, 6), (-6, -4), (-0.1, 0.1)):
+            ng = run(core() + ["Rfb out inm 1m", f"Cl out 0 {c}", f"Vin inp 0 pulse({lo} {hi} 10u 20n 20n 50u 100u)"],
+                     ["tran 10n 60u"])
+            seg = [x for tt, x in zip(ng.vec("time"), ng.vec("v(out)")) if 40e-6 < tt < 58e-6]
+            worst = max(worst, max(seg) - min(seg))
+    out["ring_cable_mv"] = round(worst * 1e3, 1)
+    out["pr17_short_mw"] = round(max(isc) ** 2 * 330 / 1e3)
     # common-mode gain of stage 1
     for tail, key in (("r", "gcm_r"), ("cs", "gcm_cs")):
         ng = run(core(tail=tail) + ["Vin inp 0 dc 0 ac 1", "Vm inm inp 0"], ["ac dec 10 10 1meg"])

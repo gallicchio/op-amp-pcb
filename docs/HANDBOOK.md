@@ -20,8 +20,8 @@ PNP arrows point in.  A dashed box names each stage.
 | TAIL | Q6, R5, R6, R7, R4, SW1 | the 1.4 mA current sink, or the 10 k resistor |
 | GAIN STAGE x30 | Q3, R8, R9 | PNP common-emitter stage, 330 ohm emitter (the big 1 W resistor, see section 2), 12 k collector; its output is Q3 C |
 | OPTIONAL COMPENSATION | C1, R14, SW2 | the 100 pF Miller capacitor from Q3 C back to Q2 C, with 1 k in series |
-| PUSH-PULL FOLLOWER | Q4, Q5, R15, R16 | the output followers, with 47 ohm in each emitter for the limit below |
-| OUTPUT CURRENT LIMIT | Q7, Q8, D5, D6 | not in the book: a safety net, as in a real op-amp.  Q7 (Q8) turns on when more than about 0.65 V stands across R15 (R16) and steals the drive; the diodes keep the idle one out of the way.  It limits at about 17 mA into a dead short (15 mA through Q4 or Q5) and does nothing below that.  R17, 47 ohm between the loop's OUT node and the jacks, is in this box too: see section 3 |
+| PUSH-PULL FOLLOWER | Q4, Q5 | the book's bare output followers, emitters joined, no bias: crossover distortion included |
+| (beside it) | R17 | not in the book: 330 ohm from the followers' emitters to OUT, inside the loop.  The output's only protection; see section 3 |
 | OPTIONAL FEEDBACK | R10, R11, SW3 | the book's 10 k / 1 k load and x11 divider; its tap is X, and the switch returns X or OUT to IN- |
 
 ## 2. Power
@@ -29,13 +29,14 @@ PNP arrows point in.  A dashed box names each stage.
 | | |
 |---|---|
 | supply | +15 V, GND, -15 V on the three-way terminal at the bottom right, marked POWER; no more than +/-16 V |
-| current | about 4 mA a rail at rest, up to 20 mA driving a 1 k load to full swing |
+| current | about 4 mA a rail at rest, up to 15 mA driving a 1 k load to full swing, 50 mA into a short at OUT |
 | protection | a Schottky in each rail: reversed leads do nothing (no LED), they do not kill it |
 | signs of life | both green LEDs on, one beside each rail |
 
 Set the bench supply's current limit to 50 mA, always, not only for a new board:
-the board never needs more than 30 mA a rail, and the limit is what saves the
-Schottkys when a scope's ground clip lands on a rail loop.  It does not save
+the board never needs more than 50 mA a rail, and the limit is what saves the
+Schottkys when a scope's ground clip lands on a rail loop, and R17 when OUT is
+shorted to a rail.  It does not save
 anything from a clip on a signal loop, because those currents stay under it:
 Q3 E to ground puts the whole rail across R8, 0.66 W at 45 mA, and Q2 C to ground
 0.5 W.  That is why R8 is the big 2512 resistor above Q3, rated 1 W, and why R7
@@ -53,28 +54,28 @@ and swapping GND with one of the rails puts 30 V across one of them.  The two
 |---|---|---|---|
 | IN- | J1, left, upper | J4 IN- / GND | +/-12 V |
 | IN+ | J2, left, lower | J5 IN+ / GND | +/-12 V |
-| OUT | J3, right | J7 OUT / GND | about +/-12 V into 1 k, 15 mA; 47 ohm out |
+| OUT | J3, right | J7 OUT / GND | about +/-10 V into 1 k; a short draws 46 mA |
 
 The jack and the terminal of each input are the same node, so a generator can
 come in on the BNC while a feedback network goes on the screws.  Each input has
 1 k in series before the transistor base, so the 1N4148 clamp between the bases
 limits the current a wrong input can push to about 7 mA (15 mA, 0.2 W in each
-1 k, with the two inputs at opposite rails).  The output limits itself (about
-15 mA through Q4 or Q5, 17 mA into a dead short with Q3's share through the sense
-transistor), so a short to ground is survived for minutes, not an afternoon:
-0.2 W in a SOT-23 whose stocked part is rated 0.2 W.  A short to a rail puts
-0.4 W into Q4 or Q5, twice its rating: a slip, not a minute.  Loads of 1 k and up
-are the design.
+1 k, with the two inputs at opposite rails).  The output's protection is one resistor, R17, which is not in the book: 330 ohm
+from the push-pull's joined emitters to OUT.  The feedback is taken at OUT, after
+R17, so the loop hides its drop and the gain and output resistance are what the
+loop makes them.  A short from OUT to ground limits at about 46 mA and Q4 or Q5
+dissipate at most 0.13 W, inside their 0.2 W, for as long as you like; R17 takes
+0.7 W of its 1 W.  Without R17 the same short would put more than 1 W into Q5.
+A short to a rail is survived with the supply limited to 50 mA (R17 gets about
+0.8 W); without the limit R17 gets 2.7 W, so do not leave it.  The price is
+swing: about +/-10 V into 1 k instead of +/-12 V.  Loads of 1 k and up are the
+design.  There is no probe loop between Q4/Q5 and R17 on purpose: a ground clip
+there would be the one short R17 cannot stop.
 
-Both OUT jacks hang from the loop's own OUT node through R17, 47 ohm, which is
-not in the book.  The board's feedback (FEEDBACK 1 or 2) is taken before R17, so
-a metre of coax on the BNC (100 pF) stays outside the loop.  Without R17 the
-simulated follower oscillated at 13 MHz on the flat tops of a 5 V square wave
-into 100 pF, because R15 and R16 sit inside the loop.  The price is 4.5 % less
-output into a 1 k load with the board's own feedback, and nothing into a scope.
-In your own circuit (FEEDBACK off) your feedback comes from the OUT terminal,
-after R17, so a long cable on OUT is inside your loop: keep it short or probe
-OUT with a 10x probe.
+R17 also keeps a cable from making the board ring: a metre of coax (100 pF) on
+the BNC, or 2.2 nF, leaves the follower clean at any level.  The book's push-pull
+with nothing between it and a capacitive load oscillates, which is what Lab 9L.3's
+isolation resistor is about.
 
 ## 4. The switches
 
@@ -135,12 +136,12 @@ with temperature: hold a finger on Q1 and watch it.
 
 ## 7. Bringing up a new board
 
-1. Look at it.  Eight transistors with their lone pad (pin 3, the collector) up
-   for Q1, Q3, Q4, Q5, Q7, Q8 and down for Q2 and Q6, the diode bands where the
+1. Look at it.  Six transistors with their lone pad (pin 3, the collector) up
+   for Q1, Q3, Q4 and Q5 and down for Q2 and Q6, the diode bands where the
    silkscreen bars are, the BNC barrels and the screw terminals' wire openings
    facing off the edges, the trimmer screw up.
 2. Set TAIL 1, COMPENSATION 1, FEEDBACK 2.  Nothing on the inputs.
-3. Power from a current-limited supply at 30 mA.  Both LEDs light; each rail
+3. Power from a supply limited to 50 mA.  Both LEDs light; each rail
    draws about 4 mA.  A rail at more than 10 mA with nothing connected is a
    fault: power off and look for a transistor in backwards.
 4. Read TP11 and TP12: +/-14.8 V.
@@ -206,8 +207,8 @@ real limits, and the limits are the lesson.
 | input bias current | about 2 uA (a BJT pair at 0.7 mA a side) | 50 pA |
 | input offset | millivolts, nullable with RV1 | 0.8 mV |
 | open-loop gain | about 130 at rest, a few hundred once the output moves | 200,000 |
-| output current | about +/-12 V into 1 k; 15 mA through Q4 or Q5 (17 mA into a dead short); a short to ground is survived | 25 mA, limited |
-| output resistance | 47 ohm (R17) outside your loop, nothing inside the board's | a fraction of an ohm |
+| output current | about +/-10 V into 1 k; 46 mA into a short, through R17; a short to ground is survived | 25 mA, limited |
+| output resistance | a few ohms: R17's 330 ohm divided by the loop gain, since your feedback comes from OUT | a fraction of an ohm |
 | slew rate | several V/us | 15 V/us |
 | inputs | anti-parallel diodes between the bases conduct above 0.7 V of difference, through the two 1 k | none |
 
@@ -223,8 +224,8 @@ real limits, and the limits are the lesson.
 | 7L.2 differentiator, 7L.3 slew rate | yes | a third slew-rate data point between the 741 and the '411 |
 | 7L.4 single-supply microphone amplifier | no | needs both rails |
 | 8L.1 comparator, 8L.1.3 Schmitt trigger, 8L.2 relaxation oscillator | yes | keep the hysteresis under a volt or so, or the input clamp loads the divider |
-| 8L.7 Wien bridge | yes at modest amplitude | 15 mA of output current is the ceiling |
-| 9L.3 capacitive loads, 9L.4 buffer in the loop | yes | 54 degrees of phase margin to lose; a probe on Q3 C costs about 12 of them.  With your feedback from the OUT terminal, R17 and a capacitive load are inside your loop: the isolation resistor 9L.3 asks for is already there, and the lesson shows |
+| 8L.7 Wien bridge | yes at modest amplitude | +/-10 V into 1 k is the ceiling |
+| 9L.3 capacitive loads, 9L.4 buffer in the loop | partly | 55 degrees of phase margin to lose; a probe on Q3 C costs about 12 of them.  A capacitive load on OUT will not make this board ring: R17 is already the isolation resistor 9L.3 adds, between the push-pull and the load.  See the ringing on a '411 |
 
 Loads of 1 k and up are the design; a short is survived, not enjoyed.
 
@@ -236,7 +237,7 @@ Loads of 1 k and up are the design; a short is survived, not enjoyed.
 | one LED | that rail's lead; the two LEDs are independent |
 | OUT stuck at a rail, open loop | normal: the open-loop gain is hundreds |
 | OUT stuck at a rail as a follower | TAIL both off; a transistor in backwards; TP6 shows which stage |
-| OUT clips at a few volts into a low load | the current limit at work: raise the load to 1 k |
-| rings or oscillates as a follower | COMPENSATION 1 off; in your own circuit, a long cable on OUT inside your loop |
+| OUT clips at a few volts into a low load | R17's 330 ohm at work: raise the load to 1 k |
+| rings or oscillates as a follower | COMPENSATION 1 off |
 | hum | the scope's ground clip is not on a GND loop |
 | a resistor is hot | a ground clip on a signal loop: Q3 E or Q2 C to ground puts 0.5 to 0.66 W into R8 (rated 1 W), Q6 E or Q6 B to ground 0.21 W into R7 (rated 0.25 W).  The 50 mA supply limit does not trip on these; move the clip |

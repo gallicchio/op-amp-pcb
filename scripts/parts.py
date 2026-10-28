@@ -107,8 +107,8 @@ PARTS = {
         process="SMT", stock=589077, price=0.026,
         footprint="Diode_SMD:D_SOD-123", symbol="Device:D_Schottky",
         desc="1 A 40 V Schottky in series with each supply: a reversed supply "
-             "does nothing instead of forward-biasing eight transistors. "
-             "Drops about 0.35 V at this board's 3 mA",
+             "does nothing instead of forward-biasing six transistors. "
+             "Drops about 0.17 V at this board's 4 mA",
         alt=["B5819W / C64885 (Preferred, 751k)"]),
     "DSW": dict(
         value="1N4148W", mpn="1N4148W", lcsc="C81598", jlc_type="basic",
@@ -138,12 +138,9 @@ PASSIVES = {
                     price=0.0085, stock=1945919, note="1206, 0.25 W: the input series resistors and R7"),
     "1.5k":  dict(lcsc="C4310", mpn="0805W8F1501T5E", jlc_type="basic",
                   price=0.0028, stock=1272825),
-    "47R":   dict(lcsc="C17714", mpn="0805W8F470JT5E", jlc_type="basic",
-                  price=0.0029, stock=601045,
-                  note="the output current limit's sense resistors, and R17, which keeps a cable on the OUT jacks outside the loop"),
     "330R_2512": dict(lcsc="C2934068", mpn="FRC2512F3300TS", jlc_type="extended",
                       price=0.0348, stock=38811,
-                      note="2512, 1 W: survives a scope ground clip on Q3 E (0.65 W) for good"),
+                      note="2512, 1 W: R8 survives a scope ground clip on Q3 E (0.65 W); R17, a short at the OUT jacks (0.5 W)"),
     "10k":   dict(lcsc="C17414", mpn="0805W8F1002T5E", jlc_type="basic",
                   price=0.0034, stock=54300842),
     "12k":   dict(lcsc="C17444", mpn="0805W8F1202T5E", jlc_type="basic",
