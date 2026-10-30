@@ -132,6 +132,12 @@ def stage_out():
     out = sys_py("check_outputs.py")
     if "ALL FAB CHECKS PASSED" not in out:
         raise Fail("the fab package did not pass its checks")
+    # JLCPCB's own drawing of each part (EasyEDA, cached a month): fitted onto
+    # our footprints, then placed by the upload CPL onto our pads, and its
+    # symbol's pin names against ours (CLAUDE_PCB.md sections 8, 23 and 26)
+    sys_py("check_rotations.py")
+    sys_py("check_overlay.py")
+    sys_py("check_pinouts.py")
 
 
 def stage_docs():

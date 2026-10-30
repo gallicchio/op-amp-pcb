@@ -333,10 +333,15 @@ def check_codes(problems, notes):
 def check_stock(problems, notes):
     """Every chosen part had stock when the design was frozen."""
     low = []
+    need_of = {}                  # placements per board, counted from the BOM
+    with open(os.path.join(OUT, "opamp", "opamp_bom_jlcpcb_upload.csv"), newline="") as fh:
+        for row in csv.DictReader(fh):
+            n = len([r for r in row["Designator"].split(",") if r.strip()])
+            need_of[row["LCSC Part #"]] = need_of.get(row["LCSC Part #"], 0) + n
     for key, p in parts.PARTS.items():
         if "stock" not in p:
             continue
-        need = {"NPN": 5, "PNP": 3, "BNC": 3, "DIP2": 3, "TERM2": 3, "TP": 19, "DSCH": 2, "DSW": 4, "LED": 2}.get(key, 1)
+        need = need_of.get(p.get("lcsc"), 1)
         boards = p["stock"] // need
         if boards < 50:
             low.append(f"{p['mpn']} ({p['stock']} in stock = {boards} boards)")
@@ -346,12 +351,53 @@ def check_stock(problems, notes):
                  f"{len(parts.PASSIVES)} passive values, all with order codes")
 
 
+def check_prints(stem, problems, notes):
+    """Every page fits what is on it (CLAUDE_PCB.md gate 23): the assembly
+    drawings fill their Letter pages, centred, and no line of the schematic's
+    text crosses its sheet's frame (rev A's title block ran off the page)."""
+    import subprocess, fit_pdf
+    d = os.path.join(OUT, stem)
+    for side in ("top", "bottom"):
+        pdf = os.path.join(d, f"{stem}-assembly-{side}.pdf")
+        (W, H), (x0, y0, x1, y1) = fit_pdf.page_sizes(pdf)[0], fit_pdf.bboxes(pdf)[0]
+        fill = max((x1 - x0) / W, (y1 - y0) / H)          # fit_pdf.check's measures
+        off = max(abs((x0 + x1) / 2 - W / 2) / W, abs((y0 + y1) / 2 - H / 2) / H)
+        edge = min(x0, y0, W - x1, H - y1) / fit_pdf.MM
+        if sorted((round(W), round(H))) != [612, 792]:
+            problems.append(f"{stem}-assembly-{side}.pdf is {W:.0f} x {H:.0f} pt, not Letter")
+        elif fill < fit_pdf.FILL_MIN or off > fit_pdf.OFF_CENTRE_MAX or edge < 4.0:
+            problems.append(f"{stem}-assembly-{side}.pdf: fills {100 * fill:.0f} %, "
+                            f"{100 * off:.1f} % off centre, {edge:.1f} mm from an edge")
+        else:
+            notes.append(f"{stem}-assembly-{side}.pdf fills its Letter page ({100 * fill:.0f} %, "
+                         f"{100 * off:.1f} % off centre, {edge:.0f} mm from the nearest edge)")
+    pdf = os.path.join(d, f"{stem}-schematic.pdf")
+    (W, H) = fit_pdf.page_sizes(pdf)[0]
+    frame = 10.0 * 72 / 25.4                       # KiCad's sheet frame, 10 mm in
+    html = subprocess.run(["pdftotext", "-bbox-layout", pdf, "-"], capture_output=True,
+                          text=True, check=True).stdout
+    out = []
+    for m in re.finditer(r'<line xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</line>',
+                         html, re.S):
+        x0, y0, x1, y1 = map(float, m.groups()[:4])
+        words = re.findall(r">([^<]*)</word>", m.group(5))
+        if len(words) == 1 and re.fullmatch(r"[0-9A-Z]{1,2}", words[0]):
+            continue                               # the frame's own ruler, in its band
+        if x0 < frame - 1 or y0 < frame - 1 or x1 > W - frame + 1 or y1 > H - frame + 1:
+            out.append(" ".join(words)[:60])
+    if out:
+        problems.append(f"{stem}-schematic.pdf: {len(out)} line(s) of text cross the frame: " + "; ".join(out))
+    else:
+        notes.append(f"{stem}-schematic.pdf: every line of text inside the sheet's frame")
+
+
 def main():
     problems, notes = [], []
     check("opamp", 2, 100.0, 100.0, problems, notes)
     check_qr("opamp", problems, notes)
     check_keying("opamp", problems, notes)
     check_models("opamp", problems, notes)
+    check_prints("opamp", problems, notes)
     check_stock(problems, notes)
     check_codes(problems, notes)
     for n in notes:

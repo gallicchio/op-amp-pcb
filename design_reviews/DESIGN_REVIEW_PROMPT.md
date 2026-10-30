@@ -108,8 +108,11 @@ documents is wrong." The board's own numbers, each of which the build checks:
 - 110 circuit assertions pass against the exported netlist; the sheet has no text
   overlaps; the fab package passes its checks (gerber layers and extent, drill files,
   BOM against CPL, each LCSC code's JLCPCB description against the value and package,
-  stock, the QR code decodes, the keyed parts);
-- 30 numbers quoted in the documents match the build;
+  stock, the QR code decodes, the keyed parts, the assembly drawings fill a Letter
+  page, no schematic text crosses its frame); JLCPCB's own drawing of every part,
+  placed by the upload CPL, lands on our pads (posts, polarity and the connectors'
+  cable faces included), and its symbol names the transistors' pins as ours;
+- 35 numbers quoted in the documents match the build;
 - the simulation (`sim/results.json`, generic 2N3904 / 2N3906 models, 3 pF of stray on
   the three high-impedance nodes, the rails fed through modelled B5819Ws from +/-15 V):
   rails +/-14.83 V, tail 1.36 mA, Q3 1.28 mA, open-loop gain 126 at rest, stage gains
@@ -251,6 +254,7 @@ points that apply here, to be used as checks:
 | `python3 sim/opamp_sim.py` | the simulation, printed (`--json` also writes `sim/results.json`); edit a copy to ask new questions, `core()` is the circuit | nothing without `--json` |
 | `python3 scripts/jlc_api.py C20526` | JLCPCB stock, price and description of a code | `scripts/jlc_cache.json` |
 | `python3 scripts/easyeda.py C20526` | JLCPCB's land pattern of a code, for the rotation question | `scripts/easyeda_cache.json` |
+| `python3 scripts/check_rotations.py`, `check_overlay.py`, `check_pinouts.py` | JLCPCB's drawings fitted to our footprints, placed by the upload CPL onto our pads, and their symbols' pin names against ours | `scripts/easyeda_cache.json` |
 | `python3 scripts/jlc_datasheet.py C20526` | fetches a code's datasheet | `datasheets/` |
 | `python3 -c "import sys; sys.path.insert(0,'scripts'); import kienv; kienv.cli('pcb','drc','--format','report','--severity-all','--schematic-parity','-o','drc.rpt','hardware/opamp.kicad_pcb')"` | KiCad's DRC on the board as it is | `drc.rpt` |
 | `python3 -c "import sys; sys.path.insert(0,'scripts'); import kienv; kienv.cli('pcb','export','svg','--layers','F.SilkS,F.Cu,Edge.Cuts','-o','silk.svg','hardware/opamp.kicad_pcb')"` | a render of any layers | `silk.svg` |
@@ -271,6 +275,9 @@ build uses the committed `sim/results.json` and says so.
   After round 1, at Jason's word, the 741-style output limiter (Q7, Q8, R15, R16, D5,
   D6) was replaced by R17 alone, 330 ohm inside the loop, so the output stage is the
   book's bare push-pull; the feedback is taken at the jacks; the layout was spread out.
+  Before the order (2026-10-29): the checks above against JLCPCB's drawings, the
+  assembly drawings fitted to Letter, the title block shortened to fit its frame, and
+  one rail missing simulated (`one_rail_*` in `sim/results.json`).
   Also: the "Q6 B" label is clear;
   ground stubs are drawn in silk; +/-16 V is the stated supply limit.  Verify those
   rather than re-find them.

@@ -122,12 +122,15 @@ def build():
         return fmt.format(op[node]) if node in op else "?"
 
     sheet = Sheet(kienv.share_dir(), paper="A2",
-              title=f"{parts.BOARD_NAME}: the Lab 5L op-amp of Learning the Art of Electronics",
+              title=f"{parts.BOARD_NAME}: the Lab 5L op-amp",
               date=parts.BOARD_DATE, rev=parts.REV,
-              company="Circuit: Hayes & Horowitz, Learning the Art of Electronics (2016), Lab 5L  |  Board: Jason Gallicchio and Claude",
+              # the title block is 110 mm: about 60 characters of title and 79 of
+              # each line below it (check_outputs.py fails a line past the frame)
+              company="Circuit: Hayes & Horowitz, Learning the Art of Electronics (2016), Lab 5L",
               comments=["2N3904 / 2N3906 (MMBT, SOT-23): the transistors of Chapter 4",
-                        f"difference x{R.get('gdiff1', 11):.0f}, gain stage x{R.get('g2_stage', 34):.0f}, follower x1 (a third at rest, in its dead zone): A = {R.get('a0', 140):.0f} open loop",
-                        "Open source, CERN-OHL-P-2.0 -- " + parts.PROJECT_URL])
+                        f"A = {R.get('a0', 140):.0f} open loop: difference x{R.get('gdiff1', 11):.0f}, gain stage x{R.get('g2_stage', 34):.0f}, follower x1 (1/3 at rest)",
+                        "Open source, CERN-OHL-P-2.0 -- " + parts.PROJECT_URL,
+                        "Board: Jason Gallicchio and Claude"])
     s = Spread(sheet, BREAKS)
     pwr_n = [0]
 

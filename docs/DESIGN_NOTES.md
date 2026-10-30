@@ -125,7 +125,11 @@ is there to catch it.
 1. **The six SOT-23s fitted a half turn round.**  JLCPCB's drawing of the SOT-23
    has its pin 1 where KiCad has pin 3, so the upload CPL turns them by 180
    degrees.  This is predicted from their land pattern, not yet read in a preview
-   of these two codes.  `PLACEMENT_CHECKS.txt` says what to look at; the lone pad
+   of these two codes, but checked three ways before the order: `check_rotations.py`
+   fits their drawing onto ours at +180 for both codes (0.06 mm rms),
+   `check_overlay.py` puts their pads where the upload CPL says and finds each
+   within 0.06 mm of ours, pin for pin, and `check_pinouts.py` reads B, E, C on
+   pins 1, 2, 3 of both codes' symbols, as ours.  `PLACEMENT_CHECKS.txt` says what to look at; the lone pad
    (pin 3, the collector) must be up on Q1, Q3, Q4, Q5 and down on Q2, Q6.  Wrong, and every stage is dead: the bring-up
    step "each rail draws about 4 mA" catches it in a second.
 2. **A DIP switch turned.**  Also predicted (from the 6-way of the same family,
@@ -134,8 +138,9 @@ is there to catch it.
 3. **The screw terminals' wire openings.**  JLCPCB's drawing of the KF301 has
    its openings on the side ours has the back, so the CPL turns it by 180 degrees
    (the pin row is symmetric, so only the body turns).  Predicted from their land
-   pattern and the vendor drawing; wrong, and the wires go in from the middle of
-   the board.  `PLACEMENT_CHECKS.txt` says which edge each one faces.
+   pattern and the vendor drawing, and `check_overlay.py` turns their openings by
+   the upload CPL and finds all four facing off the board; wrong, and the wires go
+   in from the middle of the board.  `PLACEMENT_CHECKS.txt` says which edge each one faces.
 4. **Less phase margin than the models say.**  The 55 degrees as a follower is
    the simulation's at 0 V; the real board has less, and a 10x probe (15 pF) on
    Q3 C or Q2 C takes it down by 12 to 16 degrees, both probes by about 25.
@@ -150,6 +155,16 @@ is there to catch it.
    assembler no choice.
 7. **Offset beyond the null range** on an unlucky pair.  +/-33 mV covers a 3:1
    beta mismatch; a 2N3904 pair from one reel is far better than that.
+8. **One rail missing** (a supply output left off, a lead out of J6).  D3 or D4
+   then leaves that rail floating.  The simulation (follower, IN+ over +/-12 V,
+   both tails, the LEDs in the deck) puts a missing -15 V between -1.7 and +8.7 V
+   and a missing +15 V between -12.7 and 0 V, the other supply delivering at most
+   13.6 mA.  Each LED sees at most 5.2 V reversed, through its 10 k (0.75 mA).  The
+   bypass capacitors are ceramic, with no polarity to reverse, so the motor
+   board's clamp from each rail to ground would buy nothing here.  The one stress
+   is an input driven far below a missing -15 V: Q1 and Q2 see up to 6.9 V of
+   base-emitter reverse bias, past the 2N3904's 6 V, through the 1 k input
+   resistors.  The handbook says to turn both rails on together.
 
 ## 6. Rev B list
 

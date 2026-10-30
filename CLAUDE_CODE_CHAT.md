@@ -797,3 +797,67 @@ Build: ERC 0, 110 circuit assertions, DRC 0, 30 of 30 document claims.
 ![output corner](docs/history/2026-10-28-r9-output-r17.png)
 ![back](docs/history/2026-10-28-r9-silk-bottom.png)
 ![schematic](docs/history/2026-10-28-r9-schematic.png)
+
+## Prompt 26
+
+There are some new lessons in ~/OpticsPCBs/CLAUDE_PCB.md. Look over them and do any checks that you think would help ensure the successful fabrication and assembly of revA of this board. Then I will submit the JLCPCB order.
+
+## Prompt 27 (mid-turn)
+
+Check ~/OpticsPCBs/CostasLink-PYNQ-Z2/tools/fit_pdf.py
+
+## Prompt 28 (mid-turn)
+
+I can also install whatever pdf library you'd like. Give me the apt command here in chat.
+
+## Response 15
+
+Read every lesson added to `~/OpticsPCBs/CLAUDE_PCB.md` since the board's last read
+(10-25 to 10-29) and ran the ones that bear on fabricating and assembling rev A.  The
+RF gates (24-32, the as-laid RF simulation), remote control, Vivado and the quadrature
+sign do not apply to this board.
+
+**Against JLCPCB's own drawings** (§8, §23, §26), now part of `./make.py`:
+
+- `scripts/check_rotations.py` (ported from AMOD-and-RFMOD): fits each code's land
+  pattern onto our footprint.  21 codes, 0 differ from the table; both SOT-23 codes
+  fit at +180 (0.06 mm rms), as the CPL has them.
+- `scripts/check_overlay.py` (new): places their pads where the upload CPL's own Mid X,
+  Mid Y and Rotation say.  All 61 placements land within 0.25 mm of our pads (the
+  SOT-23s 0.06 mm, pin for pin); the three BNC barrels and the four terminals' wire
+  openings face off the board.
+- `scripts/check_pinouts.py` (ported): their symbols name the MMBT3904 and MMBT3906 pins
+  1 B, 2 E, 3 C, as ours; the DIP switch's A1-B1 / A2-B2 pairs are KiCad's 1-4 / 2-3.
+
+**Stock**, re-queried today: every line in stock for ten boards; the thinnest are the
+trimmer (518) and the BNC (682).
+
+**A full rebuild from source** reproduces the committed gerbers, drills, BOM and CPL
+byte for byte: the upload package is the one in `3bbc953`.
+
+**Every page fits what is on it** (gate 23).  Two faults, both fixed:
+
+- The assembly drawings put the board 1:1 in the corner of an A4 page, its left jacks
+  off the paper.  They now come from CostasLink's `fit_pdf.py` (copied to `scripts/`,
+  plus `--from-scale` and output that is the same every build): plotted at 1.5, which
+  kicad-cli centres, then fitted to Letter landscape at 1.90:1, in black, the scale
+  printed under it.
+- The schematic's title, company line and one comment ran past the title block and off
+  the A2 sheet.  Shortened; `check_outputs.py` now fails any printed line outside the
+  frame.
+
+**One rail missing** (the motor board's clamp-diode lesson), simulated with the LEDs in
+the deck: the open rail floats (-1.7 to +8.7 V, or -12.7 to 0 V), the LEDs see at most
+5.2 V reversed through 10 k, the other supply gives at most 14 mA.  The capacitors are
+ceramic, so a clamp would save nothing.  The one stress: an input driven far below a
+missing -15 V puts 6.9 V of base-emitter reverse bias on Q1 and Q2.  The handbook now
+says to turn both rails on together.
+
+Also: 139 file references in the documents all resolve; a stale list naming Q7, Q8, D5
+and D6 removed; the thin-stock note counts placements from the BOM.  35 of 35 document
+claims, ERC 0, DRC 0, 110 circuit assertions.
+
+No PDF library is needed: Ghostscript and poppler, already installed, do it in vectors.
+
+![assembly drawing on Letter](docs/history/2026-10-29-assembly-top-letter.png)
+![title block](docs/history/2026-10-29-schematic-title-block.png)

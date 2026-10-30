@@ -6,7 +6,7 @@ NextPCB and CircuitHub also accept.
 """
 import csv, io, os, re, shutil, subprocess, sys, zipfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import kienv, parts
+import fit_pdf, kienv, parts
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
@@ -18,12 +18,9 @@ GERBER_LAYERS_2 = ("F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,"
 GERBER_LAYERS_4 = ("F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,B.Paste,"
                    "F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts")
 
-# Parts whose orientation in the CPL is worth a glance in the fab's preview:
-# anything that is not rotationally symmetric.
-ORIENTATION_SENSITIVE = ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "SW1", "SW2", "SW3", "RV1",
-                         "D1", "D2", "D3", "D4", "D5", "D6", "LED1", "LED2", "J1", "J2", "J3", "J4", "J5", "J6", "J7"]
 IMAGES = os.path.join(ROOT, "docs", "images")
 PNG_DPI = 170
+ASSEMBLY_PLOT_SCALE = 1.5     # fits the A4 sheet with room; the fit to Letter follows
 import layout as _place
 P_BOARD = max(_place.BOARD_W, _place.BOARD_H)
 
@@ -257,14 +254,24 @@ def export_prints(stem, layers):
     made = []
     kienv.cli("sch", "export", "pdf", "--black-and-white", "-o",
               os.path.join(d, f"{stem}-schematic.pdf"), sch)
-    kienv.cli("pcb", "export", "pdf", "--mode-single", "--black-and-white",
-              "--include-border-title", "--layers",
-              "F.Cu,F.Silkscreen,Edge.Cuts",
-              "-o", os.path.join(d, f"{stem}-assembly-top.pdf"), pcb)
-    kienv.cli("pcb", "export", "pdf", "--mode-single", "--black-and-white",
-              "--include-border-title", "--mirror", "--layers",
-              "B.Silkscreen,Edge.Cuts",
-              "-o", os.path.join(d, f"{stem}-assembly-bottom.pdf"), pcb)
+    # The assembly drawings fill a Letter page (CLAUDE_PCB.md gate 23).  At
+    # scale 1 kicad-cli plots the board where it lies on its A4 sheet, in the
+    # corner and off the paper; at any other scale it centres it.  So plot at
+    # ASSEMBLY_PLOT_SCALE, then fit the drawn box onto Letter, and print the
+    # true scale under it.
+    for side, layers_, extra, caption in (
+            ("top", "F.Cu,F.Silkscreen,Edge.Cuts", [],
+             "top: copper and silkscreen"),
+            ("bottom", "B.Silkscreen,Edge.Cuts", ["--mirror"],
+             "bottom, seen from below (mirrored): silkscreen")):
+        raw = os.path.join(d, f"_{stem}-assembly-{side}.pdf")
+        kienv.cli("pcb", "export", "pdf", "--mode-single", "--black-and-white",
+                  "--scale", str(ASSEMBLY_PLOT_SCALE), *extra, "--layers", layers_,
+                  "-o", raw, pcb)
+        fit_pdf.fit(raw, os.path.join(d, f"{stem}-assembly-{side}.pdf"), paper="letter",
+                    caption=f"{parts.BOARD_NAME} rev {parts.REV}, {caption}, scale {{scale}}:1",
+                    from_scale=ASSEMBLY_PLOT_SCALE)
+        os.remove(raw)
     for name in os.listdir(d):
         if name.endswith(".pdf"):
             normalise_timestamps(os.path.join(d, name))

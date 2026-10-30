@@ -16,6 +16,8 @@ MODELS = [
     # B5819W, fitted to its datasheet's 25 C forward curve: 0.27 V at 0.1 A, 0.55 V at
     # 1 A; at the board's 4 mA it drops 0.18 V, so the rails sit near +/-14.8 V
     ".model DB5819 D(IS=7.5e-6 N=1.1 RS=0.2 CJO=150e-12 M=0.4 BV=40)",
+    # KT-0805G green LED, only in the one-rail fault: reverse breakdown put at the 5 V it is rated to
+    ".model DLED D(IS=1e-20 N=1.8 RS=5 BV=5 IBV=10u)",
 ]
 
 
@@ -244,6 +246,33 @@ def results_json(path):
             worst = max(worst, max(seg) - min(seg))
     out["ring_cable_mv"] = round(worst * 1e3, 1)
     out["pr17_short_mw"] = round(max(isc) ** 2 * 330 / 1e3)
+    # one rail missing (a supply output off, a lead out of J6): D3 / D4 leave that rail
+    # floating, so what does it stress?  The follower, IN+ over +/-12 V, both tails, the
+    # LEDs in the deck.  (The bypass capacitors are ceramic: no polarity to reverse.)
+    pol = {"Q1": 1, "Q2": 1, "Q4": 1, "Q6": 1, "Q3": -1, "Q5": -1}
+    be = {"Q1": ("b1", "e1"), "Q2": ("b2", "e2"), "Q3": ("c2", "e3"), "Q4": ("c3", "pp"),
+          "Q5": ("c3", "pp"), "Q6": ("b6", "e6")}
+    fl, led_v, led_ma, vbe_rev, sup = {"+15": [], "-15": []}, 0.0, 0.0, 0.0, 0.0
+    for gone, src, node in (("-15", "VNS", "vn"), ("+15", "VPS", "vp")):
+        for tail in ("cs", "r"):
+            for vin in (-12, -5, 0, 5, 12):
+                L = [l for l in core(tail=tail) if not l.startswith(src)]
+                L += [f"Rleak {src[:3].lower()} 0 100meg", "R12 vp la 10k", "DL1 la 0 DLED",
+                      "DL2 0 lk DLED", "R13 lk vn 10k", f"Vin inp 0 {vin}", "Rfb out inm 1m"]
+                ng = run(L, ["op"])
+                v = {n: ng.vec(f"v({n})")[0] for n in ("vp", "vn", "la", "lk", "b1", "e1", "b2", "e2",
+                                                      "c2", "e3", "c3", "pp") + (("b6", "e6") if tail == "cs" else ())}
+                fl[gone].append(v[node])
+                led_v = max(led_v, -v["la"], v["lk"])
+                led_ma = max(led_ma, (v["la"] - v["vp"]) / 10.0, (v["vn"] - v["lk"]) / 10.0)   # reverse, mA
+                vbe_rev = max([vbe_rev] + [-(v[b] - v[e]) * pol[q] for q, (b, e) in be.items() if b in v])
+                other = "i(vps)" if gone == "-15" else "i(vns)"
+                sup = max(sup, abs(ng.vec(other)[0]) * 1e3)
+    out["one_rail_float_v"] = {k: [round(min(x), 1), round(max(x), 1)] for k, x in fl.items()}
+    out["one_rail_led_rev_v"] = round(led_v, 1)
+    out["one_rail_led_ma"] = round(led_ma, 2)
+    out["one_rail_vbe_rev_v"] = round(vbe_rev, 1)
+    out["one_rail_supply_ma"] = round(sup, 1)
     # common-mode gain of stage 1
     for tail, key in (("r", "gcm_r"), ("cs", "gcm_cs")):
         ng = run(core(tail=tail) + ["Vin inp 0 dc 0 ac 1", "Vm inm inp 0"], ["ac dec 10 10 1meg"])

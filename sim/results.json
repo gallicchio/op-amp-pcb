@@ -1,6 +1,6 @@
 {
  "a0": 125.6,
- "date": "2026-10-28",
+ "date": "2026-10-29",
  "f11_khz": 354.8,
  "f_unity_mhz": 14.13,
  "g11": 10.1,
@@ -13,6 +13,20 @@
  "i_tail_ma": 1.364,
  "isc_ma": 46.2,
  "null_mv": 32.6,
+ "one_rail_float_v": {
+  "+15": [
+   -12.7,
+   0.0
+  ],
+  "-15": [
+   -1.7,
+   8.7
+  ]
+ },
+ "one_rail_led_ma": 0.75,
+ "one_rail_led_rev_v": 5.2,
+ "one_rail_supply_ma": 13.6,
+ "one_rail_vbe_rev_v": 6.9,
  "op": {
   "b6": -12.806,
   "c2": 13.751,

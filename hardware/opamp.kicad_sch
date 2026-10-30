@@ -5,13 +5,14 @@
 	(uuid "9eb78eaa-30d0-5848-9a54-3294ec10adc7")
 	(paper "A2")
 	(title_block
-		(title "Discrete Transistor Op-Amp: the Lab 5L op-amp of Learning the Art of Electronics")
+		(title "Discrete Transistor Op-Amp: the Lab 5L op-amp")
 		(date "2026-10-24")
 		(rev "A")
-		(company "Circuit: Hayes & Horowitz, Learning the Art of Electronics (2016), Lab 5L  |  Board: Jason Gallicchio and Claude")
+		(company "Circuit: Hayes & Horowitz, Learning the Art of Electronics (2016), Lab 5L")
 		(comment 1 "2N3904 / 2N3906 (MMBT, SOT-23): the transistors of Chapter 4")
-		(comment 2 "difference x11, gain stage x32, follower x1 (a third at rest, in its dead zone): A = 126 open loop")
+		(comment 2 "A = 126 open loop: difference x11, gain stage x32, follower x1 (1/3 at rest)")
 		(comment 3 "Open source, CERN-OHL-P-2.0 -- github.com/gallicchio/op-amp-pcb")
+		(comment 4 "Board: Jason Gallicchio and Claude")
 	)
 	(lib_symbols
 		(symbol "Connector:Conn_Coaxial"

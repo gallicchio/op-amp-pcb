@@ -44,6 +44,13 @@ under Q6 is a 0.25 W 1206 (Q6 E or Q6 B to ground puts 0.21 W in it).  Nothing
 burns; move the clip.  Q3 E to ground also drives Q3's base-emitter junction
 past its reverse rating, so make it a slip, not a habit.
 
+Turn both rails on together.  With one missing, its Schottky leaves that rail
+floating and the board draws at most 14 mA from the other; nothing burns, and
+the LED of the missing rail stays dark.  But an input driven far below a missing
+-15 V reverse-biases Q1's and Q2's base-emitter junctions by up to 6.9 V, past
+the 2N3904's 6 V, and only the 1 k input resistors limit it: keep the inputs
+near 0 V until both LEDs are on.
+
 Stay within +/-16 V at the terminal.  The 10 uF bypass capacitors are 25 V parts,
 and swapping GND with one of the rails puts 30 V across one of them.  The two
 10 uF capacitors also hold the rails if the leads are long.
