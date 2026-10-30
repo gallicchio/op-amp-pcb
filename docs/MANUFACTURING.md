@@ -119,18 +119,18 @@ angles already applied, per LCSC code, from `scripts/parts.py`:
 
 | parts | LCSC | turned by | evidence |
 |---|---|---|---|
-| SW1, SW2, SW3 | C54949 | 270 deg | predicted: DSIC02LSGET: JLCPCB draws the DSIC06 lying along x, KiCad standing; the Lorenz DSIC06 needed +270 (read) |
-| Q1, Q2, Q4, Q6 | C20526 | 180 deg | predicted: SOT-23: their pad 1 is at (+1.0,+0.95), KiCad's at (-0.94,-0.95); the SOT-23-5 on GPSDO needed +180 on 59 placements |
-| J4, J5, J7 | C474881 | 180 deg | predicted: KF301-2P: EasyEDA draws the wire openings on +y, 3.7 mm from the pins; ours face -y (the board edge); the pin row is symmetric, so +180 only turns the body |
-| J6 | C474882 | 180 deg | predicted: KF301-3P: wire-entry arrows on +y in EasyEDA, as the 2P |
-| Q3, Q5 | C53444 | 180 deg | predicted: SOT-23, same drawing as the NPN |
-| J1, J2, J3 | C41416668 | 90 deg | read: BNC-KYWE-295-W4-N: Lorenz board rev A/B preview, built and working |
-| LED1, LED2 | C2297 | 0 deg | read: KT-0805G on KiCad's LED_0805: GPiBridge rev A preview, cathode at pad 1 |
-| R8, R17 | C2934068 | 0 deg | predicted: R2512: a resistor; their pads along x as KiCad's, either way round |
-| TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9, TP10, TP11, TP12, TP13, TP14, TP100, TP101, TP102, TP103 | C5199800 | 0 deg | predicted: RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x |
-| RV1 | C52754333 | 0 deg | predicted: 3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here |
-| D1, D2 | C81598 | 0 deg | predicted: 1N4148W SOD-123F: as the Schottky |
-| D3, D4 | C8598 | 0 deg | predicted: B5819W SOD-123: their pad 1 at -1.7 as KiCad's; cathode band end to be seen |
+| SW1, SW2, SW3 | C54949 | 270 deg | read: DSIC02LSGET: JLCPCB draws the DSIC06 lying along x, KiCad standing; the Lorenz DSIC06 needed +270; rev A preview |
+| Q1, Q2, Q4, Q6 | C20526 | 180 deg | read: SOT-23: their pad 1 is at (+1.0,+0.95), KiCad's at (-0.94,-0.95); this board's rev A preview, 2026-10-29 |
+| J4, J5, J7 | C474881 | 180 deg | read: KF301-2P: EasyEDA draws the wire openings on +y, 3.7 mm from the pins; ours face -y (the board edge); the pin row is symmetric, so +180 only turns the body; rev A preview |
+| J6 | C474882 | 180 deg | read: KF301-3P: wire-entry arrows on +y in EasyEDA, as the 2P; rev A preview |
+| Q3, Q5 | C53444 | 180 deg | read: SOT-23, same drawing as the NPN; rev A preview |
+| J1, J2, J3 | C41416668 | 90 deg | read: BNC-KYWE-295-W4-N: Lorenz board rev A/B preview, built and working; this board's rev A preview |
+| LED1, LED2 | C2297 | 0 deg | read: KT-0805G on KiCad's LED_0805: GPiBridge rev A preview, cathode at pad 1; this board's too |
+| R8, R17 | C2934068 | 0 deg | read: R2512: a resistor; their pads along x as KiCad's, either way round; rev A preview |
+| TP1, TP2, TP3, TP4, TP5, TP6, TP7, TP8, TP9, TP10, TP11, TP12, TP13, TP14, TP100, TP101, TP102, TP103 | C5199800 | 0 deg | read: RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x; rev A preview |
+| RV1 | C52754333 | 0 deg | read: 3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here; rev A preview. Their body sits 1.3 mm off our box toward pins 1 and 3 (Bourns' drawing; rev A's footprint centres it): Jason nudged it in the preview |
+| D1, D2 | C81598 | 0 deg | read: 1N4148W SOD-123F: as the Schottky; rev A preview |
+| D3, D4 | C8598 | 0 deg | read: B5819W SOD-123: their pad 1 at -1.7 as KiCad's; rev A preview |
 
 *read* means seen in a JLCPCB preview on a real order of that part on that
 footprint; *predicted* means derived by fitting JLCPCB's own land pattern
@@ -145,7 +145,7 @@ in `out/opamp/PLACEMENT_CHECKS.txt`, the list to hold against the preview.
 | Q1, Q3, Q4, Q5 | SOT-23: the lone pad (pin 3, the collector) against the pair (base and emitter) | lone pad at the TOP, the pair at the bottom |
 | Q2, Q6 | the same, the other way up | lone pad at the BOTTOM, the pair at the top |
 | SW1, SW2, SW3 | 2-way DIP switch: pads on pads; the part's own ON marking | on the side of the silkscreen word ON (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it); electrically it cannot go in wrong |
-| RV1 | 3362P trimmer, keyed | fits one way; screw on top |
+| RV1 | 3362P trimmer, keyed | its pins on the three holes; screw on top.  Its body shows 1.3 mm above the printed box (rev A's footprint draws the box centred on the pins; the real body is not): rev A's preview was nudged to the box, harmless for a part whose legs only fit the holes |
 | J1, J2 | BNC barrel | pointing off the LEFT edge |
 | J3 | BNC barrel | pointing off the RIGHT edge |
 | J4, J5 | screw terminal wire openings | facing the LEFT edge |
@@ -155,8 +155,8 @@ in `out/opamp/PLACEMENT_CHECKS.txt`, the list to hold against the preview.
 | LED1, LED2 | 0805 LED cathode mark | LED1 cathode DOWN toward its ground via, anode up toward R12; LED2 (beside POWER) cathode UP toward R13, anode down to its ground via |
 | TP1-TP14, TP100-TP103 | test loops | the loop lying along the pad's long side; not polarised |
 
-The one part that cannot go in wrong is the trimmer: its three holes form an
-L, so it fits one way.  `check_outputs.py` re-derives that from the board file
+The one part that cannot go in wrong is the trimmer: its three holes form a
+triangle, so it fits one way.  `check_outputs.py` re-derives that from the board file
 on every build.  The BNCs are not keyed (four symmetric posts and a centre
 pin), which is why their correction is read, not predicted, and worth a glance.
 

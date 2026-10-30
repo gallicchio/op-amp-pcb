@@ -291,9 +291,9 @@ build uses the committed `sim/results.json` and says so.
   Verify those rather than re-find them. Still open: the "Remove Mark" fee, and the
   fee constants in the cost model (Gemini thinks the $3 Extended fee is not charged on
   the four through-hole codes; unverified, so the estimate keeps it).
-- Every CPL rotation except the BNCs' and the LEDs' is predicted, not read; the BNC's
-  +90 was read on a built board with the same footprint. `PLACEMENT_CHECKS.txt` is the
-  list for the preview.
+- Every CPL rotation was read in rev A's preview (2026-10-29); before that all but
+  the BNCs' and the LEDs' were predicted.  The preview found one thing the pad checks
+  could not: the 3362P's body sits 1.3 mm off our footprint's box (DESIGN_NOTES 5.9).
 - There is no front copper pour, on purpose: the drawing would be unreadable over
   fill.
 - "Remove Mark" for the order number: the whole front is a drawing. The three

@@ -861,3 +861,35 @@ No PDF library is needed: Ghostscript and poppler, already installed, do it in v
 
 ![assembly drawing on Letter](docs/history/2026-10-29-assembly-top-letter.png)
 ![title block](docs/history/2026-10-29-schematic-title-block.png)
+
+## Prompt 29
+
+I had to nudge RV1 down a bit in the placement process. Everything else looked fine.
+
+## Response 16
+
+Every rotation is now *read*: all twelve entries in `parts.JLC_ROTATION`, the six
+SOT-23s' +180, the DIP switches' +270 and the terminals' +180 among them.
+
+RV1's nudge was our footprint's fault, not JLCPCB's.  The pads fit theirs to 0.04 mm,
+but Bourns' 3362P drawing has pins 1 and 3 3.53 mm from the body's edge and pin 2
+2.54 mm further in, so the body's centre lies on the line of pins 1 and 3.  EasyEDA
+draws it that way; our footprint centres the body, the silkscreen box, the courtyard
+and the 3D model on the triangle of pins instead.  On RV1, turned 180 degrees, the
+real body therefore sits 1.3 mm higher than the printed box, which is what the
+preview showed.  Nudging it down to the box moved their pins off our holes in the
+preview, which is harmless for a part whose three legs only fit the holes one way.
+
+On rev A the overhang covers nothing: no other part's pad is within 0.5 mm of the real
+body, which reaches up to the "Q1 E" and "Q2 E" labels (red: Bourns' body; blue: our
+box; green: the holes).
+
+![RV1's real body against the printed box](docs/history/2026-10-29-rv1-body.png)
+
+No pad check could see it, so `check_overlay.py` now also compares the centre of
+JLCPCB's whole drawing with our courtyard's: every other part is within 0.11 mm (0.4 mm
+for a terminal's side tab) and RV1 is 1.33 mm, its one known exception.  The board,
+gerbers and CPL are unchanged (rev A is as ordered).  The footprint fix is on the rev B
+list, with the "Q1 E" / "Q2 E" labels moving up to clear the corrected box.  The
+design notes (5.9), the placement checklist and `CLAUDE_PCB.md` (the rotation table's
+reads, and "a pad fit cannot see the body") say the same.

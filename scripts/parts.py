@@ -162,20 +162,24 @@ PASSIVES = {
 # "read": seen in a JLCPCB "Confirm Parts Placement" preview on a real order.
 # "predicted": from fitting their land pattern on ours by pin number
 # (scripts/easyeda.py); listed in PLACEMENT_CHECKS.txt for the order day.
+# Every entry was read in this board's rev A preview (Jason, 2026-10-29:
+# "Everything else looked fine"; RV1 needed a nudge, see C52754333).
 JLC_ROTATION = {
-    "C41416668": (90, "read", "BNC-KYWE-295-W4-N: Lorenz board rev A/B preview, built and working"),
-    "C20526": (180, "predicted", "SOT-23: their pad 1 is at (+1.0,+0.95), KiCad's at (-0.94,-0.95); "
-                                 "the SOT-23-5 on GPSDO needed +180 on 59 placements"),
-    "C53444": (180, "predicted", "SOT-23, same drawing as the NPN"),
-    "C54949": (270, "predicted", "DSIC02LSGET: JLCPCB draws the DSIC06 lying along x, KiCad standing; "
-                                 "the Lorenz DSIC06 needed +270 (read)"),
-    "C2297": (0, "read", "KT-0805G on KiCad's LED_0805: GPiBridge rev A preview, cathode at pad 1"),
-    "C8598": (0, "predicted", "B5819W SOD-123: their pad 1 at -1.7 as KiCad's; cathode band end to be seen"),
-    "C81598": (0, "predicted", "1N4148W SOD-123F: as the Schottky"),
-    "C52754333": (0, "predicted", "3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here"),
-    "C474881": (180, "predicted", "KF301-2P: EasyEDA draws the wire openings on +y, 3.7 mm from the pins; "
-                                   "ours face -y (the board edge); the pin row is symmetric, so +180 only turns the body"),
-    "C474882": (180, "predicted", "KF301-3P: wire-entry arrows on +y in EasyEDA, as the 2P"),
-    "C2934068": (0, "predicted", "R2512: a resistor; their pads along x as KiCad's, either way round"),
-    "C5199800": (0, "predicted", "RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x"),
+    "C41416668": (90, "read", "BNC-KYWE-295-W4-N: Lorenz board rev A/B preview, built and working; this board's rev A preview"),
+    "C20526": (180, "read", "SOT-23: their pad 1 is at (+1.0,+0.95), KiCad's at (-0.94,-0.95); "
+                            "this board's rev A preview, 2026-10-29"),
+    "C53444": (180, "read", "SOT-23, same drawing as the NPN; rev A preview"),
+    "C54949": (270, "read", "DSIC02LSGET: JLCPCB draws the DSIC06 lying along x, KiCad standing; "
+                            "the Lorenz DSIC06 needed +270; rev A preview"),
+    "C2297": (0, "read", "KT-0805G on KiCad's LED_0805: GPiBridge rev A preview, cathode at pad 1; this board's too"),
+    "C8598": (0, "read", "B5819W SOD-123: their pad 1 at -1.7 as KiCad's; rev A preview"),
+    "C81598": (0, "read", "1N4148W SOD-123F: as the Schottky; rev A preview"),
+    "C52754333": (0, "read", "3362P: their pads 1/3 at y=+1.25 and 2 at y=-1.25, as drawn here; rev A preview. "
+                             "Their body sits 1.3 mm off our box toward pins 1 and 3 (Bourns' drawing; "
+                             "rev A's footprint centres it): Jason nudged it in the preview"),
+    "C474881": (180, "read", "KF301-2P: EasyEDA draws the wire openings on +y, 3.7 mm from the pins; "
+                             "ours face -y (the board edge); the pin row is symmetric, so +180 only turns the body; rev A preview"),
+    "C474882": (180, "read", "KF301-3P: wire-entry arrows on +y in EasyEDA, as the 2P; rev A preview"),
+    "C2934068": (0, "read", "R2512: a resistor; their pads along x as KiCad's, either way round; rev A preview"),
+    "C5199800": (0, "read", "RH-5019 test loop: one 4.0 x 2.2 pad, as drawn here; the loop lies along x; rev A preview"),
 }

@@ -15,7 +15,12 @@ JLCPCB's preview shows), then
   - pad for pad by number where both sides number the same way, which is what
     puts a diode's cathode or a transistor's base on the right pad;
   - for the connectors whose pins are symmetric, the face a cable enters
-    (their drawing's barrel or wire openings) pointing off the nearest edge.
+    (their drawing's barrel or wire openings) pointing off the nearest edge;
+  - the centre of their whole drawing (body, silkscreen and pads) within
+    BODY_TOL of our courtyard's centre.  Pads alone cannot see a body that
+    sits off its pins: rev A's 3362P footprint centred the body on the pins,
+    Bourns and JLCPCB put it 1.3 mm toward pins 1 and 3, and the preview
+    showed their body off our box (Jason nudged it, 2026-10-29).
 
 Calibrated on the BNC, whose +90 was read off a real preview (Lorenz board).
 """
@@ -25,9 +30,17 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 import easyeda, parts
 from check_rotations import turn
+from sexp_parse import parse_file
 
 STEM = "opamp"
 TOL = 0.25                         # mm, any of their pads to the nearest of ours
+BODY_TOL = 0.5                     # mm, their drawing's centre to our courtyard's (a terminal's side tab: 0.4)
+# bodies known to sit off our courtyard: printed, not failed
+KNOWN_BODY = {
+    "C52754333": "3362P: rev A's footprint centres the body on the pins; Bourns has pins 1 and 3 3.53 mm "
+                 "from the body's edge, so the body sits 1.3 mm toward them.  Harmless on rev A (nothing "
+                 "under the overhang); fix the footprint in rev B",
+}
 # pad numbers that mean something else on their side: compare positions only
 OTHER_NUMBERING = {
     "C41416668": "BNC: their centre pin is 5 and the posts 1-4, ours 1 and 2",
@@ -44,10 +57,38 @@ FACE = {
 }
 
 
+def courtyards():
+    """{ref: centre of its courtyard on the board}, y down."""
+    out = {}
+    for fp in parse_file(os.path.join(ROOT, "hardware", STEM + ".kicad_pcb")).kids("footprint"):
+        ref = next((pr.atom(1) for pr in fp.kids("property") if pr.atom(0) == "Reference"), None)
+        at = fp.first("at")
+        pts = [(float(ln.first(k).atom(0)), float(ln.first(k).atom(1)))
+               for ln in list(fp.kids("fp_line")) + list(fp.kids("fp_rect"))
+               if ln.first("layer").atom(0) == "F.CrtYd" for k in ("start", "end")]
+        if pts:
+            c = ((min(p[0] for p in pts) + max(p[0] for p in pts)) / 2, (min(p[1] for p in pts) + max(p[1] for p in pts)) / 2)
+            t = turn(c, float(at.atom(2) or 0))
+            out[ref] = (float(at.atom(0)) + t[0], float(at.atom(1)) + t[1])
+    return out
+
+
+def drawing_centre(code):
+    """The centre of EasyEDA's whole drawing of a part (its bbox), from the land pattern's origin, y down."""
+    res, _ = easyeda.svgs(code)
+    fpd = next((r for r in res if r.get("docType") == 4 and r.get("bbox")), None)
+    lp, _ = easyeda.land_pattern(code)
+    if not fpd or not lp:
+        return None
+    b, (ox, oy) = fpd["bbox"], lp["origin"]
+    return ((b["x"] + b["width"] / 2 - ox) * easyeda.UNIT, (b["y"] + b["height"] / 2 - oy) * easyeda.UNIT)
+
+
 def main():
     root = os.path.join(ROOT, "out")
     import json
     geom = json.load(open(os.path.join(root, "pcb_geom.json")))
+    crt = courtyards()
     H, W = geom["board_h"], geom["board_w"]
     pads = {}
     for p in geom["pads"]:
@@ -92,9 +133,21 @@ def main():
             dot = dx * edge[0] + dy * edge[1]
             msg.append("%s face %s" % (what, "off the edge" if dot > 0.9 else "INTO THE BOARD"))
             ok &= dot > 0.9
+        flag = "ok" if ok else "BAD"
+        bc = drawing_centre(code)
+        if bc and ref in crt:
+            t = turn(bc, rot)
+            off = math.hypot(mx + t[0] - crt[ref][0], my + t[1] - crt[ref][1])
+            if off > BODY_TOL:
+                msg.append("their drawing %.2f mm off our courtyard's centre" % off)
+                if code in KNOWN_BODY:
+                    msg.append("known: " + KNOWN_BODY[code])
+                    flag = "known" if ok else flag
+                else:
+                    ok, flag = False, "BAD"
         n += 1
-        line = "  %-5s %-5s %-10s rot %5.1f  %s" % ("ok" if ok else "BAD", ref, code, rot, ", ".join(msg))
-        if not ok or code in FACE or ref in ("Q1", "Q3", "D1", "D3", "SW1", "RV1", "LED1", "TP1"):
+        line = "  %-5s %-5s %-10s rot %5.1f  %s" % (flag, ref, code, rot, ", ".join(msg))
+        if not ok or flag == "known" or code in FACE or ref in ("Q1", "Q3", "D1", "D3", "SW1", "LED1", "TP1"):
             print(line)
         if not ok:
             bad.append(line)

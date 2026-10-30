@@ -124,21 +124,20 @@ is there to catch it.
 
 1. **The six SOT-23s fitted a half turn round.**  JLCPCB's drawing of the SOT-23
    has its pin 1 where KiCad has pin 3, so the upload CPL turns them by 180
-   degrees.  This is predicted from their land pattern, not yet read in a preview
-   of these two codes, but checked three ways before the order: `check_rotations.py`
+   degrees.  Read in rev A's preview (2026-10-29), after three checks before it: `check_rotations.py`
    fits their drawing onto ours at +180 for both codes (0.06 mm rms),
    `check_overlay.py` puts their pads where the upload CPL says and finds each
    within 0.06 mm of ours, pin for pin, and `check_pinouts.py` reads B, E, C on
    pins 1, 2, 3 of both codes' symbols, as ours.  `PLACEMENT_CHECKS.txt` says what to look at; the lone pad
    (pin 3, the collector) must be up on Q1, Q3, Q4, Q5 and down on Q2, Q6.  Wrong, and every stage is dead: the bring-up
    step "each rail draws about 4 mA" catches it in a second.
-2. **A DIP switch turned.**  Also predicted (from the 6-way of the same family,
-   which was read).  Electrically symmetric: any orientation with the pads on the
+2. **A DIP switch turned.**  Read in rev A's preview (the 6-way of the same family
+   had been read on the Lorenz board).  Electrically symmetric: any orientation with the pads on the
    pads works, only the sliders' direction changes.
 3. **The screw terminals' wire openings.**  JLCPCB's drawing of the KF301 has
    its openings on the side ours has the back, so the CPL turns it by 180 degrees
-   (the pin row is symmetric, so only the body turns).  Predicted from their land
-   pattern and the vendor drawing, and `check_overlay.py` turns their openings by
+   (the pin row is symmetric, so only the body turns).  Read in rev A's preview;
+   `check_overlay.py` turns their openings by
    the upload CPL and finds all four facing off the board; wrong, and the wires go
    in from the middle of the board.  `PLACEMENT_CHECKS.txt` says which edge each one faces.
 4. **Less phase margin than the models say.**  The 55 degrees as a follower is
@@ -151,8 +150,8 @@ is there to catch it.
    the handbook's 50 mA supply limit holds it to about 0.8 W.
 6. **The BNC's rotation**, +90 degrees, was read on a built board of the same
    jack on the same footprint, so it is the least likely of the connectors to be
-   wrong; the trimmer's is predicted, but its keyed hole pattern leaves the
-   assembler no choice.
+   wrong; the trimmer's was read in rev A's preview, and its triangle of holes
+   leaves the assembler no choice (but see 9).
 7. **Offset beyond the null range** on an unlucky pair.  +/-33 mV covers a 3:1
    beta mismatch; a 2N3904 pair from one reel is far better than that.
 8. **One rail missing** (a supply output left off, a lead out of J6).  D3 or D4
@@ -165,12 +164,25 @@ is there to catch it.
    is an input driven far below a missing -15 V: Q1 and Q2 see up to 6.9 V of
    base-emitter reverse bias, past the 2N3904's 6 V, through the 1 k input
    resistors.  The handbook says to turn both rails on together.
+9. **The trimmer's body sits 1.3 mm off its printed box** (found in rev A's
+   preview, 2026-10-29: JLCPCB's drawing of RV1 showed above our box and Jason
+   nudged it down).  Bourns' 3362P has pins 1 and 3 3.53 mm from the body's edge
+   and pin 2 2.54 mm further in, so the body's centre is on the line of pins 1 and
+   3; rev A's footprint centres the body, the silkscreen box, the courtyard and the
+   3D model on the triangle of pins instead.  On the board the real body reaches
+   1.3 mm higher than the box, up to the "Q1 E" and "Q2 E" labels; no other part's
+   pad is within 0.5 mm of it, so it seats.  The legs only fit the holes, so the
+   nudge in the preview cannot misplace it.  The pad checks could not see this;
+   `check_overlay.py` now compares the centre of JLCPCB's whole drawing with our
+   courtyard's, and RV1 is its one known exception, for rev B.
 
 ## 6. Rev B list
 
 * A fourth switch position or a jumper to lift the 1 k input resistors for a
   bandwidth measurement without them.
 * A place for a 1 nF to try as the compensation capacitor.
-* Read every predicted rotation in the first preview and mark it "read".
+* RV1's footprint from Bourns' drawing: the body, silkscreen box, courtyard and 3D
+  model 1.3 mm toward pins 1 and 3 (the "Q1 E" and "Q2 E" labels move up to clear
+  the box), then drop its `KNOWN_BODY` entry in `check_overlay.py`.
 * 35 V or 50 V parts for the 10 uF bypass capacitors, so a swapped GND lead (30 V)
   is inside their rating; today the handbook says +/-16 V.

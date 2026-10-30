@@ -226,8 +226,8 @@ def main():
     for line in PREVIEW_CHECKS:
         a(f"| {line[0]} | {line[1]} | {line[2]} |")
     a("")
-    a("The one part that cannot go in wrong is the trimmer: its three holes form an")
-    a("L, so it fits one way.  `check_outputs.py` re-derives that from the board file")
+    a("The one part that cannot go in wrong is the trimmer: its three holes form a")
+    a("triangle, so it fits one way.  `check_outputs.py` re-derives that from the board file")
     a("on every build.  The BNCs are not keyed (four symmetric posts and a centre")
     a("pin), which is why their correction is read, not predicted, and worth a glance.")
     a("")
@@ -420,7 +420,9 @@ PREVIEW_CHECKS = [
     ("Q2, Q6", "the same, the other way up", "lone pad at the BOTTOM, the pair at the top"),
     ("SW1, SW2, SW3", "2-way DIP switch: pads on pads; the part's own ON marking",
      "on the side of the silkscreen word ON (left of SW1, above SW2; the 'ON>' above SW3's right-hand pads points at it); electrically it cannot go in wrong"),
-    ("RV1", "3362P trimmer, keyed", "fits one way; screw on top"),
+    ("RV1", "3362P trimmer, keyed", "its pins on the three holes; screw on top.  Its body shows 1.3 mm above "
+     "the printed box (rev A's footprint draws the box centred on the pins; the real body is not): "
+     "rev A's preview was nudged to the box, harmless for a part whose legs only fit the holes"),
     ("J1, J2", "BNC barrel", "pointing off the LEFT edge"),
     ("J3", "BNC barrel", "pointing off the RIGHT edge"),
     ("J4, J5", "screw terminal wire openings", "facing the LEFT edge"),
